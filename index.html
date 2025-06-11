@@ -353,52 +353,178 @@ section h2 {
     font-size: 0.9rem;
 }
 
+/* Kompletní transformace tabulky na permanentní grid */
+
+/* Základní styl pro tabulku */
 #links-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+    max-width: 1400px;
+    margin: 1rem auto 0 auto;
+    border-collapse: separate;
+    background: #f8fafc;
+    border-radius: 12px;
+    overflow: hidden;
     box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    overflow-x: auto;
-    display: block;
-    white-space: nowrap;
 }
 
-#links-table th,
-#links-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+/* Skryj thead úplně - už ho nepotřebujeme */
+#links-table thead {
+    display: none;
 }
 
-#links-table th {
-    background: var(--primary-gradient);
-    color: white;
+/* Transformuj tbody na grid kontejner */
+#links-table tbody {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    padding: 2rem;
+    background: #f8fafc;
+}
+
+/* Každý řádek (tr) jako grid kartička */
+#links-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    min-height: 140px;
+}
+
+/* Hover efekt pro kartičky */
+#links-table tbody tr:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Reset všech td stylů */
+#links-table tbody td {
+    border: none;
+    padding: 0;
+    text-align: center;
+    width: 100%;
+}
+
+/* Ikona - první buňka */
+#links-table tbody td:nth-child(1) {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+}
+
+/* Název odkazu - druhá buňka */
+#links-table tbody td:nth-child(2) {
     font-weight: 600;
-}
-#links-table tr:nth-child(even) {
-    background-color: #fdfdff;
-}
-#links-table tr:hover td {
-    background-color: rgba(102, 126, 234, 0.1);
+    color: #2d3748;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+    line-height: 1.2;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#links-table a {
+/* URL adresa - třetí buňka */
+#links-table tbody td:nth-child(3) {
+    font-size: 0.75rem;
+    color: #718096;
+    word-break: break-all;
+    line-height: 1.3;
+    margin-bottom: auto;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#links-table tbody td:nth-child(3) a {
     color: #5a67d8;
     text-decoration: none;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-}
-#links-table a svg {
-    margin-right: 8px;
-    color: #5a67d8;
+    transition: color 0.2s ease;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(90, 103, 216, 0.1);
 }
 
-#links-table a:hover {
-    text-decoration: underline;
+#links-table tbody td:nth-child(3) a:hover {
     color: #434190;
+    text-decoration: underline;
+    background: rgba(90, 103, 216, 0.2);
 }
 
+/* Akce tlačítka - čtvrtá buňka (edit mode) */
+#links-table tbody td:nth-child(4) {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.edit-mode-only {
+    display: none;
+}
+
+/* Když je edit mode aktivní */
+body.edit-mode .edit-mode-only {
+    display: flex;
+}
+
+body.edit-mode #links-table tbody tr {
+    min-height: 180px; /* Více místa pro tlačítka */
+}
+
+/* Responzivní design */
+@media (max-width: 1300px) {
+    #links-table tbody {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1.2rem;
+    }
+}
+
+@media (max-width: 1100px) {
+    #links-table tbody {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 900px) {
+    #links-table tbody {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    #links-table tbody {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+        padding: 1rem;
+    }
+    
+    #links-table tbody tr {
+        padding: 1rem 0.5rem;
+        min-height: 120px;
+    }
+}
+
+@media (max-width: 400px) {
+    #links-table tbody {
+        grid-template-columns: 1fr;
+    }
+}
 .modal { 
     position: fixed;
     top: 0;
