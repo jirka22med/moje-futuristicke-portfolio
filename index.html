@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje Osobní Stránka - Jiřík</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+     /* Reset a základní styly */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding-top: 70px; /* Výška hlavičky, aby obsah nezačínal pod ní */
+    text-align: center;
+}
+
+:root {
+    --header-bg-color: rgba(0,0,0,0.1); 
+    --text-color: white;
+    --border-color: rgba(255,255,255,0.2);
+    --secondary-text-color: rgba(255,255,255,0.8);
+    --nav-bg-color: rgba(0,0,0,0.3);
+    --primary-gradient: linear-gradient(45deg, #667eea, #764ba2);
+    --secondary-gradient: linear-gradient(45deg, #42a5f5, #1e88e5);
+    --danger-gradient: linear-gradient(45deg, #ef5350, #e53935);
+}
+
+header {
+    background-color: var(--header-bg-color);
+    color: var(--text-color);
+    text-align: center;
+    padding: 2rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-top: -40px;
+}
+header h1 {
+    font-size: 2.5em;
+    text-align: center;
+    margin-top: -45px;
+    margin-bottom: 0.5rem;
+}
+header p {
+    font-size: 1.1em;
+    color: var(--secondary-text-color);
+}
+
+nav { 
+    background-color: var(--nav-bg-color);
+    padding: 0.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    font-size: 0.9rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#loading-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    z-index: 10000;
+    font-size: 1.1rem;
+}
+
+.hidden {
+    display: none !important;
+}
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+main {
+    padding: 2rem 0;
+    margin-top: 140px; 
+    min-height: calc(100vh - 140px - 70px);
+    margin-top: -20px;
+    width: 100%;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    margin-top: -20px;
+    width: 100%;
+}
+
+section {
+    display: none;
+    background: rgba(255, 255, 255, 0.95);
+    margin: 1rem 0;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    width: 100%;
+}
+
+section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+section h2, section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+section h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+section h2 {
+    font-size: 2rem;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+    color: #4a5568;
+}
+
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+#html-editor {
+    width: 100%;
+    height: 400px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    resize: vertical;
+    background-color: #fdfdfd;
+    color: #333;
+}
+
+#html-preview {
+    width: 100%;
+    height: 400px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+}
+
+.button, button {
+    background: var(--primary-gradient);
+    color: white !important; 
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+    text-decoration: none; 
+    display: inline-block;
+}
+
+.button:hover, button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.btn-secondary {
+    background: var(--secondary-gradient);
+}
+
+.btn-danger {
+    background: var(--danger-gradient);
+}
+
+.gallery-controls {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#newImageUrl {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+}
+
+#gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.gallery-image-wrapper {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    background-color: #e0e0e0;
+}
+
+.gallery-image-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.gallery-image-wrapper img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+    display: block;
+}
+
+.delete-img-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(220,53,69,0.8); 
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+.delete-img-btn:hover {
+    background: #b02a37; 
+}
+
+.saved-code-item {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.saved-code-item:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.item-header h3 {
+    color: #667eea;
+    font-size: 1.25rem;
+    margin-bottom: 0;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.actions .button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+#links-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+}
+
+#links-table th,
+#links-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#links-table th {
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+}
+#links-table tr:nth-child(even) {
+    background-color: #fdfdff;
+}
+#links-table tr:hover td {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+#links-table a {
+    color: #5a67d8;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+#links-table a svg {
+    margin-right: 8px;
+    color: #5a67d8;
+}
+
+#links-table a:hover {
+    text-decoration: underline;
+    color: #434190;
+}
+
+.modal { 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; 
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.modal.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    max-width: 90%;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+.modal.visible .modal-content {
+    transform: scale(1);
+}
+
+.modal input[type="text"], .modal input[type="url"], .modal input[type="email"], .modal input[type="password"] { 
+    width: 100%;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+}
+.modal .modal-buttons { 
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+#image-modal { 
+    background: rgba(0,0,0,0.9);
+}
+
+#image-modal .modal-content {
+    background: transparent;
+    max-width: 95%;
+    max-height: 95%;
+    padding: 0;
+    box-shadow: none; 
+}
+
+#modal-img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 10px;
+    display: block;
+    margin: auto;
+}
+
+.modal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modal-nav button {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: none;
+    padding: 0.8rem; 
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem; 
+    width: 50px; 
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+.modal-nav button:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+footer {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    position: relative;
+    width: 100%;
+}
+
+#user-id-display { 
+    background: rgba(255,255,255,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem; 
+    color: white;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+#user-id-display span {
+    font-weight: bold;
+}
+
+/* Nové styly pro editaci inline obsahu */
+[contenteditable="true"] {
+    outline: 2px dashed rgba(102, 126, 234, 0.5); /* Modrý rámeček pro editovatelné prvky */
+    padding: 2px;
+    min-width: 1em; /* Zaručuje, že prázdný prvek je stále viditelný */
+    transition: outline 0.2s ease;
+}
+[contenteditable="true"]:hover {
+    outline-color: rgba(102, 126, 234, 0.8);
+}
+[contenteditable="true"]:focus {
+    outline: 2px solid #667eea; /* Pevný modrý rámeček při aktivní editaci */
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.edit-controls {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+    z-index: 10;
+}
+
+.edit-controls button {
+    padding: 5px 8px;
+    font-size: 0.8em;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.edit-controls button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.editable-image-wrapper {
+    position: relative;
+    display: inline-block; /* Aby obal reagoval na velikost obrázku */
+}
+.editable-image-wrapper .edit-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.2s;
+    z-index: 5;
+}
+.editable-image-wrapper .edit-icon:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.editable-link {
+    position: relative;
+    display: inline-block;
+    margin-right: 20px; /* Místo pro edit ikonu */
+}
+.editable-link .edit-icon {
+    position: absolute;
+    right: -20px; /* Posune ikonu vedle odkazu */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background-color 0.2s;
+    z-index: 5;
+}
+.editable-link .edit-icon:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Skrytí/Zobrazení editačních prvků */
+body:not(.edit-mode) [contenteditable="true"],
+body:not(.edit-mode) .edit-controls,
+body:not(.edit-mode) .delete-img-btn,
+body:not(.edit-mode) #data-management,
+body:not(.edit-mode) #addImageUrlBtn,
+body:not(.edit-mode) #newImageUrl,
+body:not(.edit-mode) #save-code-btn,
+body:not(.edit-mode) .actions .button,
+body:not(.edit-mode) .editable-image-wrapper .edit-icon,
+body:not(.edit-mode) .editable-link .edit-icon,
+body:not(.edit-mode) .edit-mode-only { /* NOVINKA: Skrýváme i edit-mode-only prvky */
+    display: none !important;
+}
+
+/* Nová třída pro zobrazení edit módu */
+body.edit-mode #edit-mode-toggle-btn {
+    display: block; /* Zobrazí tlačítko "Ukončit editaci" */
+}
+body.edit-mode .edit-controls,
+body.edit-mode .delete-img-btn,
+body.edit-mode #data-management,
+body.edit-mode #addImageUrlBtn,
+body.edit-mode #newImageUrl,
+body.edit-mode #save-code-btn,
+body.edit-mode .actions .button,
+body.edit-mode .editable-image-wrapper .edit-icon,
+body.edit-mode .editable-link .edit-icon {
+    display: flex; /* Zobrazí ostatní editační prvky */
+}
+body.edit-mode .editable-image-wrapper .edit-icon,
+body.edit-mode .editable-link .edit-icon {
+    display: flex; /* Specificky pro ikony */
+}
+body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v edit módu */
+    display: table-cell !important; /* Pro buňky tabulky */
+}
+
+/* KOMPLETNÍ MEDIA QUERIES PRO PLNOU ŠÍŘKU */
+
+/* Tablet landscape a větší */
+@media (min-width: 768px) {
+    .editor-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .container {
+        padding: 0 2rem;
+    }
+    
+    section {
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+    
+    #gallery-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+/* Tablet portrait a menší - DVOUŘÁDKOVÁ NAVIGACE + VYLEPŠENÉ ODKAZY */
+@media (max-width: 767px) {
+    body {
+        padding-top: 0;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0 0.5rem;
+        margin: 0;
+    }
+    
+    .nav-container {
+        padding: 0 0.5rem;
+        /* KLÍČOVÁ ZMĚNA: Vytvoříme grid layout pro dvouřádkovou navigaci */
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0.5rem;
+        justify-items: center;
+        align-items: center;
+    }
+    
+    header {
+        position: relative;
+        padding: 1rem 0.5rem;
+        margin-top: 0;
+    }
+    
+    header h1 { 
+        font-size: 2rem; 
+        margin-top: 0;
+    }
+    
+    header p { 
+        font-size: 1rem; 
+    }
+
+    nav {
+        position: relative;
+        top: 0;
+        padding: 1rem 0; /* Zvětšený padding pro dvouřádkovou navigaci */
+    }
+
+    .nav-link {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+        margin: 0; /* Odstraníme margin, protože používáme grid gap */
+        width: 100%; /* Tlačítka vyplní celou šířku grid buňky */
+        text-align: center;
+        white-space: nowrap; /* Zabráníme zalomení textu */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Přidáme tři tečky při překročení */
+    }
+    
+    main {
+        margin-top: 0;
+        padding: 1rem 0;
+        width: 100%;
+    }
+
+    section {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-radius: 10px;
+        width: 100%;
+    }
+
+    section h1 {
+        font-size: 1.8rem;
+    }
+    
+    section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .editor-container {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    #html-editor, #html-preview {
+        height: 300px;
+    }
+    
+    .gallery-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #newImageUrl {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    #gallery-container {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    /* VYLEPŠENÉ EXTERNÍ ODKAZY */
+    #links-table {
+        font-size: 0.9rem;
+        display: table;
+        overflow-x: auto;
+        width: 100%;
+        table-layout: fixed; /* Fixní layout pro lepší kontrolu šířek */
+    }
+    
+    #links-table th,
+    #links-table td {
+        padding: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden; /* Skryje obsah, který přeteče */
+        text-overflow: ellipsis; /* Přidá tři tečky */
+        max-width: 0; /* Umožní fungování ellipsis */
+    }
+    
+    /* Specifické šířky pro sloupce */
+    #links-table th:first-child,
+    #links-table td:first-child {
+        width: 30%; /* Název */
+        min-width: 80px;
+    }
+    
+    #links-table th:nth-child(2),
+    #links-table td:nth-child(2) {
+        width: 50%; /* URL - největší prostor */
+        min-width: 120px;
+    }
+    
+    #links-table th:last-child,
+    #links-table td:last-child {
+        width: 20%; /* Popis */
+        min-width: 60px;
+    }
+    
+    /* Pro odkazy v buňkách */
+    #links-table a {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .modal .modal-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-nav {
+        padding: 0 1rem;
+    }
+}
+
+/* Mobilní zařízení - TAKÉ S DVOUŘÁDKOVOU NAVIGACÍ + VYLEPŠENÉ ODKAZY */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 0.25rem;
+    }
+    
+    .nav-container {
+        padding: 0 0.25rem;
+        /* Zachováváme grid layout i pro mobilní zařízení */
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0.3rem;
+        justify-items: center;
+        align-items: center;
+    }
+    
+    .nav-link {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.4rem;
+        margin: 0;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    header {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    header p {
+        font-size: 0.9rem;
+    }
+    
+    nav {
+        padding: 0.8rem 0; /* Přizpůsobený padding pro menší obrazovky */
+    }
+    
+    section {
+        padding: 0.75rem;
+        margin: 0.25rem 0;
+    }
+    
+    section h1 {
+        font-size: 1.5rem;
+    }
+    
+    section h2 {
+        font-size: 1.3rem;
+    }
+    
+    #gallery-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .gallery-image-wrapper img {
+        height: 150px;
+    }
+    
+    .button, button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        margin: 0.25rem;
+        width: auto;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+        width: 98%;
+        margin: 0.5rem;
+    }
+    
+    .modal input[type="text"], 
+    .modal input[type="url"], 
+    .modal input[type="email"], 
+    .modal input[type="password"] {
+        font-size: 16px; /* Zabraňuje zoomování na iOS */
+        padding: 0.75rem;
+    }
+    
+    /* VYLEPŠENÉ EXTERNÍ ODKAZY PRO MOBIL */
+    #links-table {
+        font-size: 0.8rem;
+        display: table;
+        overflow-x: auto;
+        width: 100%;
+        table-layout: fixed;
+    }
+    
+    #links-table th,
+    #links-table td {
+        padding: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden; /* Skryje obsah, který přeteče */
+        text-overflow: ellipsis; /* Přidá tři tečky */
+        max-width: 0; /* Umožní fungování ellipsis */
+    }
+    
+    /* Upravené šířky pro mobilní */
+    #links-table th:first-child,
+    #links-table td:first-child {
+        width: 25%; /* Název - menší */
+        min-width: 60px;
+    }
+    
+    #links-table th:nth-child(2),
+    #links-table td:nth-child(2) {
+        width: 55%; /* URL - více prostoru */
+        min-width: 100px;
+    }
+    
+    #links-table th:last-child,
+    #links-table td:last-child {
+        width: 20%; /* Popis */
+        min-width: 50px;
+    }
+    
+    /* Pro odkazy v buňkách */
+    #links-table a {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+    
+    .modal-nav button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Velmi malé displeje - TAKÉ S DVOUŘÁDKOVOU NAVIGACÍ + SKRYTÝ POPIS U ODKAZŮ */
+@media (max-width: 320px) {
+    .container {
+        padding: 0 0.1rem;
+    }
+    
+    .nav-container {
+        padding: 0 0.1rem;
+        /* Grid layout zůstává i pro velmi malé displeje */
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0.2rem;
+        justify-items: center;
+        align-items: center;
+    }
+    
+    .nav-link {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.2rem;
+        margin: 0;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    nav {
+        padding: 0.6rem 0;
+    }
+    
+    header h1 {
+        font-size: 1.3rem;
+    }
+    
+    section {
+        padding: 0.5rem;
+    }
+    
+    #gallery-container {
+        grid-template-columns: 1fr;
+    }
+    
+    /* EXTRÉMNÍ OPTIMALIZACE ODKAZŮ PRO VELMI MALÉ DISPLEJE */
+    #links-table {
+        font-size: 0.75rem;
+        display: table;
+        overflow-x: auto;
+        width: 100%;
+        table-layout: fixed;
+    }
+    
+    #links-table th,
+    #links-table td {
+        padding: 0.2rem;
+        white-space: nowrap;
+        overflow: hidden; /* Skryje obsah, který přeteče */
+        text-overflow: ellipsis; /* Přidá tři tečky */
+        max-width: 0; /* Umožní fungování ellipsis */
+    }
+    
+    /* Extrémně malé displeje - skryjeme popis úplně */
+    #links-table th:last-child,
+    #links-table td:last-child {
+        display: none; /* Skryje sloupec s popisem */
+    }
+    
+    /* Přerozdělíme prostor mezi název a URL */
+    #links-table th:first-child,
+    #links-table td:first-child {
+        width: 35%; /* Název */
+        min-width: 70px;
+    }
+    
+    #links-table th:nth-child(2),
+    #links-table td:nth-child(2) {
+        width: 65%; /* URL - maximum prostoru */
+        min-width: 120px;
+    }
+    
+    /* Pro odkazy v buňkách */
+    #links-table a {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+}
+    </style>
+</head>
+<body style="visibility: hidden;">
+    <div id="loading-indicator" class="hidden">Načítání...</div>
+
+    <header>
+        <h1 data-editable="header-title">Vítejte na mé osobní stránce!</h1>
+        <p data-editable="header-subtitle">Jiřík a jeho digitální království</p>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="nav-link" data-section="about">O mně</a>
+            <a href="#" class="nav-link" data-section="portfolio">Portfolio</a>
+            <a href="#" class="nav-link" data-section="contacts">Kontakty</a>
+            <a href="#" class="nav-link" data-section="editor">HTML Editor</a>
+            <a href="#" class="nav-link" data-section="saved">Moje HTML kódy</a>
+            <a href="#" class="nav-link" data-section="gallery">Galerie</a>
+            <a href="#" class="nav-link" data-section="links">Odkazy</a>
+            <div id="data-management"></div>
+            <button id="edit-mode-toggle-btn" class="button hidden" onclick="toggleEditMode()">Ukončit editaci</button>
+            <button id="login-button" class="button" onclick="showAuthModal()">Upravit stránku</button>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <section id="about">
+                <h2 data-editable="about-h2">O mně</h2>
+                <p data-editable="about-intro"><strong>Jiří Med – Milovník techniky a zábavy</strong></p>
+                <div>
+                    <h3 data-editable="about-h3-1">Co rád dělám o volných chvílích:</h3>
+                    <p data-editable="about-text-1"><strong>Hraní počítačových her:</strong> Jsem fanoušek herního světa, kde se rád ponořím do různých virtuálních světů. Ať už je to akce, strategie nebo RPG, počítačové hry mě baví a pomáhají mi vypnout. Herní svět mi dává prostor pro dobrodružství, výzvy a rozvoj strategie.</p>
+                    <p data-editable="about-text-2"><strong>Sledování YouTube videí:</strong> Když zrovna nehraju hry, užívám si sledování videí na YouTube. Zajímají mě herní let’s playe, technické novinky a videa oblíbených vloggerů, která mě inspirují a občas rozesmějí. YouTube je pro mě zábavou i zdrojem nových nápadů.</p>
+                </div>
+                <div>
+                    <h3 data-editable="about-h3-2">Další zájmy:</h3>
+                    <p data-editable="about-text-3"><strong>Star Trek:</strong> Moje vášeň pro sci-fi svět Star Treku je obrovská. Miluju tento seriál i jeho postavy, které mě provázejí už od dětství. Vlastním projekt věnovaný Star Treku, kde kombinuji svou lásku k tomuto univerzu s technickými znalostmi. Futuristické technologie a warpové efekty jsou pro mě fascinující, a dokonce jsem je začlenil do svého webového projektu.</p>
+                    <p data-editable="about-text-4"><strong>Technika a kódování:</strong> Jsem nadšenec do technologií a rád pracuju na různých technických výzvách. Programování a úprava HTML a CSS jsou mojí vášní, protože mě baví vytvářet funkční a esteticky krásné webové stránky. Mám cit pro detail a rád kombinuju moderní design s inovativními funkcemi.</p>
+                </div>
+                <div>
+                    <h3 data-editable="about-h3-3">Styl života:</h3>
+                    <p data-editable="about-text-5">Rád trávím čas u počítače, ať už při hraní, tvorbě webů nebo sledování videí. Miluju barevné LED pásky a osvětlení, které bliká do rytmu hudby, což přináší skvělou atmosféru do mého prostoru. Tato kombinace techniky a estetiky mi dodává inspiraci a vytváří místo, kde se cítím dobře.</p>
+                </div>
+            </section>
+
+            <section id="portfolio">
+                <h2 data-editable="portfolio-h2">Portfolio</h2>
+                <p data-editable="portfolio-intro">V této sekci najdeš ukázky mých projektů a práce, které odrážejí mé zájmy v oblasti technologií. I když nejsem programátor, díky spolupráci s AI, jako je ChatGPT a Claude.AI, se mi podařilo vytvořit tyto projekty, na které jsem pyšný.</p>
+                <div class="portfolio-items" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="portfolio-item" data-item-id="star-trek-project" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
+                        <h3 data-editable="portfolio-item-1-title">Star Trek Webový Projekt</h3>
+                        <p data-editable="portfolio-item-1-desc">Tento projekt je věnován mému oblíbenému sci-fi seriálu Star Trek. Díky pomoci od chatbotů ChatGPT a Claude.AI jsem vytvořil interaktivní webovou stránku s animacemi warp pohonu, seznamy postav a klíčovými momenty ze všech sérií. Stránka je responzivní a přizpůsobí se jakémukoli zařízení, což navozuje pocit, jako bys byl přímo ve vesmíru.</p>
+                        <a href="https://jirka22med.github.io/star-trek-universe/" class="button editable-link" data-link-id="star-trek-link" data-editable-link-text="Zobrazit projekt &rarr;"><i class="fas fa-edit edit-icon"></i></a>
+                        <div class="edit-controls hidden">
+                            <button onclick="editPortfolioItem('star-trek-project')">Editovat</button>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-item-id="audio-led-project" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
+                        <h3 data-editable="portfolio-item-2-title">Audio a LED projekty</h3>
+                        <p data-editable="portfolio-item-2-desc-1">Tento projekt je skvělým příkladem mého praktického přístupu k technice. Vzal jsem dva reproduktory Lamax Storm 1, které jsem rozebral, a odpojil jsem u nich jeden z malých vnitřních reproduktorů...</p>
+                        <p data-editable="portfolio-item-2-desc-2">Celý systém je postaven na jednoduchém principu: zvukové signály, které normálně pohánějí reproduktory, jsou přesměrovány tak, aby poháněly osvětlení...</p>
+                        <a href="#" class="button editable-link" data-link-id="audio-led-link" data-editable-link-text="Více o projektu &rarr;"><i class="fas fa-edit edit-icon"></i></a>
+                        <div class="edit-controls hidden">
+                            <button onclick="editPortfolioItem('audio-led-project')">Editovat</button>
+                        </div>
+                    </div>
+                    <div class="portfolio-item" data-item-id="web-design-coding" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
+                        <h3 data-editable="portfolio-item-3-title">Webový design a kódování</h3>
+                        <p data-editable="portfolio-item-3-desc">I když se nepovažuji za programátora, díky AI jsem zvládl tvorbu responzivních webových stránek s moderním designem. Mám několik projektů, které využívají HTML, CSS a JavaScript, a které mi pomohla vytvořit umělá inteligence.</p>
+                        <a href="#" class="button editable-link" data-link-id="web-design-link" data-editable-link-text="Prohlédnout si ukázky &rarr;"><i class="fas fa-edit edit-icon"></i></a>
+                        <div class="edit-controls hidden">
+                            <button onclick="editPortfolioItem('web-design-coding')">Editovat</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="add-portfolio-item-btn" class="button hidden">Přidat položku do portfolia</button>
+            </section>
+
+            <section id="contacts">
+                <h2 data-editable="contacts-h2">Kontakty</h2>
+                <p data-editable="contacts-intro">Zde můžete přidat své kontaktní údaje, jako je e-mail, odkazy na sociální sítě (např. Discord, GitHub) nebo jiné způsoby, jak vás mohou lidé oslovit.</p>
+                <div class="contact-details" style="margin-top: 1rem;">
+                    <p><strong>E-mail:</strong> <a href="mailto:tvuj.email@example.com" data-link-id="contact-email" data-editable-link-text="tvuj.email@example.com" class="editable-link"><i class="fas fa-edit edit-icon"></i></a></p>
+                    <p><strong>Discord:</strong> <span data-editable="contact-discord">TvojeJmeno#1234</span></p>
+                </div>
+                <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
+            </section>
+
+            <section id="editor">
+                <h2>HTML Editor</h2>
+                <div class="editor-container">
+                    <div>
+                        <label for="html-editor">HTML Kód:</label>
+                        <textarea id="html-editor" placeholder="Zde pište svůj HTML kód..."></textarea>
+                    </div>
+                    <div>
+                        <label for="html-preview">Náhled:</label>
+                        <iframe id="html-preview"></iframe>
+                    </div>
+                </div>
+                <button id="save-code-btn">Uložit kód</button>
+            </section>
+
+            <section id="saved">
+                <h2>Moje HTML kódy</h2>
+                <div id="saved-codes-list">
+                    <p>Načítání uložených kódů...</p>
+                </div>
+            </section>
+
+            <section id="gallery">
+                <h2>Galerie</h2>
+                <div class="gallery-controls">
+                    <input type="url" id="newImageUrl" placeholder="Vložte URL adresu obrázku...">
+                    <button id="addImageUrlBtn" class="button">Přidat obrázek</button>
+                </div>
+                <div id="gallery-container">
+                    <p>Načítání obrázků...</p>
+                </div>
+            </section>
+
+            <section id="links">
+                <h2>Externí Odkazy</h2>
+                <table id="links-table">
+                    <thead>
+                        <tr>
+                            <th>Ikona</th>
+                            <th>Název odkazu</th>
+                            <th>Adresa URL</th>
+                            <th class="edit-mode-only">Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Odkazy se budou generovat zde -->
+                    </tbody>
+                </table>
+                <button id="add-link-btn" class="button hidden">Přidat odkaz</button>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> <span data-editable="footer-copyright-name">Jiří Med</span>. Všechna práva vyhrazena.</p>
+        <p data-editable="footer-slogan">Inspirováno technologiemi a budoucností.</p>
+    </footer>
+
+    <!-- Modals (stejné jako v původním kódu) -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content">
+            <img id="modal-img" src="" alt="Zvětšený obrázek">
+            <div class="modal-nav">
+                <button id="prev-image-btn" class="button btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                    Předchozí
+                </button>
+                <button id="close-modal-btn" class="button btn-danger">Zavřít</button>
+                <button id="next-image-btn" class="button btn-secondary">
+                    Další
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 5px;"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="save-code-modal" class="modal">
+        <div class="modal-content">
+            <h3>Uložit HTML kód</h3>
+            <label for="code-title-input">Název kódu:</label>
+            <input type="text" id="code-title-input" placeholder="Např. Můj úžasný snippet">
+            <div class="modal-buttons">
+                <button id="cancel-save-code-btn" class="button btn-secondary">Zrušit</button>
+                <button id="confirm-save-code-btn" class="button">Uložit</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="alert-modal-title">Upozornění</h3>
+            <p id="alert-modal-message"></p>
+            <div class="modal-buttons">
+                <button id="alert-modal-ok-btn" class="button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="confirm-modal-title">Potvrzení</h3>
+            <p id="confirm-modal-message"></p>
+            <div class="modal-buttons">
+                <button id="confirm-modal-cancel-btn" class="button btn-secondary">Zrušit</button>
+                <button id="confirm-modal-ok-btn" class="button btn-danger">Potvrdit</button>
+            </div>
+    </div>
+</div>
+
+<div id="auth-modal" class="modal">
+    <div class="modal-content">
+        <h3>Přihlášení / Registrace</h3>
+        <label for="auth-email">Email:</label>
+        <input type="email" id="auth-email" placeholder="vas.email@example.com">
+        <label for="auth-password">Heslo:</label>
+        <input type="password" id="auth-password" placeholder="********">
+        <div class="modal-buttons">
+            <button id="login-auth-btn" class="button">Přihlásit se</button>
+            <button id="signup-auth-btn" class="button btn-secondary">Registrovat se</button>
+            <button id="cancel-auth-btn" class="button btn-danger">Zrušit</button>
+        </div>
+        <p id="auth-error-message" style="color: red; margin-top: 10px;"></p>
+    </div>
+</div>
+
+<div id="edit-image-modal" class="modal">
+    <div class="modal-content">
+        <h3>Upravit obrázek</h3>
+        <label for="edit-image-url">URL obrázku:</label>
+        <input type="url" id="edit-image-url" placeholder="https://example.com/obrazek.jpg">
+        <label for="edit-image-name">Název obrázku:</label>
+        <input type="text" id="edit-image-name" placeholder="Popis obrázku">
+        <div class="modal-buttons">
+            <button id="cancel-edit-image-btn" class="button btn-secondary">Zrušit</button>
+            <button id="save-edit-image-btn" class="button">Uložit</button>
+        </div>
+    </div>
+</div>
+
+<div id="edit-link-modal" class="modal">
+    <div class="modal-content">
+        <h3>Upravit odkaz</h3>
+        <label for="edit-link-title">Název odkazu:</label>
+        <input type="text" id="edit-link-title" placeholder="Název odkazu">
+        <label for="edit-link-url">URL odkazu:</label>
+        <input type="url" id="edit-link-url" placeholder="https://example.com">
+        <div class="modal-buttons">
+            <button id="cancel-edit-link-btn" class="button btn-secondary">Zrušit</button>
+            <button id="save-edit-link-btn" class="button">Uložit</button>
+        </div>
+    </div>
+</div>
+
+<div id="edit-portfolio-modal" class="modal">
+    <div class="modal-content">
+        <h3>Upravit položku portfolia</h3>
+        <label for="edit-portfolio-title">Název:</label>
+        <input type="text" id="edit-portfolio-title" placeholder="Název projektu">
+        <label for="edit-portfolio-desc-1">Popis 1:</label>
+        <textarea id="edit-portfolio-desc-1" rows="5" placeholder="Popis projektu"></textarea>
+        <label for="edit-portfolio-desc-2">Popis 2 (volitelné):</label>
+        <textarea id="edit-portfolio-desc-2" rows="5" placeholder="Další popis"></textarea>
+        <label for="edit-portfolio-link-text">Text tlačítka odkazu:</label>
+        <input type="text" id="edit-portfolio-link-text" placeholder="Text tlačítka">
+        <label for="edit-portfolio-link-url">URL odkazu:</label>
+        <input type="url" id="edit-portfolio-link-url" placeholder="https://">
+        <div class="modal-buttons">
+            <button id="cancel-edit-portfolio-btn" class="button btn-secondary">Zrušit</button>
+            <button id="save-edit-portfolio-btn" class="button">Uložit</button>
+            <button id="delete-portfolio-btn" class="button btn-danger hidden">Smazat položku</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+   // javascript.js
+// Obsahuje veškerou logiku webové stránky s integrací Firebase pro synchronizaci dat.
+
+// --- Supabase Konstanty ---
+const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Globální proměnná pro stav editačního módu
+let isEditMode = false;
+const EDIT_MODE_KEY = 'portfolio_edit_mode_active'; // Klíč pro uložení stavu edit módu
+
+// --- Firebase Konfigurace a inicializace ---
+// ZDE NAHRAĎ SVÉ VLASTNÍ FIREBASE KONFIGURAČNÍ ÚDAJE!
+const firebaseConfig = {
+    apiKey: "AIzaSyCu5iBjQg01lxiiGpB-eXi4_N7kb4WLs4E",
+    authDomain: "fir-test-2bb95.firebaseapp.com",
+    projectId: "fir-test-2bb95",
+    storageBucket: "fir-test-2bb95.firebasestorage.app",
+    messagingSenderId: "494805653679",
+    appId: "1:494805653679:web:1b7d0b024a388aaf711c5a",
+    // measurementId: "YOUR_MEASUREMENT_ID" // Pokud používáš Analytics
+     // !!! ZDE JE KLÍČOVÁ ZMĚNA !!!
+    databaseURL: "https://fir-test-2bb95-default-rtdb.firebaseio.com/", // <--- TOTO MUSÍ BÝT PŘESNĚ TAKHLE
+};
+
+// Inicializuj Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database(); // Získání instance Realtime Database
+
+// Ukládání dat na Firebase
+// Data budou uložena pod cestou users/<supabase_user_id>/portfolio_data
+// To zajistí, že každý přihlášený uživatel má svá vlastní data.
+let currentSupabaseUserId = null; // Zde budeme držet ID aktuálně přihlášeného uživatele
+
+function getFirebaseDataPath(userId) {
+    if (!userId) {
+        console.warn("Attempted to get Firebase data path without a user ID. Data will be saved to a generic path (not user-specific).");
+        return 'public_portfolio_data'; // Fallback pro test, pokud není user ID
+    }
+    return `users/${userId}/portfolio_data`;
+}
+
+// Funkce pro načítání dat z Firebase
+async function loadDataFromFirebase() {
+    if (!currentSupabaseUserId) {
+        console.warn("User not logged in, skipping Firebase data load.");
+        return;
+    }
+    showLoading("Načítám data z vesmíru...");
+    const path = getFirebaseDataPath(currentSupabaseUserId);
+    try {
+        const snapshot = await database.ref(path).once('value');
+        const firebaseData = snapshot.val();
+        if (firebaseData) {
+            console.log("Firebase data loaded:", firebaseData);
+            // Přepíšeme lokální data daty z Firebase
+            galleryImagesData = firebaseData.galleryImages || [...initialImageUrls];
+            savedCodesData = firebaseData.savedCodes || [];
+            externalLinksData = firebaseData.externalLinks || [...initialExternalLinksData];
+            editableContentData = firebaseData.editableContent || {};
+            
+            // Aplikujeme načtený obsah na stránku
+            applyEditableContent();
+            updateGalleryDisplay();
+            renderSavedCodesDisplay();
+            renderExternalLinks();
+            showAlertModal("Data synchronizována", "Data byla úspěšně načtena z cloudu.");
+        } else {
+            console.log("No data found in Firebase for this user. Loading from localStorage or initial data.");
+            // Pokud na Firebase nejsou data, nahrajeme tam ty z localStorage / defaultní
+            await saveDataToFirebase();
+        }
+    } catch (error) {
+        console.error("Error loading data from Firebase:", error);
+        showAlertModal("Chyba synchronizace", `Nepodařilo se načíst data z cloudu: ${error.message}`);
+        // Fallback: Pokud se nepodaří načíst z Firebase, pokusíme se načíst z localStorage
+        loadDataFromLocalStorage();
+    } finally {
+        hideLoading();
+    }
+}
+
+// Funkce pro ukládání dat na Firebase
+async function saveDataToFirebase() {
+    if (!currentSupabaseUserId) {
+        console.warn("User not logged in, skipping Firebase data save.");
+        return false;
+    }
+    showLoading("Ukládám data do vesmíru...");
+    const path = getFirebaseDataPath(currentSupabaseUserId);
+    const dataToSave = {
+        galleryImages: galleryImagesData,
+        savedCodes: savedCodesData,
+        externalLinks: externalLinksData,
+        editableContent: editableContentData
+    };
+    try {
+        await database.ref(path).set(dataToSave);
+        console.log("Data successfully saved to Firebase.");
+        hideLoading();
+        return true;
+    } catch (error) {
+        console.error("Error saving data to Firebase:", error);
+        showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
+        hideLoading();
+        return false;
+    }
+}
+
+// --- Supabase autentizace a přesměrování ---
+// Ponecháváme Supabase Auth jako primární přihlašovací systém.
+// Po přihlášení Supabase uživatele získáme jeho ID pro Firebase.
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingIndicatorElement = document.getElementById('loading-indicator');
+
+    if (loadingIndicatorElement) {
+        loadingIndicatorElement.textContent = "Načítání stránky...";
+        loadingIndicatorElement.classList.remove('hidden');
+    } else {
+        console.error("Loading indicator element not found!");
+    }
+    
+    // Kontrola Supabase knihovny (zůstává stejná)
+    if (typeof supabase === 'undefined' || typeof supabase.createClient !== 'function') {
+        console.error('Supabase library not loaded or createClient is not a function.');
+        if (loadingIndicatorElement) {
+            loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Supabase se nenačetla.';
+        }
+        document.body.style.visibility = 'visible';
+        return;
+    }
+    
+    // Kontrola Firebase knihovny
+    if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function') {
+        console.error('Firebase library not loaded or initializeApp is not a function. Check your HTML script tags.');
+        if (loadingIndicatorElement) {
+            loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Firebase se nenačetla.';
+        }
+        document.body.style.visibility = 'visible';
+        return;
+    }
+
+    // --- Supabase autentizace a přesměrování ---
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        console.log('Supabase Auth State Change:', event, session);
+        if (event === 'SIGNED_OUT') {
+            currentSupabaseUserId = null; // Vymažeme ID uživatele
+            disableEditMode();
+            localStorage.removeItem(EDIT_MODE_KEY);
+            if (window.location.pathname !== '/login.html' && window.location.pathname !== '/signup.html') {
+                console.log('Uživatel odhlášen, editační režim vypnut.');
+                document.getElementById('login-button')?.classList.remove('hidden');
+                document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
+                document.getElementById('user-id-display')?.classList.add('hidden');
+            }
+            initializeApp(true); // Inicializujeme aplikaci bez přihlášeného uživatele (načte jen z localStorage)
+        } else if (event === 'SIGNED_IN') {
+            console.log('Uživatel je přihlášen.');
+            currentSupabaseUserId = session.user.id; // Uložíme ID přihlášeného uživatele
+            document.getElementById('login-button')?.classList.add('hidden');
+            document.getElementById('edit-mode-toggle-btn')?.classList.remove('hidden');
+            
+            const userIdDisplaySpan = document.getElementById('firebase-user-id');
+            const userIdContainer = document.getElementById('user-id-display');
+            if (session && session.user && userIdDisplaySpan && userIdContainer) {
+                userIdDisplaySpan.textContent = session.user.id;
+                userIdContainer.classList.remove('hidden');
+            }
+            
+            initializeApp(false); // Inicializujeme aplikaci, protože uživatel je přihlášen
+            // Po inicializaci aplikace (která načte data z Firebase) zkontrolujeme stav edit módu
+            if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
+                enableEditMode();
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+            } else {
+                disableEditMode();
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+            }
+            
+            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
+            document.body.style.visibility = 'visible';
+        }
+    });
+
+    // Kontrola stavu přihlášení při načtení stránky
+    async function checkInitialAuthState() {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) {
+            console.error("Chyba při získávání session:", error);
+            if (loadingIndicatorElement) {
+                loadingIndicatorElement.textContent = `Chyba ověření: ${error.message}. Zkuste obnovit.`;
+            }
+            document.body.style.visibility = 'visible';
+            return;
+        }
+
+        if (session) {
+            console.log('Uživatel je již přihlášen:', session.user.email);
+            currentSupabaseUserId = session.user.id; // Získáme ID uživatele
+            document.getElementById('login-button')?.classList.add('hidden');
+            document.getElementById('edit-mode-toggle-btn')?.classList.remove('hidden');
+            
+            const userIdDisplaySpan = document.getElementById('firebase-user-id');
+            const userIdContainer = document.getElementById('user-id-display');
+            if (session.user && userIdDisplaySpan && userIdContainer) {
+                userIdDisplaySpan.textContent = session.user.id;
+                userIdContainer.classList.remove('hidden');
+            }
+            
+            if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
+                enableEditMode();
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+            } else {
+                disableEditMode();
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+            }
+            
+            initializeApp(false); // Inicializujeme aplikaci, protože uživatel je přihlášen
+            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
+            document.body.style.visibility = 'visible';
+        } else {
+            console.log('Uživatel není přihlášen.');
+            currentSupabaseUserId = null; // Vymažeme ID uživatele
+            initializeApp(true); // Inicializujeme appku bez přihlášeného uživatele
+            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
+            document.body.style.visibility = 'visible';
+            document.getElementById('login-button')?.classList.remove('hidden');
+            document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
+            document.getElementById('user-id-display')?.classList.add('hidden');
+            disableEditMode();
+            localStorage.removeItem(EDIT_MODE_KEY);
+        }
+    }
+    checkInitialAuthState();
+});
+
+// --- Funkce pro zobrazení/skrytí přihlašovacího modalu (zůstávají stejné) ---
+function showAuthModal() {
+    showModal(document.getElementById('auth-modal'));
+    document.getElementById('auth-email').focus();
+    document.getElementById('auth-error-message').textContent = '';
+}
+
+function hideAuthModal() {
+    hideModal(document.getElementById('auth-modal'));
+    document.getElementById('auth-email').value = '';
+    document.getElementById('auth-password').value = '';
+    document.getElementById('auth-error-message').textContent = '';
+}
+
+document.getElementById('cancel-auth-btn')?.addEventListener('click', hideAuthModal);
+
+// --- Funkce pro přihlášení (integrujeme s Firebase) ---
+document.getElementById('login-auth-btn')?.addEventListener('click', async () => {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    const errorMessageEl = document.getElementById('auth-error-message');
+    errorMessageEl.textContent = '';
+
+    showLoading("Přihlašování...");
+
+    const { error, session } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        console.error('Chyba při přihlašování:', error.message);
+        errorMessageEl.textContent = `Chyba: ${error.message}`;
+        hideLoading();
+    } else {
+        hideAuthModal();
+        // currentSupabaseUserId je nastaven v onAuthStateChange listeneru
+        // initializeApp je také volán v onAuthStateChange listeneru
+        // enableEditMode je volán v onAuthStateChange listeneru po načtení dat
+        hideLoading();
+    }
+});
+
+// --- Funkce pro registraci (integrujeme s Firebase) ---
+document.getElementById('signup-auth-btn')?.addEventListener('click', async () => {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+    const errorMessageEl = document.getElementById('auth-error-message');
+    errorMessageEl.textContent = '';
+
+    showLoading("Registrace...");
+
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) {
+        console.error('Chyba při registraci:', error.message);
+        errorMessageEl.textContent = `Chyba: ${error.message}`;
+        hideLoading();
+    } else {
+        if (data && data.user) {
+            // Po úspěšné registraci (a ověření e-mailu, pokud je vyžadováno)
+            // Uživatel bude automaticky přihlášen, a onAuthStateChange to zachytí
+            // a inicializuje appku a načte data z Firebase.
+            showAlertModal("Registrace úspěšná", "Registrace proběhla úspěšně! Nyní se můžete přihlásit.");
+        } else {
+            showAlertModal("Registrace vyžaduje potvrzení", "Zkontrolujte svůj email pro potvrzení registrace. Poté se můžete přihlásit.");
+        }
+        hideAuthModal();
+        hideLoading();
+    }
+});
+
+// --- Funkce pro odhlášení (zůstává stejná, Firebase ID se smaže v onAuthStateChange) ---
+window.signOut = async function() {
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Odhlásit se?", "Opravdu se chcete odhlásit?", { okText: 'Ano, odhlásit', cancelText: 'Zůstat přihlášen' }) :
+        confirm("Opravdu se chcete odhlásit?")
+    );
+
+    if (confirmed) {
+        showLoading("Odhlašování...");
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+            console.error('Chyba při odhlašování:', error.message);
+            showAlertModal("Chyba odhlášení", `Nepodařilo se odhlásit: ${error.message}`);
+            hideLoading();
+        } else {
+            showAlertModal("Odhlášení", "Byli jste úspěšně odhlášeni. Pro úpravy se opět přihlaste.");
+            // currentSupabaseUserId je nastaven na null v onAuthStateChange listeneru
+            // disableEditMode je volán v onAuthStateChange listeneru
+            hideLoading();
+        }
+    }
+};
+
+// --- Globální proměnné a pomocné funkce ---
+let activeSection = 'about';
+let galleryImagesData = [];
+let savedCodesData = [];
+let externalLinksData = [];
+let currentModalImageIndex = 0;
+let editableContentData = {}; // Nový objekt pro ukládání editovatelného obsahu
+
+const STORAGE_KEYS = {
+    GALLERY_IMAGES: 'portfolio_gallery_images',
+    SAVED_CODES: 'portfolio_saved_codes',
+    EXTERNAL_LINKS: 'portfolio_external_links',
+    EDITABLE_CONTENT: 'portfolio_editable_content' // Nový klíč pro editovatelný obsah
+};
+
+const initialImageUrls = [
+    { id: 'initial-1', url: 'https://img.freepik.com/free-photo/futuristic-background-with-colorful-abstract-design_1340-39 futuristic-technology-background-with-neon-lights_76964-11458.jpg?w=826&t=st=1716545000~exp=1716545600~hmac=e6108f60104301f3b2886131029b0f10151707f3020142e9950b1e22704c654a', name: 'Technologie'},
+    { id: 'initial-2', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k18.jpg?ver=0', name: 'Srdce'},
+    { id: 'initial-3', url: 'https://img.freepik.com/free-photo/glowing-spaceship-orbits-planet-starry-galaxy-generated-by-ai_188544-9655.jpg?w=1060&t=st=1716545052~exp=1716545652~hmac=c6a7d107b56da6822f221372f4476a3793075997b820160f494a887688068b14', name: 'Vesmírná loď'},
+    { id: 'initial-4', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k7.jpg?ver=0', name: 'Mlhovina'},
+    { id: 'initial-5', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k8.jpg?ver=0', name: 'Kyberpunk město'},
+    { id: 'initial-6', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k13.jpg?ver=0', name: 'Notebook v akci'},
+    { id: 'initial-7', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k14.jpg?ver=0', name: 'Galaxie'},
+    { id: 'initial-8', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1920x10804.jpg?ver=0', name: 'Lidský mozek'},
+    { id: 'initial-9', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_15360x86402.jpg?ver=0', name: 'Vědecké laboratoře'},
+    { id: 'initial-10', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/misurina-sunset.jpg?ver=0', name: 'Neuronová síť'},
+    { id: 'initial-11', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/snowy-landscape-with-mountains-lake-with-snow-ground.jpg?ver=0', name: 'Datová mřížka'},
+    { id: 'initial-12', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/wet-sphere-reflective-water-abstract-beauty-generated-by-ai.jpg?ver=0', name: 'Futuristické město'},
+    { id: 'initial-13', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/vnon-pozadi-od-admirala-chatbota..jpg?ver=0', name: 'Světelná geometrie'},
+    { id: 'initial-14', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1024x1792.jpg?ver=0', name: 'Digitální plameny'},
+    { id: 'initial-15', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_300x3001_2.jpg?ver=0', name: 'Exoplaneta'},
+    { id: 'initial-16', url: 'https://img36.rajce.idnes.cz/d3603/10/10185/10185286_0147349ad505c43a2d9f6eb372624417/images/CIMG0039.jpg?ver=3', name: 'Kybernetická maska'},
+];
+
+let initialExternalLinksData = [
+    { title: 'Claude AI', url: 'https://claude.ai/' }, { title: 'SledujSerialy', url: 'https://sledujserialy.sx/' },
+    { title: 'Kukaj.me', url: 'https://serial.kukaj.me/' }, { title: 'ProSebe.cz', url: 'https://prosebe.cz/user/project' },
+    { title: 'Populace.cz', url: 'https://www.populace.cz' }, { title: 'My-Map.eu', url: 'https://www.my-map.eu/odmeny' },
+    { title: 'Národní Panel', url: 'https://www.narodnipanel.cz/?backlink=expx2' }, { title: 'Lifepoints Panel', url: 'https://app.lifepointspanel.com/en-US/login' },
+    { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
+    { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
+];
+
+// --- Funkce pro ukládání a načítání z localStorage (s upravenou logikou pro editableContent) ---
+// Tyto funkce nyní budou volány primárně pro práci s lokální cache, zatímco saveAllData/loadDataFromStorage
+// budou volány pro inicializaci a konečné uložení na Firebase.
+function saveToLocalStorage(key, data) {
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+        return true;
+    } catch (error) {
+        console.error('Chyba při ukládání do localStorage:', error);
+        if (window.showAlertModal) showAlertModal("Chyba ukládání", "Nepodařilo se uložit data do trvalého úložiště. Možná je úložiště plné.");
+        else alert("Chyba ukládání do localStorage.");
+        return false;
+    }
+}
+
+function loadFromLocalStorage(key, defaultValue = []) {
+    try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : defaultValue;
+    } catch (error) {
+        console.error('Chyba při načítání z localStorage:', error);
+        return defaultValue;
+    }
+}
+
+function clearLocalStorageData() {
+    try {
+        Object.values(STORAGE_KEYS).forEach(key => {
+            localStorage.removeItem(key);
+        });
+        localStorage.removeItem(EDIT_MODE_KEY);
+
+        if (window.showAlertModal) showAlertModal("Data vymazána", "Všechna uložená data byla úspěšně vymazána z trvalého úložiště.");
+        else alert("Data vymazána.");
+        
+        // Po vymazání se vrátíme k výchozím datům a obnovíme zobrazení
+        galleryImagesData = [...initialImageUrls];
+        savedCodesData = [];
+        externalLinksData = [...initialExternalLinksData];
+        editableContentData = {};
+        applyEditableContent();
+
+        updateGalleryDisplay();
+        renderSavedCodesDisplay();
+        renderExternalLinks();
+        showAlertModal("Data vymazána", "Všechna data včetně upraveného textu byla vymazána a stránka se vrátila k výchozímu obsahu.");
+        
+        // Také smažeme data z Firebase pro aktuálního uživatele (pokud je přihlášen)
+        if (currentSupabaseUserId) {
+            database.ref(getFirebaseDataPath(currentSupabaseUserId)).remove()
+                .then(() => console.log("Firebase data for user also cleared."))
+                .catch(error => console.error("Error clearing Firebase data:", error));
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Chyba při mazání localStorage dat:', error);
+        if (window.showAlertModal) showAlertModal("Chyba", "Nepodařilo se vymazat všechna data.");
+        else alert("Chyba při mazání dat.");
+        return false;
+    }
+}
+
+// Upravená funkce loadDataFromStorage: Nyní načítá i z Firebase, pokud je uživatel přihlášen
+function loadDataFromStorage() {
+    // 1. Vždy načti lokální data (pro okamžité zobrazení / offline fallback)
+    const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
+    galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
+    
+    savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
+    
+    const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
+    externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
+
+    editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
+    applyEditableContent();
+
+    // 2. Pokud je uživatel přihlášen, zkus načíst/synchronizovat z Firebase
+    if (currentSupabaseUserId) {
+        loadDataFromFirebase();
+    }
+}
+
+// --- Funkce pro aplikaci editovatelného obsahu (zůstává stejná) ---
+function applyEditableContent() {
+    for (const id in editableContentData) {
+        const element = document.querySelector(`[data-editable="${id}"]`);
+        if (element) {
+            if (element.tagName === 'A' && element.classList.contains('editable-link')) {
+                element.href = editableContentData[id].url || '#';
+                element.innerHTML = `${editableContentData[id].text || ''}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
+            } else {
+                element.innerHTML = editableContentData[id];
+            }
+        }
+    }
+
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    portfolioItems.forEach(item => {
+        const itemId = item.dataset.itemId;
+        if (editableContentData[`${itemId}-title`]) {
+            item.querySelector(`[data-editable="${itemId}-title"]`).innerHTML = editableContentData[`${itemId}-title`];
+        }
+        if (editableContentData[`${itemId}-desc-1`]) {
+            item.querySelector(`[data-editable="${itemId}-desc-1"]`).innerHTML = editableContentData[`${itemId}-desc-1`];
+        }
+        const desc2Element = item.querySelector(`[data-editable="${itemId}-desc-2"]`);
+        if (desc2Element && editableContentData[`${itemId}-desc-2`]) {
+            desc2Element.innerHTML = editableContentData[`${itemId}-desc-2`];
+        }
+
+        const linkElement = item.querySelector(`[data-link-id="${itemId}-link"]`);
+        if (linkElement && editableContentData[`${itemId}-link-url`]) {
+            linkElement.href = editableContentData[`${itemId}-link-url`];
+            linkElement.innerHTML = `${editableContentData[`${itemId}-link-text`]}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
+        }
+    });
+}
+
+// initializeApp nyní přijímá parametr, zda se má načíst z Firebase
+function initializeApp(loadOnlyLocalStorage = false) {
+    setupNavigation();
+    setupHtmlEditor();
+    setupGallery();
+    setupDataManagement();
+    
+    // Pokud je uživatel přihlášen, loadDataFromStorage to vezme v potaz a zkusí Firebase
+    // Pokud loadOnlyLocalStorage je true (uživatel není přihlášen), načteme jen z localStorage
+    if (loadOnlyLocalStorage) {
+        const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
+        galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
+        savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
+        const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
+        externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
+        editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
+        applyEditableContent(); // Aplikovat načtený obsah na stránku
+    } else {
+        loadDataFromStorage(); // Tato funkce již volá Firebase, pokud je uživatel přihlášen
+    }
+
+    renderExternalLinks();
+    updateGalleryDisplay();
+    renderSavedCodesDisplay();
+
+    const currentYearEl = document.getElementById('currentYear');
+    if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+
+    showSection(activeSection, true);
+    console.log("Aplikace inicializována.");
+}
+
+// --- Funkce pro přepínání editačního módu (zůstávají stejné) ---
+function toggleEditMode() {
+    if (isEditMode) {
+        disableEditMode();
+        showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do mezipaměti prohlížeče. Pro trvalé uložení klikněte na 'Uložit vše'.");
+    } else {
+        enableEditMode();
+        showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Nezapomeňte uložit změny!");
+    }
+}
+
+function enableEditMode() {
+    isEditMode = true;
+    document.body.classList.add('edit-mode');
+    document.getElementById('login-button')?.classList.add('hidden');
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+    document.getElementById('edit-mode-toggle-btn')?.classList.remove('hidden');
+
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+    });
+
+    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+        icon.classList.remove('hidden');
+    });
+    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+        icon.classList.remove('hidden');
+    });
+
+    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+        controls.classList.remove('hidden');
+    });
+    document.getElementById('add-portfolio-item-btn').classList.remove('hidden');
+    document.getElementById('add-link-btn').classList.remove('hidden');
+    document.getElementById('data-management').classList.remove('hidden');
+
+    document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
+        el.style.display = 'table-cell';
+    });
+
+    localStorage.setItem(EDIT_MODE_KEY, 'true');
+}
+
+function disableEditMode() {
+    isEditMode = false;
+    document.body.classList.remove('edit-mode');
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (!session) {
+            document.getElementById('login-button')?.classList.remove('hidden');
+            document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
+        }
+    });
+
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.removeAttribute('contenteditable');
+        const id = el.dataset.editable;
+        if (id) {
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+            } else {
+                editableContentData[id] = el.innerHTML;
+            }
+        }
+    });
+
+    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+        icon.classList.add('hidden');
+    });
+    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+        icon.classList.add('hidden');
+    });
+
+    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+        controls.classList.add('hidden');
+    });
+    document.getElementById('add-portfolio-item-btn').classList.add('hidden');
+    document.getElementById('add-link-btn').classList.add('hidden');
+    document.getElementById('data-management').classList.add('hidden');
+
+    document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
+        el.style.display = 'none';
+    });
+
+    saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData);
+    localStorage.removeItem(EDIT_MODE_KEY);
+}
+
+// --- Funkce pro načítání a skrývání indikátoru (zůstávají stejné) ---
+function showLoading(message = "Načítání...") {
+    const loadingIndicatorElement = document.getElementById('loading-indicator');
+    if (loadingIndicatorElement) {
+        loadingIndicatorElement.textContent = message;
+        loadingIndicatorElement.classList.remove('hidden');
+    }
+}
+function hideLoading() {
+    const loadingIndicatorElement = document.getElementById('loading-indicator');
+    if (loadingIndicatorElement) {
+        loadingIndicatorElement.classList.add('hidden');
+    }
+}
+
+// --- Správa dat (integrujeme s Firebase) ---
+function setupDataManagement() {
+    const dataManagementContainer = document.getElementById('data-management');
+    if (dataManagementContainer) {
+        dataManagementContainer.innerHTML = `
+                <div class="data-management-buttons" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;">
+                    <button id="save-all-data-btn" class="button btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">💾 Uložit vše</button>
+                    <button id="clear-all-data-btn" class="button btn-danger" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🗑️ Vymazat vše</button>
+                    <button id="export-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📤 Export</button>
+                    <button id="import-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📥 Import</button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                </div>
+            `;
+        
+        document.getElementById('save-all-data-btn')?.addEventListener('click', saveAllDataToStorage);
+        document.getElementById('clear-all-data-btn')?.addEventListener('click', handleClearAllData);
+        document.getElementById('export-data-btn')?.addEventListener('click', exportData);
+        document.getElementById('import-data-btn')?.addEventListener('click', () => {
+            document.getElementById('import-file-input')?.click();
+        });
+        document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
+    }
+}
+
+// saveAllDataToStorage nyní volá i saveDataToFirebase
+function saveAllDataToStorage() {
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        const id = el.dataset.editable;
+        if (id) {
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+            } else {
+                editableContentData[id] = el.innerHTML;
+            }
+        }
+    });
+
+    let savedCount = 0;
+    if (saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData)) savedCount++;
+    if (saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData)) savedCount++;
+    if (saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData)) savedCount++;
+    if (saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData)) savedCount++;
+    
+    const message = savedCount === 4 ? "Všechna data byla úspěšně uložena." : `Uloženo ${savedCount} ze 4 kategorií dat.`;
+    
+    // Uložíme i na Firebase, pokud je uživatel přihlášen
+    if (currentSupabaseUserId) {
+        saveDataToFirebase().then(success => {
+            if (success) {
+                showAlertModal("Data uložena", `${message} A také synchronizována s cloudem.`);
+            } else {
+                showAlertModal("Uloženo lokálně", `${message} Ale nepodařilo se synchronizovat s cloudem.`);
+            }
+        });
+    } else {
+        showAlertModal(savedCount === 4 ? "Data uložena" : "Částečné uložení", `${message} Pro synchronizaci se přihlaste.`);
+    }
+}
+
+// handleClearAllData nyní volá i clearLocalStorageData, která maže i z Firebase
+async function handleClearAllData() {
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Vymazat všechna data?", "Opravdu chcete vymazat všechna uložená data? Tato akce je nevratná! Zahrnuje i texty upravené na stránce a data v cloudu.", { okText: 'Ano, vymazat', cancelText: 'Zrušit' }) :
+        confirm("Opravdu chcete vymazat všechna uložená data?")
+    );
+    
+    if (confirmed) {
+        clearLocalStorageData();
+    }
+}
+
+// exportData a importData se nemění, protože pracují s lokálním JSONem
+function exportData() {
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        const id = el.dataset.editable;
+        if (id) {
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+            } else {
+                editableContentData[id] = el.innerHTML;
+            }
+        }
+    });
+
+    const exportObject = {
+        galleryImages: galleryImagesData,
+        savedCodes: savedCodesData,
+        externalLinks: externalLinksData,
+        editableContent: editableContentData,
+        exportDate: new Date().toISOString(),
+        version: "1.1"
+    };
+    
+    const dataStr = JSON.stringify(exportObject, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `portfolio-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    if(window.showAlertModal) showAlertModal("Export dokončen", "Data byla exportována do souboru JSON.");
+    else alert("Data exportována.");
+}
+
+function handleImportData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            const confirmed = await (window.showConfirmModal ?
+                showConfirmModal("Importovat data?", "Importování přepíše všechna současná data (včetně textů na stránce). Chcete pokračovat?", { okText: 'Ano, importovat', cancelText: 'Zrušit' }) :
+                confirm("Importování přepíše data. Pokračovat?")
+            );
+            
+            if (confirmed) {
+                if (importedData.galleryImages) galleryImagesData = importedData.galleryImages;
+                if (importedData.savedCodes) savedCodesData = importedData.savedCodes;
+                if (importedData.externalLinks) externalLinksData = importedData.externalLinks;
+                if (importedData.editableContent) editableContentData = importedData.editableContent;
+                
+                saveAllDataToStorage(); // Uloží naimportovaná data lokálně i na Firebase
+                
+                applyEditableContent();
+                updateGalleryDisplay();
+                renderSavedCodesDisplay();
+                renderExternalLinks();
+                
+                if(window.showAlertModal) showAlertModal("Import dokončen", "Data byla úspěšně naimportována a uložena.");
+                else alert("Data naimportována.");
+            }
+        } catch (error) {
+            console.error('Chyba při importu:', error);
+            if(window.showAlertModal) showAlertModal("Chyba importu", "Nepodařilo se načíst data ze souboru. Zkontrolujte, zda je soubor platný JSON.");
+            else alert("Chyba importu dat.");
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+// --- Navigace a sekce (zůstávají stejné) ---
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('.nav-container a.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = link.dataset.section;
+            showSection(sectionId);
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+    const initialActiveLink = document.querySelector(`.nav-container a.nav-link[data-section="${activeSection}"]`);
+    if (initialActiveLink) initialActiveLink.classList.add('active');
+}
+
+function showSection(id, isInitial = false) {
+    if (!id) id = 'about';
+    activeSection = id;
+    document.querySelectorAll('main section').forEach(section => {
+        section.classList.remove('active');
+        if (!(isInitial && section.id === id)) {
+            section.style.display = 'none';
+        }
+    });
+    const sectionElement = document.getElementById(id);
+    if (sectionElement) {
+        sectionElement.style.display = 'block';
+        setTimeout(() => sectionElement.classList.add('active'), 10);
+    } else {
+        console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
+        const aboutSection = document.getElementById('about');
+        if(aboutSection) {
+            aboutSection.style.display = 'block';
+            setTimeout(() => aboutSection.classList.add('active'), 10);
+            activeSection = 'about';
+            document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
+        }
+    }
+}
+
+// --- HTML Editor (upravujeme pro Firebase) ---
+function setupHtmlEditor() {
+    const editor = document.getElementById('html-editor');
+    const preview = document.getElementById('html-preview');
+    const saveBtn = document.getElementById('save-code-btn');
+    
+    if (!editor || !preview || !saveBtn) {
+        console.error("HTML editor elementy nebyly nalezeny!");
+        return;
+    }
+
+    editor.addEventListener('input', () => { preview.srcdoc = editor.value; });
+    preview.srcdoc = editor.value;
+
+    saveBtn.addEventListener('click', () => {
+        if (!editor.value.trim()) {
+            if(window.showAlertModal) showAlertModal("Prázdný kód", "Nelze uložit prázdný HTML kód.");
+            else alert("Nelze uložit prázdný kód.");
+            return;
+        }
+        const saveModal = document.getElementById('save-code-modal');
+        if(saveModal) showModal(saveModal);
+        document.getElementById('code-title-input')?.focus();
+    });
+}
+
+function saveHtmlCodeLocally(title, code) {
+    const newCode = {
+        id: `local-code-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        title, code, createdAt: new Date().toISOString()
+    };
+    savedCodesData.unshift(newCode);
+    saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData); // Uloží lokálně
+    // A také na Firebase
+    if (currentSupabaseUserId) {
+        saveDataToFirebase(); // Uloží všechna data, včetně savedCodesData
+    }
+    renderSavedCodesDisplay();
+    if(window.showAlertModal) showAlertModal("Kód uložen", `Kód "${title}" byl trvale uložen.`);
+    else alert(`Kód "${title}" uložen.`);
+}
+
+function deleteHtmlCodeLocally(id) {
+    savedCodesData = savedCodesData.filter(code => code.id !== id);
+    saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData); // Uloží lokálně
+    // A také na Firebase
+    if (currentSupabaseUserId) {
+        saveDataToFirebase();
+    }
+    renderSavedCodesDisplay();
+}
+
+function renderSavedCodesDisplay() {
+    const listEl = document.getElementById('saved-codes-list');
+    if(!listEl) return;
+    listEl.innerHTML = savedCodesData.length === 0 ? '<p>Žádné kódy nejsou aktuálně uloženy.</p>' : '';
+    
+    savedCodesData.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'saved-code-item';
+        div.innerHTML = `
+                <div class="item-header">
+                    <h3>${item.title}</h3>
+                    <div class="actions">
+                        <button class="button btn-secondary load-code">Načíst</button>
+                        <button class="button btn-danger delete-code">Smazat</button>
+                    </div>
+                </div>
+                <p>Uloženo: ${new Date(item.createdAt).toLocaleString('cs-CZ')}</p>
+            `;
+        div.querySelector('.load-code').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('html-editor').value = item.code;
+            document.getElementById('html-preview').srcdoc = item.code;
+            showSection('editor');
+            document.querySelector('.nav-container a.nav-link[data-section="editor"]')?.click();
+        });
+        div.querySelector('.delete-code').addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const confirmed = await (window.showConfirmModal ?
+                showConfirmModal("Smazat kód?", `Opravdu chcete smazat kód "${item.title}"?`) :
+                confirm(`Smazat kód "${item.title}"?`)
+            );
+            if (confirmed) deleteHtmlCodeLocally(item.id);
+        });
+        div.addEventListener('click', () => {
+            document.getElementById('html-editor').value = item.code;
+            document.getElementById('html-preview').srcdoc = item.code;
+            showSection('editor');
+            document.querySelector('.nav-container a.nav-link[data-section="editor"]')?.click();
+        });
+        listEl.appendChild(div);
+    });
+}
+
+// --- Galerie (upravujeme pro Firebase) ---
+function setupGallery() {
+    const addBtn = document.getElementById('addImageUrlBtn');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const prevBtn = document.getElementById('prev-image-btn');
+    const nextBtn = document.getElementById('next-image-btn');
+    const saveEditImageBtn = document.getElementById('save-edit-image-btn');
+    const cancelEditImageBtn = document.getElementById('cancel-edit-image-btn');
+    
+    if(addBtn) addBtn.addEventListener('click', handleAddImageUrl);
+    if(closeBtn) closeBtn.addEventListener('click', closeImageModal);
+    if(prevBtn) prevBtn.addEventListener('click', () => navigateImageModal(-1));
+    if(nextBtn) nextBtn.addEventListener('click', () => navigateImageModal(1));
+    if(saveEditImageBtn) saveEditImageBtn.addEventListener('click', saveEditedImage);
+    if(cancelEditImageBtn) cancelEditImageBtn.addEventListener('click', () => hideModal(document.getElementById('edit-image-modal')));
+}
+
+async function handleAddImageUrl() {
+    const urlInput = document.getElementById('newImageUrl');
+    if (!urlInput) {
+        console.error("Element #newImageUrl not found for adding gallery image.");
+        return;
+    }
+    const imageUrl = urlInput.value.trim();
+
+    if (imageUrl && isValidHttpUrl(imageUrl)) {
+        const imageNamePrompt = prompt(`Zadejte název pro obrázek (URL: ${imageUrl.substring(0,50)}...). Prázdné pro výchozí název.`, `Obrázek ${galleryImagesData.length + 1}`);
+        let imageName = (imageNamePrompt && imageNamePrompt.trim() !== "") ? imageNamePrompt.trim() : `Obrázek ${galleryImagesData.length + 1}_${Math.floor(Math.random()*1000)}`;
+        
+        const newImage = {
+            id: `local-img-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,
+            url: imageUrl, name: imageName, createdAt: new Date().toISOString()
+        };
+        galleryImagesData.unshift(newImage);
+        saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
+        // A také na Firebase
+        if (currentSupabaseUserId) {
+            saveDataToFirebase();
+        }
+        updateGalleryDisplay();
+        if(window.showAlertModal) showAlertModal("Obrázek přidán", `Obrázek "${imageName}" byl uložen.`);
+        else alert(`Obrázek "${imageName}" uložen.`);
+        urlInput.value = '';
+    } else {
+        if(window.showAlertModal) showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
+        else alert("Neplatná URL.");
+    }
+}
+
+function isValidHttpUrl(string) {
+    let url;
+    try { url = new URL(string); }
+    catch (_) { return false; }
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
+async function deleteGalleryImageLocally(id) {
+    const imageToDelete = galleryImagesData.find(img => img.id === id);
+    if (!imageToDelete) return;
+
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Smazat obrázek?", `Opravdu smazat "${imageToDelete.name || 'tento obrázek'}"?`) :
+        confirm(`Smazat obrázek "${imageToDelete.name || 'tento obrázek'}"?`)
+    );
+    if (confirmed) {
+        galleryImagesData = galleryImagesData.filter(img => img.id !== id);
+        saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
+        // A také na Firebase
+        if (currentSupabaseUserId) {
+            saveDataToFirebase();
+        }
+        updateGalleryDisplay();
+    }
+}
+
+function updateGalleryDisplay() {
+    const container = document.getElementById('gallery-container');
+    if(!container) return;
+    container.innerHTML = galleryImagesData.length === 0 ? '<p>Galerie je prázdná.</p>' : '';
+    
+    galleryImagesData.forEach((imgData, index) => {
+        const div = document.createElement('div');
+        div.className = 'gallery-image-wrapper';
+        div.innerHTML = `
+                <img src="${imgData.url}" alt="${imgData.name || 'Obrázek z galerie'}" onerror="this.onerror=null;this.src='https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';this.alt='Obrázek nelze načíst';">
+                <button class="delete-img-btn ${isEditMode ? '' : 'hidden'}" title="Smazat obrázek">&times;</button>
+                <i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}" data-image-id="${imgData.id}"></i>
+            `;
+        div.querySelector('img').addEventListener('click', () => openImageModal(index));
+        div.querySelector('.delete-img-btn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteGalleryImageLocally(imgData.id);
+        });
+        div.querySelector('.edit-icon')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editImage(imgData.id);
+        });
+        container.appendChild(div);
+    });
+}
+
+let editingImageId = null; // Pro uložení ID obrázku, který se právě edituje
+function editImage(imageId) {
+    editingImageId = imageId;
+    const image = galleryImagesData.find(img => img.id === imageId);
+    if (image) {
+        document.getElementById('edit-image-url').value = image.url;
+        document.getElementById('edit-image-name').value = image.name;
+        showModal(document.getElementById('edit-image-modal'));
+    }
+}
+
+function saveEditedImage() {
+    const url = document.getElementById('edit-image-url').value.trim();
+    const name = document.getElementById('edit-image-name').value.trim();
+
+    if (!isValidHttpUrl(url)) {
+        showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
+        return;
+    }
+
+    const index = galleryImagesData.findIndex(img => img.id === editingImageId);
+    if (index !== -1) {
+        galleryImagesData[index].url = url;
+        galleryImagesData[index].name = name;
+        saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
+        // A také na Firebase
+        if (currentSupabaseUserId) {
+            saveDataToFirebase();
+        }
+        updateGalleryDisplay();
+        hideModal(document.getElementById('edit-image-modal'));
+        showAlertModal("Obrázek upraven", `Obrázek "${name}" byl úspěšně upraven.`);
+    } else {
+        showAlertModal("Chyba", "Obrázek k úpravě nebyl nalezen.");
+    }
+}
+
+function openImageModal(index) {
+    if (index < 0 || index >= galleryImagesData.length) return;
+    currentModalImageIndex = index;
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-img');
+    if(!modal || !modalImg) return;
+
+    modalImg.src = galleryImagesData[index].url;
+    modalImg.alt = galleryImagesData[index].name || 'Zvětšený obrázek';
+    showModal(modal);
+}
+
+function closeImageModal() {
+    hideModal(document.getElementById('image-modal'));
+}
+
+function navigateImageModal(direction) {
+    const newIndex = currentModalImageIndex + direction;
+    if (newIndex >= 0 && newIndex < galleryImagesData.length) {
+        openImageModal(newIndex);
+    } else if (galleryImagesData.length > 0) {
+        currentModalImageIndex = (newIndex < 0) ? galleryImagesData.length - 1 : 0;
+        openImageModal(currentModalImageIndex);
+    }
+}
+
+// --- Externí odkazy (upravujeme pro Firebase) ---
+function renderExternalLinks() {
+    const tableBody = document.querySelector('#links-table tbody');
+    if (!tableBody) {
+        console.error("Table body for links not found!");
+        return;
+    }
+    tableBody.innerHTML = '';
+    
+    if (externalLinksData.length === 0) {
+        const row = tableBody.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 4;
+        cell.textContent = 'Žádné externí odkazy k zobrazení.';
+        cell.style.textAlign = 'center';
+        return;
+    }
+
+    externalLinksData.forEach((link, index) => {
+        const row = tableBody.insertRow();
+        row.insertCell().innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3 -3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
+        
+        const titleCell = row.insertCell();
+        const anchor = document.createElement('a');
+        anchor.href = link.url;
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
+        anchor.textContent = link.title;
+        titleCell.appendChild(anchor);
+        
+        row.insertCell().textContent = link.url;
+
+        const actionsCell = row.insertCell();
+        actionsCell.className = 'edit-mode-only';
+        actionsCell.innerHTML = `
+                <button class="button btn-secondary edit-link-btn" data-index="${index}">Editovat</button>
+                <button class="button btn-danger delete-link-btn" data-index="${index}">Smazat</button>
+            `;
+        actionsCell.querySelector('.edit-link-btn')?.addEventListener('click', () => editLink(index));
+        actionsCell.querySelector('.delete-link-btn')?.addEventListener('click', () => deleteLink(index));
+    });
+}
+
+document.getElementById('add-link-btn')?.addEventListener('click', addLink);
+
+function addLink() {
+    editingLinkIndex = -1;
+    document.getElementById('edit-link-title').value = '';
+    document.getElementById('edit-link-url').value = '';
+    showModal(document.getElementById('edit-link-modal'));
+}
+
+let editingLinkIndex = null;
+function editLink(index) {
+    editingLinkIndex = index;
+    const link = externalLinksData[index];
+    if (link) {
+        document.getElementById('edit-link-title').value = link.title;
+        document.getElementById('edit-link-url').value = link.url;
+        showModal(document.getElementById('edit-link-modal'));
+    }
+}
+
+function saveEditedLink() {
+    const title = document.getElementById('edit-link-title').value.trim();
+    const url = document.getElementById('edit-link-url').value.trim();
+
+    if (!title || !url || !isValidHttpUrl(url)) {
+        showAlertModal("Chybějící/neplatné údaje", "Zadejte platný název a URL (http:// nebo https://) pro odkaz.");
+        return;
+    }
+
+    if (editingLinkIndex === -1) {
+        externalLinksData.push({ title, url });
+        showAlertModal("Odkaz přidán", `Odkaz "${title}" byl přidán.`);
+    } else {
+        externalLinksData[editingLinkIndex] = { title, url };
+        showAlertModal("Odkaz upraven", `Odkaz "${title}" byl upraven.`);
+    }
+    
+    saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData); // Uloží lokálně
+    // A také na Firebase
+    if (currentSupabaseUserId) {
+        saveDataToFirebase();
+    }
+    renderExternalLinks();
+    hideModal(document.getElementById('edit-link-modal'));
+}
+document.getElementById('save-edit-link-btn')?.addEventListener('click', saveEditedLink);
+document.getElementById('cancel-edit-link-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-link-modal')));
+
+
+async function deleteLink(index) {
+    const linkToDelete = externalLinksData[index];
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Smazat odkaz?", `Opravdu smazat odkaz "${linkToDelete.title}"?`) :
+        confirm(`Smazat odkaz "${linkToDelete.title}"?`)
+    );
+    if (confirmed) {
+        externalLinksData.splice(index, 1);
+        saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData); // Uloží lokálně
+        // A také na Firebase
+        if (currentSupabaseUserId) {
+            saveDataToFirebase();
+        }
+        renderExternalLinks();
+    }
+}
+
+// --- Modální okna (zůstávají stejné) ---
+function showModal(modalElement) {
+    if(modalElement) modalElement.classList.add('visible');
+}
+function hideModal(modalElement) {
+    if(modalElement) modalElement.classList.remove('visible');
+}
+
+const saveCodeModalEl = document.getElementById('save-code-modal');
+const codeTitleInputEl = document.getElementById('code-title-input');
+const confirmSaveCodeBtnEl = document.getElementById('confirm-save-code-btn');
+const cancelSaveCodeBtnEl = document.getElementById('cancel-save-code-btn');
+
+if(confirmSaveCodeBtnEl && codeTitleInputEl) {
+    confirmSaveCodeBtnEl.addEventListener('click', () => {
+        const title = codeTitleInputEl.value.trim();
+        const editor = document.getElementById('html-editor');
+        const code = editor ? editor.value : '';
+        if (title && code) {
+            saveHtmlCodeLocally(title, code);
+            if(saveCodeModalEl) hideModal(saveCodeModalEl);
+            codeTitleInputEl.value = '';
+        } else {
+            if(window.showAlertModal) showAlertModal("Chybějící údaje", "Zadejte název a ujistěte se, že kód není prázdný.");
+            else alert("Nelze uložit prázdný kód.");
+        }
+    });
+}
+if(cancelSaveCodeBtnEl) cancelSaveCodeBtnEl.addEventListener('click', () => {
+    if(saveCodeModalEl) hideModal(saveCodeModalEl);
+    if(codeTitleInputEl) codeTitleInputEl.value = '';
+});
+
+// Definice pro globální okna (zůstávají stejné)
+if (!window.showAlertModal) {
+    window.showAlertModal = (title, message) => {
+        console.warn("Custom showAlertModal not fully initialized, using native alert.");
+        return new Promise((resolve) => {
+            alert(`${title}\n\n${message}`);
+            resolve(true);
+        });
+    };
+}
+if (!window.showConfirmModal) {
+    window.showConfirmModal = (title, message) => {
+        console.warn("Custom showConfirmModal not fully initialized, using native confirm.");
+        return new Promise((resolve) => {
+            resolve(confirm(`${title}\n\n${message}`));
+        });
+    };
+}
+
+const alertModalEl = document.getElementById('alert-modal');
+const alertModalTitleEl = document.getElementById('alert-modal-title');
+const alertModalMessageEl = document.getElementById('alert-modal-message');
+let alertModalOkBtnEl = document.getElementById('alert-modal-ok-btn');
+
+if(alertModalEl && alertModalTitleEl && alertModalMessageEl && alertModalOkBtnEl) {
+    window.showAlertModal = (title, message) => {
+        return new Promise((resolve) => {
+            alertModalTitleEl.textContent = title;
+            alertModalMessageEl.textContent = message;
+            
+            const newOkBtn = alertModalOkBtnEl.cloneNode(true);
+            alertModalOkBtnEl.parentNode.replaceChild(newOkBtn, alertModalOkBtnEl);
+            alertModalOkBtnEl = newOkBtn;
+            
+            alertModalOkBtnEl.onclick = () => {
+                hideModal(alertModalEl);
+                resolve(true);
+            };
+            showModal(alertModalEl);
+        });
+    };
+}
+
+
+const confirmModalEl = document.getElementById('confirm-modal');
+const confirmModalTitleEl = document.getElementById('confirm-modal-title');
+const confirmModalMessageEl = document.getElementById('confirm-modal-message');
+let confirmModalOkBtnEl = document.getElementById('confirm-modal-ok-btn');
+let confirmModalCancelBtnEl = document.getElementById('confirm-modal-cancel-btn');
+
+if(confirmModalEl && confirmModalTitleEl && confirmModalMessageEl && confirmModalOkBtnEl && confirmModalCancelBtnEl) {
+    window.showConfirmModal = (title, message, buttonTexts = {}) => {
+        return new Promise((resolve) => {
+            confirmModalTitleEl.textContent = title;
+            confirmModalMessageEl.textContent = message;
+
+            const newOkBtn = confirmModalOkBtnEl.cloneNode(true);
+            newOkBtn.textContent = buttonTexts.okText || 'Potvrdit';
+            confirmModalOkBtnEl.parentNode.replaceChild(newOkBtn, confirmModalOkBtnEl);
+            confirmModalOkBtnEl = newOkBtn;
+            
+            const newCancelBtn = confirmModalCancelBtnEl.cloneNode(true);
+            newCancelBtn.textContent = buttonTexts.cancelText || 'Zrušit';
+            confirmModalCancelBtnEl.parentNode.replaceChild(newCancelBtn, confirmModalCancelBtnEl);
+            confirmModalCancelBtnEl = newCancelBtn;
+            
+            confirmModalOkBtnEl.onclick = () => {
+                hideModal(confirmModalEl);
+                resolve(true);
+            };
+            confirmModalCancelBtnEl.onclick = () => {
+                hideModal(confirmModalEl);
+                resolve(false);
+            };
+            showModal(confirmModalEl);
+        });
+    };
+}
+
+window.showSection = showSection;
+
+// --- Nové funkce pro editaci portfolia (upravujeme pro Firebase) ---
+let editingPortfolioItemId = null; // ID položky, kterou právě editujeme
+
+function editPortfolioItem(itemId) {
+    editingPortfolioItemId = itemId;
+    const item = document.querySelector(`.portfolio-item[data-item-id="${itemId}"]`);
+    if (!item) return;
+
+    document.getElementById('edit-portfolio-title').value = item.querySelector(`[data-editable="${itemId}-title"]`).textContent.trim();
+    document.getElementById('edit-portfolio-desc-1').value = item.querySelector(`[data-editable="${itemId}-desc-1"]`).textContent.trim();
+    
+    const desc2Element = item.querySelector(`[data-editable="${itemId}-desc-2"]`);
+    document.getElementById('edit-portfolio-desc-2').value = desc2Element ? desc2Element.textContent.trim() : '';
+
+    const linkElement = item.querySelector(`[data-link-id="${itemId}-link"]`);
+    document.getElementById('edit-portfolio-link-text').value = linkElement ? linkElement.childNodes[0].nodeValue.trim() : '';
+    document.getElementById('edit-portfolio-link-url').value = linkElement ? linkElement.href : '';
+
+    document.getElementById('delete-portfolio-btn').classList.remove('hidden');
+    showModal(document.getElementById('edit-portfolio-modal'));
+}
+
+document.getElementById('save-edit-portfolio-btn')?.addEventListener('click', saveEditedPortfolioItem);
+document.getElementById('cancel-edit-portfolio-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-portfolio-modal')));
+document.getElementById('delete-portfolio-btn')?.addEventListener('click', deletePortfolioItem);
+document.getElementById('add-portfolio-item-btn')?.addEventListener('click', addPortfolioItem);
+
+function addPortfolioItem() {
+    editingPortfolioItemId = null;
+    document.getElementById('edit-portfolio-title').value = '';
+    document.getElementById('edit-portfolio-desc-1').value = '';
+    document.getElementById('edit-portfolio-desc-2').value = '';
+    document.getElementById('edit-portfolio-link-text').value = '';
+    document.getElementById('edit-portfolio-link-url').value = '';
+    document.getElementById('delete-portfolio-btn').classList.add('hidden');
+    showModal(document.getElementById('edit-portfolio-modal'));
+}
+
+function saveEditedPortfolioItem() {
+    const title = document.getElementById('edit-portfolio-title').value.trim();
+    const desc1 = document.getElementById('edit-portfolio-desc-1').value.trim();
+    const desc2 = document.getElementById('edit-portfolio-desc-2').value.trim();
+    const linkText = document.getElementById('edit-portfolio-link-text').value.trim();
+    const linkUrl = document.getElementById('edit-portfolio-link-url').value.trim();
+
+    if (!title || !desc1) {
+        showAlertModal("Chybějící údaje", "Vyplňte prosím název a první popis položky portfolia.");
+        return;
+    }
+    if (linkUrl && !isValidHttpUrl(linkUrl)) {
+        showAlertModal("Neplatná URL", "Zadejte platnou URL adresu pro odkaz (http:// nebo https://).");
+        return;
+    }
+
+    const newId = editingPortfolioItemId || `portfolio-item-${Date.now()}`;
+    
+    editableContentData[`${newId}-title`] = title;
+    editableContentData[`${newId}-desc-1`] = desc1;
+    editableContentData[`${newId}-desc-2`] = desc2;
+    editableContentData[`${newId}-link-text`] = linkText;
+    editableContentData[`${newId}-link-url`] = linkUrl;
+
+    if (!editingPortfolioItemId) {
+        const portfolioContainer = document.querySelector('.portfolio-items');
+        const newItemHtml = `
+                <div class="portfolio-item" data-item-id="${newId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
+                    <h3 data-editable="${newId}-title">${title}</h3>
+                    <p data-editable="${newId}-desc-1">${desc1}</p>
+                    ${desc2 ? `<p data-editable="${newId}-desc-2">${desc2}</p>` : ''}
+                    <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${newId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt &rarr;'}" target="_blank" rel="noopener noreferrer">
+                        ${linkText || 'Zobrazit projekt &rarr;'}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
+                    </a>
+                    <div class="edit-controls ${isEditMode ? '' : 'hidden'}">
+                        <button onclick="editPortfolioItem('${newId}')">Editovat</button>
+                    </div>
+                </div>
+            `;
+        portfolioContainer.insertAdjacentHTML('beforeend', newItemHtml);
+        if (isEditMode) {
+            const newlyAddedItem = portfolioContainer.lastElementChild;
+            newlyAddedItem.querySelectorAll('[data-editable]').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+            });
+        }
+        showAlertModal("Položka přidána", `Nová položka portfolia "${title}" byla přidána.`);
+    } else {
+        applyEditableContent();
+        showAlertModal("Položka upravena", `Položka portfolia "${title}" byla upravena.`);
+    }
+
+    saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData); // Uloží lokálně
+    // A také na Firebase
+    if (currentSupabaseUserId) {
+        saveDataToFirebase();
+    }
+    hideModal(document.getElementById('edit-portfolio-modal'));
+    editingPortfolioItemId = null;
+}
+
+async function deletePortfolioItem() {
+    if (!editingPortfolioItemId) return;
+
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
+        confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
+    );
+
+    if (confirmed) {
+        const itemElement = document.querySelector(`.portfolio-item[data-item-id="${editingPortfolioItemId}"]`);
+        if (itemElement) {
+            itemElement.remove();
+            delete editableContentData[`${editingPortfolioItemId}-title`];
+            delete editableContentData[`${editingPortfolioItemId}-desc-1`];
+            delete editableContentData[`${editingPortfolioItemId}-desc-2`];
+            delete editableContentData[`${editingPortfolioItemId}-link-text`];
+            delete editableContentData[`${editingPortfolioItemId}-link-url`];
+            saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData); // Uloží lokálně
+            // A také na Firebase
+            if (currentSupabaseUserId) {
+                saveDataToFirebase();
+            }
+            showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána.");
+        } else {
+            showAlertModal("Chyba", "Položka k smazání nebyla nalezena.");
+        }
+        hideModal(document.getElementById('edit-portfolio-modal'));
+        editingPortfolioItemId = null;
+    }
+}
+</script>
+</body>
+</html>
