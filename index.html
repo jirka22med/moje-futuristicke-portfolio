@@ -1232,7 +1232,14 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <button id="login-button" class="button" onclick="showAuthModal()">Upravit stránku</button>
         </div>
     </nav>
-
+               <!-- Tlačítka správy dat - ready to copy -->
+<div class="function-setupDataManagement" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;">
+    <button id="save-all-data-btn" class="button btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">💾 Uložit vše</button>
+    <button id="clear-all-data-btn" class="button btn-danger" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🗑️ Vymazat vše</button>
+    <button id="export-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📤 Export</button>
+    <button id="import-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📥 Import</button>
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+</div>
     <main>
         <div class="container">
             <section id="about">
@@ -1476,7 +1483,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// javascript.js
+   // javascript.js
 // Obsahuje veškerou logiku webové stránky s integrací Firebase pro synchronizaci dat.
 
 // --- Supabase Konstanty ---
@@ -2101,30 +2108,17 @@ function hideLoading() {
     }
 }
 
-// --- Správa dat (integrujeme s Firebase) ---
-function setupDataManagement() {
-    const dataManagementContainer = document.getElementById('data-management');
-    if (dataManagementContainer) {
-        dataManagementContainer.innerHTML = `
-                <div class="data-management-buttons" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;">
-                    <button id="save-all-data-btn" class="button btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">💾 Uložit vše</button>
-                    <button id="clear-all-data-btn" class="button btn-danger" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🗑️ Vymazat vše</button>
-                    <button id="export-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📤 Export</button>
-                    <button id="import-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📥 Import</button>
-                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                </div>
-            `;
-        
-        document.getElementById('save-all-data-btn')?.addEventListener('click', saveAllDataToStorage);
-        document.getElementById('clear-all-data-btn')?.addEventListener('click', handleClearAllData);
-        document.getElementById('export-data-btn')?.addEventListener('click', exportData);
-        document.getElementById('import-data-btn')?.addEventListener('click', () => {
-            document.getElementById('import-file-input')?.click();
-        });
-        document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
-    }
+// --- Funkcionalita tlačítek správy dat (jen JavaScript logika) ---
+ function setupDataManagement() {
+    // Připojení event listenerů k tlačítkům s danými ID
+    document.getElementById('save-all-data-btn')?.addEventListener('click', saveAllDataToStorage);
+    document.getElementById('clear-all-data-btn')?.addEventListener('click', handleClearAllData);
+    document.getElementById('export-data-btn')?.addEventListener('click', exportData);
+    document.getElementById('import-data-btn')?.addEventListener('click', () => {
+        document.getElementById('import-file-input')?.click();
+    });
+    document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
 }
-
 // saveAllDataToStorage nyní volá i saveDataToFirebase
 function saveAllDataToStorage() {
     document.querySelectorAll('[data-editable]').forEach(el => {
@@ -2903,6 +2897,75 @@ async function deletePortfolioItem() {
         editingPortfolioItemId = null;
     }
 }
-</script>
+// --- Pomocný script pro správu viditelnosti tlačítek ---
+(function() {
+    'use strict';
+    
+    // Funkce pro skrytí tlačítek správy dat
+    function hideDataManagementButtons() {
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container) {
+            container.style.display = 'none';
+        }
+    }
+    
+    // Funkce pro zobrazení tlačítek správy dat
+    function showDataManagementButtons() {
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container) {
+            container.style.display = 'flex';
+        }
+    }
+    
+    // Sledování změn na body elementu
+    function observeEditMode() {
+        const body = document.body;
+        
+        // MutationObserver pro sledování změn tříd
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (body.classList.contains('edit-mode')) {
+                        showDataManagementButtons();
+                    } else {
+                        hideDataManagementButtons();
+                    }
+                }
+            });
+        });
+        
+        // Spuštění observeru
+        observer.observe(body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+        
+        // Kontrola současného stavu
+        if (body.classList.contains('edit-mode')) {
+            showDataManagementButtons();
+        } else {
+            hideDataManagementButtons();
+        }
+    }
+    
+    // Inicializace
+    function initDataManagementVisibility() {
+        hideDataManagementButtons();
+        observeEditMode();
+    }
+    
+    // Spuštění při načtení DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDataManagementVisibility);
+    } else {
+        initDataManagementVisibility();
+    }
+    
+    // Export funkcí pro ruční použití
+    window.hideDataManagementButtons = hideDataManagementButtons;
+    window.showDataManagementButtons = showDataManagementButtons;
+    
+})();
+    </script>
 </body>
 </html>
