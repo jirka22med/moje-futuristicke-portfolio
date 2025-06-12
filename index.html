@@ -1208,6 +1208,219 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         max-width: 100%;
     }
 }
+/* ZÁKLADNÍ STYL PRO DATA MANAGEMENT KONTEJNER */
+.function-setupDataManagement {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 1rem;
+    margin: 1rem auto; /* PŘIDÁNO/ZMĚNA: Nastavuje automatické okraje vlevo a vpravo pro centrování */
+    max-width: 600px; /* PŘIDÁNO: Nastavuje maximální šířku kontejneru, aby se mohl vycentrovat.
+                       * Tuto hodnotu budeš muset PŘIZPŮSOBIT, aby se na různých zařízeních vešel grid.
+                       */
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    position: relative;
+    overflow: hidden;
+}
+
+.data-management-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    justify-items: center;
+    align-items: center;
+    padding: 0 1rem;
+    /* DŮLEŽITÉ: Ujisti se, že tento kontejner má 100% šířku uvnitř svého rodiče,
+       aby se grid správně roztahoval. */
+    width: 100%; /* PŘIDÁNO: Zajistí, že grid zabere celou šířku rodiče */
+}
+
+.function-setupDataManagement::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.1) 100%);
+    pointer-events: none;
+}
+
+.function-setupDataManagement .button {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap; /* Ponecháno podle tvého požadavku, ale může způsobit přetékání */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.function-setupDataManagement .btn-primary {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.function-setupDataManagement .btn-danger {
+    background: rgba(244, 67, 54, 0.9);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.function-setupDataManagement .btn-secondary {
+    background: rgba(63, 81, 181, 0.9);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.function-setupDataManagement .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+.function-setupDataManagement .btn-primary:hover {
+    background: rgba(76, 175, 80, 1);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+.function-setupDataManagement .btn-danger:hover {
+    background: rgba(244, 67, 54, 1);
+    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+}
+
+.function-setupDataManagement .btn-secondary:hover {
+    background: rgba(63, 81, 181, 1);
+    box-shadow: 0 5px 15px rgba(63, 81, 181, 0.4);
+}
+
+/* KOMPLETNÍ MEDIA QUERIES PRO DATA MANAGEMENT */
+
+/* Tablet landscape a větší */
+@media (min-width: 768px) {
+    .function-setupDataManagement {
+        padding: 1.5rem 2rem;
+        margin: 2rem auto; /* PŘIDÁNO/ZMĚNA: Auto margin pro centrování */
+        max-width: 800px; /* PŘIDÁNO/ZMĚNA: Upravit pro centrování na větších obrazovkách */
+    }
+    
+    .data-management-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .function-setupDataManagement .button {
+        padding: 1rem 1.2rem;
+        font-size: 1rem;
+    }
+}
+
+/* Tablet portrait a menší - DVOUŘÁDKOVÝ LAYOUT */
+@media (max-width: 767px) {
+    .function-setupDataManagement {
+        padding: 1rem 0.5rem;
+        margin: 1rem auto; /* PŘIDÁNO/ZMĚNA: Auto margin pro centrování */
+        max-width: 400px; /* PŘIDÁNO/ZMĚNA: Upravit pro centrování na menších obrazovkách */
+    }
+    
+    .data-management-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
+        
+        gap: 0.8rem;
+        justify-items: center;
+        align-items: center;
+        padding: 0 0.5rem;
+    }
+    
+    .function-setupDataManagement .button {
+        padding: 0.8rem 1rem;
+        font-size: 0.85rem;
+        margin: 0;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Mobilní zařízení - TAKÉ DVOUŘÁDKOVÝ LAYOUT */
+@media (max-width: 480px) {
+    .function-setupDataManagement {
+        padding: 0.8rem 0.25rem;
+        margin: 0.8rem auto; /* PŘIDÁNO/ZMĚNA: Auto margin pro centrování */
+        max-width: 425px; /* PŘIDÁNO/ZMĚNA: Upravit pro centrování na malých mobileních obrazovkách */
+    }
+    
+    .data-management-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
+        
+        gap: 0.6rem;
+        justify-items: center;
+        align-items: center;
+        padding: 0 0.25rem;
+    }
+    
+    .function-setupDataManagement .button {
+        font-size: 0.75rem;
+        padding: 0.7rem 0.8rem;
+        margin: 0;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Velmi malé displeje - DVOUŘÁDKOVÝ LAYOUT S MINIMÁLNÍMI ROZMĚRY */
+@media (max-width: 320px) {
+    .function-setupDataManagement {
+        padding: 0.6rem 0.1rem;
+        margin: 0.6rem auto; /* PŘIDÁNO/ZMĚNA: Auto margin pro centrování */
+        max-width: 200px; /* PŘIDÁNO/ZMĚNA: Upravit pro centrování na velmi malých obrazovkách */
+    }
+    
+    .data-management-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
+        
+        gap: 0.4rem;
+        justify-items: center;
+        align-items: center;
+        padding: 0 0.1rem;
+    }
+    
+    .function-setupDataManagement .button {
+        font-size: 0.7rem;
+        padding: 0.6rem 0.4rem;
+        margin: 0;
+        width: 100%;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1219,6 +1432,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     </header>
 
     <nav>
+        <div id="data-management"></div>
         <div class="nav-container">
             <a href="#" class="nav-link" data-section="about">O mně</a>
             <a href="#" class="nav-link" data-section="portfolio">Portfolio</a>
@@ -1227,17 +1441,21 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <a href="#" class="nav-link" data-section="saved">Moje HTML kódy</a>
             <a href="#" class="nav-link" data-section="gallery">Galerie</a>
             <a href="#" class="nav-link" data-section="links">Odkazy</a>
-            <div id="data-management"></div>
             <button id="edit-mode-toggle-btn" class="button hidden" onclick="toggleEditMode()">Zavřít</button>
             <button id="login-button" class="button" onclick="showAuthModal()">Upravit</button>
         </div>
     </nav>
+     
+            
                <!-- Tlačítka správy dat - ready to copy -->
-<div class="function-setupDataManagement" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;">
-    <button id="save-all-data-btn" class="button btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">💾 Uložit vše</button>
-    <button id="clear-all-data-btn" class="button btn-danger" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🗑️ Vymazat vše</button>
-    <button id="export-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📤 Export</button>
-    <button id="import-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📥 Import</button>
+    
+<div class="function-setupDataManagement">
+    <div class="data-management-container">
+        <button id="save-all-data-btn" class="button btn-primary" >💾 Uložit vše</button>
+        <button id="clear-all-data-btn" class="button btn-danger" >🗑️ Vymazat vše</button>
+        <button id="export-data-btn" class="button btn-secondary" >📤 Export</button>
+        <button id="import-data-btn" class="button btn-secondary" >📥 Import</button>
+    </div>
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
 </div>
     <main>
