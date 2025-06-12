@@ -1228,8 +1228,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <a href="#" class="nav-link" data-section="gallery">Galerie</a>
             <a href="#" class="nav-link" data-section="links">Odkazy</a>
             <div id="data-management"></div>
-            <button id="edit-mode-toggle-btn" class="button hidden" onclick="toggleEditMode()">Ukončit editaci</button>
-            <button id="login-button" class="button" onclick="showAuthModal()">Upravit stránku</button>
+            <button id="edit-mode-toggle-btn" class="button hidden" onclick="toggleEditMode()">Zavřít</button>
+            <button id="login-button" class="button" onclick="showAuthModal()">Upravit</button>
         </div>
     </nav>
                <!-- Tlačítka správy dat - ready to copy -->
@@ -1658,10 +1658,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Po inicializaci aplikace (která načte data z Firebase) zkontrolujeme stav edit módu
             if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                 enableEditMode();
-                document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
             } else {
                 disableEditMode();
-                document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
             }
             
             if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
