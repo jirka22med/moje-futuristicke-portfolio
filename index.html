@@ -763,7 +763,7 @@ body:not(.edit-mode) .edit-mode-only { /* NOVINKA: Skrýváme i edit-mode-only p
 
 /* Nová třída pro zobrazení edit módu */
 body.edit-mode #edit-mode-toggle-btn {
-    display: block; /* Zobrazí tlačítko "Ukončit editaci" */
+    display: block; /* Zobrazí tlačítko "Zavřít" */
 }
 body.edit-mode .edit-controls,
 body.edit-mode .delete-img-btn,
@@ -1696,10 +1696,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                 enableEditMode();
-                document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
             } else {
                 disableEditMode();
-                document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+                document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
             }
             
             initializeApp(false); // Inicializujeme aplikaci, protože uživatel je přihlášen
@@ -2020,7 +2020,7 @@ function enableEditMode() {
     isEditMode = true;
     document.body.classList.add('edit-mode');
     document.getElementById('login-button')?.classList.add('hidden');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
     document.getElementById('edit-mode-toggle-btn')?.classList.remove('hidden');
 
     document.querySelectorAll('[data-editable]').forEach(el => {
@@ -2051,7 +2051,7 @@ function enableEditMode() {
 function disableEditMode() {
     isEditMode = false;
     document.body.classList.remove('edit-mode');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
     supabaseClient.auth.getSession().then(({ data: { session } }) => {
         if (!session) {
             document.getElementById('login-button')?.classList.remove('hidden');
