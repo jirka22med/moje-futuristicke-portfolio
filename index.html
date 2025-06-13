@@ -3184,6 +3184,62 @@ async function deletePortfolioItem() {
     window.showDataManagementButtons = showDataManagementButtons;
     
 })();
+    //tady je pomocní script pro heslo pred přechodem k přihlášení a registrace 
+
+    // hypoteticky_lokalni_heslo_script_hardcoded_FINAL.js (nebo ho vložte do javascript.js)
+
+(function() { // Okamžitě spuštěná anonymní funkce pro udržení čistého rozsahu
+    'use strict';
+
+    // !!! EXTRÉMNĚ DŮLEŽITÉ BEZPEČNOSTNÍ UPOZORNĚNÍ !!!
+    // Hardcoding hesla v JavaScriptu je VELMI NEBEZPEČNÉ.
+    // Kdokoli, kdo se podívá na zdrojový kód tvé stránky (např. přes F12 v prohlížeči), toto heslo okamžitě uvidí.
+    // TOTO POUŽÍVEJTE POUZE PRO TESTOVÁNÍ NEBO PRO NAPROSTO NEDŮVĚRNÉ POUŽITÍ.
+    const HARDCODED_ACCESS_PASSWORD = 'jirkamed32369976'; 
+
+    // Získáme referenci na tlačítko "Upravit stránku" (id="login-button")
+    const loginButton = document.getElementById('login-button'); 
+
+    // Kontrola, zda tlačítko existuje
+    if (!loginButton) {
+        console.warn("Gemini Helper: Tlačítko pro přihlášení (login-button) nebylo nalezeno. Pomocný script se nespustí.");
+        return; // Pokud tlačítko není, script nemá smysl
+    }
+
+    /**
+     * Zpracuje pokus o přístup k přihlašovacímu/registračnímu formuláři.
+     * Ověří pevně dané heslo z kódu.
+     */
+    async function handleLocalAccessPasswordHardcodedFinal() {
+        // Krok 1: Zkontrolovat, zda uživatel již není přihlášen přes Supabase
+        // Pokud je přihlášen, lokální heslo je zbytečné a přeskakuje se.
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+            console.log("Gemini Helper: Uživatel je již přihlášen přes Supabase. Lokální hardcoded heslo přeskočeno.");
+            window.showAuthModal(); // Zobrazíme autentizační modal přímo
+            return; // Konec funkce
+        }
+
+        // Krok 2: Vyžádat heslo od uživatele
+        const enteredPassword = prompt("Zadejte prosím přístupové heslo k formuláři úprav:");
+        
+        // Krok 3: Ověřit zadané heslo proti pevně danému v kódu
+        if (enteredPassword === HARDCODED_ACCESS_PASSWORD) {
+            alert("Přístup povolen!");
+            console.log("Gemini Helper: Lokální hardcoded heslo správně, přístup povolen.");
+            window.showAuthModal(); // Heslo správné, zobrazíme formulář
+        } else {
+            alert("Chybné heslo. Přístup zamítnut.");
+            console.log("Gemini Helper: Lokální hardcoded heslo chybné, přístup zamítnut.");
+        }
+    }
+
+    // Krok 4: Přepíšeme původní chování tlačítka "Upravit stránku"
+    // Původní onclick="showAuthModal()" v HTML bude ignorován, protože ho přepíšeme JavaScriptem.
+    loginButton.onclick = handleLocalAccessPasswordHardcodedFinal;
+
+})(); // Okamžité spuštění scriptu při načtení
+
     </script>
 </body>
 </html>
