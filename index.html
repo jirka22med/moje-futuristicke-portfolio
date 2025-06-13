@@ -1667,17 +1667,15 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <button id="login-button" class="button" onclick="showAuthModal()">Upravit</button>
         </div>
     </nav>
-     <div id="local-password-modal" class="modal">
+    <div id="local-password-modal" class="modal">
     <div class="modal-content">
         <h3>Zadejte přístupové heslo</h3>
-        <form id="local-password-form"> 
-            <input type="password" id="local-password-input" placeholder="Heslo">
-            <p id="local-password-error" class="error-message"></p>
-            <div class="modal-actions">
-                <button id="local-password-ok-btn" class="button btn-primary" type="submit">OK</button> 
-                <button id="local-password-cancel-btn" class="button btn-secondary" type="button">Zrušit</button> 
-            </div>
-        </form> 
+        <input type="password" id="local-password-input" placeholder="Heslo">
+        <p id="local-password-error" class="error-message"></p> 
+        <div class="modal-actions">
+            <button id="local-password-ok-btn" class="button btn-primary">OK</button>
+            <button id="local-password-cancel-btn" class="button btn-secondary">Zrušit</button>
+        </div>
     </div>
 </div>
             
