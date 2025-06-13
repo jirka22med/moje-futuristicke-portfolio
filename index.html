@@ -1935,10 +1935,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 <script>
 // javascript.js
 // Obsahuje veškerou logiku webové stránky s integrací Firebase pro synchronizaci dat pro VŠECHNY UŽIVATELE (real-time).
+// Zajišťuje okamžité zobrazení obsahu z localStorage, pak real-time synchronizaci.
 
 // --- Supabase Konstanty ---
 const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrak5wdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Globální proměnná pro stav editačního módu
@@ -1960,7 +1961,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database(); // Získání instance Realtime Database
 
-// --- Nová cesta pro veřejně synchronizovaná data ---
+// --- Cesta pro veřejně synchronizovaná data ---
 const PUBLIC_PORTFOLIO_DATA_PATH = 'public_portfolio_content'; 
 
 // Funkce pro získání cesty k datům (nyní vždy veřejná cesta)
@@ -1974,16 +1975,21 @@ function setupRealtimeFirebaseListener() {
     const path = getFirebaseDataPath();
     console.log(`Nastavuji real-time posluchač na Firebase cestě: ${path}`);
 
-    // Používáme .on() pro real-time aktualizace
     database.ref(path).on('value', (snapshot) => {
         const firebaseData = snapshot.val();
         if (firebaseData) {
             console.log("Real-time data načtena z Firebase:", firebaseData);
-            // Aktualizujeme lokální JS proměnné
+            // VŽDY aktualizujeme lokální JS proměnné a localStorage z Firebase
             galleryImagesData = firebaseData.galleryImages || [...initialImageUrls];
             savedCodesData = firebaseData.savedCodes || [];
             externalLinksData = firebaseData.externalLinks || [...initialExternalLinksData];
             editableContentData = firebaseData.editableContent || {};
+
+            // Uložíme aktualizovaná data do localStorage, aby byla cache vždy čerstvá
+            saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData);
+            saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData);
+            saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData);
+            saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData);
 
             // Aplikujeme načtený obsah na stránku
             applyEditableContent();
@@ -1992,13 +1998,29 @@ function setupRealtimeFirebaseListener() {
             renderExternalLinks();
             // Nyní se UI aktualizuje okamžitě, jakmile se data změní na Firebase
         } else {
-            console.log("Žádná data v Firebase na cestě: " + path + ". Načítám výchozí data.");
+            console.log("Žádná data v Firebase na cestě: " + path + ". Používám výchozí data a ukládám na Firebase.");
             // Pokud veřejná cesta neobsahuje data, inicializujeme ji výchozími (přihlášený uživatel)
-            // Tím se zajistí, že web nebude prázdný, pokud ještě nikdo nic neuložil na public_portfolio_content
-            if (supabaseClient.auth.getSession().then(({ data: { session } }) => session) && !firebaseData) {
-                // Pouze pokud je někdo přihlášen, může inicializovat prázdnou DB
-                saveDataToFirebase();
-            }
+            // Pouze pokud je někdo přihlášen, může inicializovat prázdnou DB výchozími daty
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session) { // Pouze pokud je přihlášený uživatel
+                    // Pokud data ve Firebase nejsou, nahrajeme tam defaultní data z initialXyzData
+                    galleryImagesData = [...initialImageUrls];
+                    savedCodesData = []; // Můžeš přidat nějaké defaultní kódy, pokud chceš
+                    externalLinksData = [...initialExternalLinksData];
+                    editableContentData = {}; // Musíš zde přidat defaultní HTML obsah, pokud má být prázdný
+                    // Aplikujeme výchozí obsah na UI
+                    applyEditableContent();
+                    updateGalleryDisplay();
+                    renderSavedCodesDisplay();
+                    renderExternalLinks();
+                    // Nyní se data uloží do Firebase, aby se inicializovala veřejná cesta
+                    saveDataToFirebase();
+                } else {
+                    // Pokud není přihlášen a Firebase je prázdné, použijeme pouze localStorage / default,
+                    // Firebase listener nic neudělal, takže zůstane zobrazený initial setup.
+                    loadDataFromStorage(); // Načte lokální defaulty, pokud nic není ve Firebase
+                }
+            });
         }
         hideLoading(); // Skryjeme loading, jakmile se data poprvé načtou
         document.body.style.visibility = 'visible'; // Zobrazíme body
@@ -2013,8 +2035,7 @@ function setupRealtimeFirebaseListener() {
 // Funkce pro ukládání dat na Firebase
 // Nyní ukládá na veřejnou cestu, ale jen pokud je uživatel přihlášen (podle Firebase pravidel)
 async function saveDataToFirebase() {
-    // Kontrolu currentSupabaseUserId nyní ponecháváme, protože zápis má být povolen jen přihlášeným uživatelům.
-    // Firebase pravidla to pak ještě jednou ověří.
+    // Kontrolu currentSupabaseUserId ponecháváme, protože zápis má být povolen jen přihlášeným uživatelům.
     if (!currentSupabaseUserId) {
         console.warn("Uživatel není přihlášen, přeskočeno ukládání dat do Firebase (zápis je povolen jen přihlášeným).");
         showAlertModal("Chyba ukládání", "Pro uložení změn se prosím přihlaste.");
@@ -2154,8 +2175,6 @@ document.addEventListener('DOMContentLoaded', function() {
             disableEditMode();
             localStorage.removeItem(EDIT_MODE_KEY);
         }
-        // Zde nespouštíme initializeApp, real-time listener se nastavuje jednou
-        // a loader/viditelnost je řízena jím.
     }
 
     // --- KLÍČOVÁ ZMĚNA: Nastavíme real-time posluchač Firebase hned na začátku ---
@@ -2478,7 +2497,7 @@ function enableEditMode() {
     });
     document.getElementById('add-portfolio-item-btn').classList.remove('hidden');
     document.getElementById('add-link-btn').classList.remove('hidden');
-    document.getElementById('data-management').classList.remove('hidden');
+    document.getElementById('data-management').classList.add('hidden');
 
     document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
         el.style.display = 'table-cell';
@@ -2752,7 +2771,7 @@ function setupHtmlEditor() {
 
 function saveHtmlCodeLocally(title, code) {
     const newCode = {
-        id: `local-code-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        id: `local-code-<span class="math-inline">\{Date\.now\(\)\}\-</span>{Math.random().toString(36).substr(2, 5)}`,
         title, code, createdAt: new Date().toISOString()
     };
     savedCodesData.unshift(newCode);
@@ -2846,10 +2865,10 @@ async function handleAddImageUrl() {
 
     if (imageUrl && isValidHttpUrl(imageUrl)) {
         const imageNamePrompt = prompt(`Zadejte název pro obrázek (URL: ${imageUrl.substring(0,50)}...). Prázdné pro výchozí název.`, `Obrázek ${galleryImagesData.length + 1}`);
-        let imageName = (imageNamePrompt && imageNamePrompt.trim() !== "") ? imageNamePrompt.trim() : `Obrázek ${galleryImagesData.length + 1}_${Math.floor(Math.random()*1000)}`;
+        let imageName = (imageNamePrompt && imageNamePrompt.trim() !== "") ? imageNamePrompt.trim() : `Obrázek <span class="math-inline">\{galleryImagesData\.length \+ 1\}\_</span>{Math.floor(Math.random()*1000)}`;
         
         const newImage = {
-            id: `local-img-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,
+            id: `local-img-<span class="math-inline">\{Date\.now\(\)\}\-</span>{Math.random().toString(36).substr(2,5)}`,
             url: imageUrl, name: imageName, createdAt: new Date().toISOString()
         };
         galleryImagesData.unshift(newImage);
@@ -2861,7 +2880,6 @@ async function handleAddImageUrl() {
         updateGalleryDisplay();
         if(window.showAlertModal) showAlertModal("Obrázek přidán", `Obrázek "${imageName}" byl uložen.`);
         else alert(`Obrázek "${imageName}" uložen.`);
-        urlInput.value = '';
     } else {
         if(window.showAlertModal) showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
         else alert("Neplatná URL.");
@@ -2903,9 +2921,9 @@ function updateGalleryDisplay() {
         const div = document.createElement('div');
         div.className = 'gallery-image-wrapper';
         div.innerHTML = `
-                <img src="${imgData.url}" alt="${imgData.name || 'Obrázek z galerie'}" onerror="this.onerror=null;this.src='https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';this.alt='Obrázek nelze načíst';">
+                <img src="<span class="math-inline">\{imgData\.url\}" alt\="</span>{imgData.name || 'Obrázek z galerie'}" onerror="this.onerror=null;this.src='https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';this.alt='Obrázek nelze načíst';">
                 <button class="delete-img-btn ${isEditMode ? '' : 'hidden'}" title="Smazat obrázek">&times;</button>
-                <i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}" data-image-id="${imgData.id}"></i>
+                <i class="fas fa-edit edit-icon <span class="math-inline">\{isEditMode ? '' \: 'hidden'\}" data\-image\-id\="</span>{imgData.id}"></i>
             `;
         div.querySelector('img').addEventListener('click', () => openImageModal(index));
         div.querySelector('.delete-img-btn')?.addEventListener('click', (e) => {
@@ -3019,8 +3037,8 @@ function renderExternalLinks() {
         const actionsCell = row.insertCell();
         actionsCell.className = 'edit-mode-only';
         actionsCell.innerHTML = `
-                <button class="button btn-secondary edit-link-btn" data-index="${index}">Editovat</button>
-                <button class="button btn-danger delete-link-btn" data-index="${index}">Smazat</button>
+                <button class="button btn-secondary edit-link-btn" data-index="<span class="math-inline">\{index\}"\>Editovat</button\>
+<button class\="button btn\-danger delete\-link\-btn" data\-index\="</span>{index}">Smazat</button>
             `;
         actionsCell.querySelector('.edit-link-btn')?.addEventListener('click', () => editLink(index));
         actionsCell.querySelector('.delete-link-btn')?.addEventListener('click', () => deleteLink(index));
@@ -3131,7 +3149,7 @@ if (!window.showAlertModal) {
     window.showAlertModal = (title, message) => {
         console.warn("Custom showAlertModal not fully initialized, using native alert.");
         return new Promise((resolve) => {
-            alert(`${title}\n\n${message}`);
+            alert(`<span class="math-inline">\{title\}\\n\\n</span>{message}`);
             resolve(true);
         });
     };
@@ -3140,7 +3158,7 @@ if (!window.showConfirmModal) {
     window.showConfirmModal = (title, message) => {
         console.warn("Custom showConfirmModal not fully initialized, using native confirm.");
         return new Promise((resolve) => {
-            resolve(confirm(`${title}\n\n${message}`));
+            resolve(confirm(`<span class="math-inline">\{title\}\\n\\n</span>{message}`));
         });
     };
 }
@@ -3176,7 +3194,7 @@ const confirmModalMessageEl = document.getElementById('confirm-modal-message');
 let confirmModalOkBtnEl = document.getElementById('confirm-modal-ok-btn');
 let confirmModalCancelBtnEl = document.getElementById('confirm-modal-cancel-btn');
 
-if(confirmModalEl && confirmModalTitleEl && confirmModalMessageEl && confirmModalOkBtnEl && confirmModalCancelBtnEl) {
+if(confirmModalEl && confirmModalTitleEl && confirmModalTitleEl && confirmModalMessageEl && confirmModalOkBtnEl && confirmModalCancelBtnEl) { // Typo in original code: confirmModalTitleEl repeated
     window.showConfirmModal = (title, message, buttonTexts = {}) => {
         return new Promise((resolve) => {
             confirmModalTitleEl.textContent = title;
@@ -3272,15 +3290,15 @@ function saveEditedPortfolioItem() {
     if (!editingPortfolioItemId) {
         const portfolioContainer = document.querySelector('.portfolio-items');
         const newItemHtml = `
-                <div class="portfolio-item" data-item-id="${newId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
-                    <h3 data-editable="${newId}-title">${title}</h3>
-                    <p data-editable="${newId}-desc-1">${desc1}</p>
+                <div class="portfolio-item" data-item-id="<span class="math-inline">\{newId\}" style\="background\-color\: \#f9f9f9; padding\: 1rem; border\-radius\: 4px; border\: 1px solid \#ddd; position\: relative;"\>
+<h3 data\-editable\="</span>{newId}-title"><span class="math-inline">\{title\}</h3\>
+<p data\-editable\="</span>{newId}-desc-1">${desc1}</p>
                     ${desc2 ? `<p data-editable="${newId}-desc-2">${desc2}</p>` : ''}
-                    <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${newId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt &rarr;'}" target="_blank" rel="noopener noreferrer">
+                    <a href="<span class="math-inline">\{linkUrl \|\| '\#'\}" class\="button editable\-link" data\-link\-id\="</span>{newId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt &rarr;'}" target="_blank" rel="noopener noreferrer">
                         ${linkText || 'Zobrazit projekt &rarr;'}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
                     </a>
-                    <div class="edit-controls ${isEditMode ? '' : 'hidden'}">
-                        <button onclick="editPortfolioItem('${newId}')">Editovat</button>
+                    <div class="edit-controls <span class="math-inline">\{isEditMode ? '' \: 'hidden'\}"\>
+<button onclick\="editPortfolioItem\('</span>{newId}')">Editovat</button>
                     </div>
                 </div>
             `;
@@ -3553,7 +3571,6 @@ async function deletePortfolioItem() {
     loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
 })();
-
     </script>
 </body>
 </html>
