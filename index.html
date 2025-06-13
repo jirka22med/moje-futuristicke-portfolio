@@ -1939,7 +1939,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 // --- Supabase Konstanty ---
 const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrak5wdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Globální proměnná pro stav editačního módu
@@ -1983,8 +1983,8 @@ function setupRealtimeFirebaseListener() {
             galleryImagesData = firebaseData.galleryImages || [...initialImageUrls];
             savedCodesData = firebaseData.savedCodes || [];
             externalLinksData = firebaseData.externalLinks || [...initialExternalLinksData];
-            editableContentData = firebaseData.editableContent || {};
-
+            editableContentData = firebaseData.editableContent || {}; // Aktualizace editableContentData
+            
             // Uložíme aktualizovaná data do localStorage, aby byla cache vždy čerstvá
             saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData);
             saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData);
@@ -1996,29 +1996,27 @@ function setupRealtimeFirebaseListener() {
             updateGalleryDisplay();
             renderSavedCodesDisplay();
             renderExternalLinks();
-            // Nyní se UI aktualizuje okamžitě, jakmile se data změní na Firebase
         } else {
-            console.log("Žádná data v Firebase na cestě: " + path + ". Používám výchozí data a ukládám na Firebase.");
-            // Pokud veřejná cesta neobsahuje data, inicializujeme ji výchozími (přihlášený uživatel)
-            // Pouze pokud je někdo přihlášen, může inicializovat prázdnou DB výchozími daty
+            console.log("Žádná data v Firebase na cestě: " + path + ". Inicializuji výchozí data a ukládám na Firebase.");
+            // Pokud veřejná cesta neobsahuje data, inicializujeme ji výchozími
+            galleryImagesData = [...initialImageUrls];
+            savedCodesData = []; 
+            externalLinksData = [...initialExternalLinksData];
+            editableContentData = {...initialEditableContentData}; // KLÍČOVÁ ZMĚNA: Používáme výchozí textová data
+            
+            // Aplikujeme výchozí obsah na UI
+            applyEditableContent();
+            updateGalleryDisplay();
+            renderSavedCodesDisplay();
+            renderExternalLinks();
+            
+            // Nyní se data uloží do Firebase, aby se inicializovala veřejná cesta (jen pokud je přihlášený uživatel, který má oprávnění zapisovat)
             supabaseClient.auth.getSession().then(({ data: { session } }) => {
-                if (session) { // Pouze pokud je přihlášený uživatel
-                    // Pokud data ve Firebase nejsou, nahrajeme tam defaultní data z initialXyzData
-                    galleryImagesData = [...initialImageUrls];
-                    savedCodesData = []; // Můžeš přidat nějaké defaultní kódy, pokud chceš
-                    externalLinksData = [...initialExternalLinksData];
-                    editableContentData = {}; // Musíš zde přidat defaultní HTML obsah, pokud má být prázdný
-                    // Aplikujeme výchozí obsah na UI
-                    applyEditableContent();
-                    updateGalleryDisplay();
-                    renderSavedCodesDisplay();
-                    renderExternalLinks();
-                    // Nyní se data uloží do Firebase, aby se inicializovala veřejná cesta
+                if (session && session.user) { // Pouze pokud je přihlášený uživatel
                     saveDataToFirebase();
                 } else {
-                    // Pokud není přihlášen a Firebase je prázdné, použijeme pouze localStorage / default,
-                    // Firebase listener nic neudělal, takže zůstane zobrazený initial setup.
-                    loadDataFromStorage(); // Načte lokální defaulty, pokud nic není ve Firebase
+                    console.warn("Upozornění: Firebase je prázdné a uživatel není přihlášen. Výchozí data nebudou uložena do cloudu, pouze lokálně.");
+                    showAlertModal("Upozornění", "Váš web je prázdný. Přihlaste se prosím a uložte změny, aby se obsah zobrazil pro všechny.");
                 }
             });
         }
@@ -2035,7 +2033,6 @@ function setupRealtimeFirebaseListener() {
 // Funkce pro ukládání dat na Firebase
 // Nyní ukládá na veřejnou cestu, ale jen pokud je uživatel přihlášen (podle Firebase pravidel)
 async function saveDataToFirebase() {
-    // Kontrolu currentSupabaseUserId ponecháváme, protože zápis má být povolen jen přihlášeným uživatelům.
     if (!currentSupabaseUserId) {
         console.warn("Uživatel není přihlášen, přeskočeno ukládání dat do Firebase (zápis je povolen jen přihlášeným).");
         showAlertModal("Chyba ukládání", "Pro uložení změn se prosím přihlaste.");
@@ -2106,7 +2103,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
                 document.getElementById('user-id-display')?.classList.add('hidden');
             }
-            // Zde už nenačítáme data z localStorage, real-time listener se o to postará
+            // Real-time listener se o to postará, ale zajistíme, že pokud Firebase je prázdné, tak se načtou defaulty
+            // pokud se user odhlasi a public_portfolio_content je prazdne, tak se ukaze initial
+            if(!database.ref(PUBLIC_PORTFOLIO_DATA_PATH).get().then(s => s.val())) {
+                 loadDataFromStorage(); // Načte lokální defaulty, pokud nic není ve Firebase pro všechny
+            }
+
         } else if (event === 'SIGNED_IN') {
             console.log('Uživatel je přihlášen.');
             currentSupabaseUserId = session.user.id; // Uložíme ID přihlášeného uživatele
@@ -2128,13 +2130,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 disableEditMode();
                 document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
             }
-            // Real-time listener se stará o načítání dat pro všechny, takže zde není třeba explicitní načítání
+            // Real-time listener se stará o načítání dat pro všechny, zde není třeba explicitní načítání
+            // Pokud ale přihlášený uživatel jako první vidí prázdnou DB, tak ji inicializuje
+            database.ref(PUBLIC_PORTFOLIO_DATA_PATH).get().then(snapshot => {
+                if (!snapshot.val()) {
+                    // DB je prázdná, inicializujeme ji výchozími daty a uložíme
+                    galleryImagesData = [...initialImageUrls];
+                    savedCodesData = [];
+                    externalLinksData = [...initialExternalLinksData];
+                    editableContentData = {...initialEditableContentData};
+                    saveDataToFirebase();
+                }
+            });
         }
-        // Loading indicator je nyní skryt v real-time listeneru po prvním načtení dat
-        // document.body.style.visibility je nyní zobrazen v real-time listeneru
     });
 
-    // Kontrola stavu přihlášení při načtení stránky
+    // Kontrola stavu přihlášení při načtení stránky (první kontrola)
     async function checkInitialAuthState() {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
         if (error) {
@@ -2489,7 +2500,7 @@ function enableEditMode() {
         icon.classList.remove('hidden');
     });
     document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
-        icon.classList.remove('hidden');
+        icon.classList.add('hidden');
     });
 
     document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
