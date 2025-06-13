@@ -1421,6 +1421,228 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         text-overflow: ellipsis;
     }
 }
+        /* modals.css (nebo style.css) */
+
+/* === MODAL OKNA CSS === */
+
+/* Základní modal overlay */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Modal aktivní stav */
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal obsah */
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ffff;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 
+        0 10px 30px rgba(0, 255, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    position: relative;
+    transform: scale(0.7);
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+/* Modal content animace při aktivaci */
+.modal.active .modal-content {
+    transform: scale(1);
+}
+
+/* Modal nadpis */
+.modal-content h3 {
+    color: #00ffff;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Modal input pole */
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    caret-color: #00ffff;
+}
+
+.modal-content input:focus {
+    outline: none;
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    animation: input-glow 2s infinite;
+}
+
+.modal-content input::placeholder {
+    color: #888;
+}
+
+/* Animace pro input když je aktivní */
+@keyframes input-glow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+}
+
+/* Blikající kurzor efekt pro input */
+.modal-content input:focus {
+    outline: none;
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    animation: input-glow 2s infinite, caret-blink 1s infinite;
+}
+
+/* Blikání kurzoru v input poli */
+@keyframes caret-blink {
+    0%, 50% {
+        caret-color: #00ffff;
+    }
+    51%, 100% {
+        caret-color: transparent;
+    }
+}
+
+/* Error zpráva */
+.error-message {
+    color: #ff4444;
+    font-size: 0.9rem;
+    margin: 10px 0;
+    text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
+    min-height: 20px;
+}
+
+/* Modal tlačítka kontejner */
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+/* Modal tlačítka základní styl */
+.modal-actions .button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Primární tlačítko (OK) */
+.modal-actions .btn-primary {
+    background: linear-gradient(135deg, #00ffff 0%, #0088ff 100%);
+    color: #000;
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+.modal-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #33ffff 0%, #0099ff 100%);
+    box-shadow: 0 6px 20px rgba(0, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Sekundární tlačítko (Zrušit) */
+.modal-actions .btn-secondary {
+    background: linear-gradient(135deg, #666 0%, #444 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-actions .btn-secondary:hover {
+    background: linear-gradient(135deg, #777 0%, #555 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Zavírací křížek (pokud budeš chtít přidat) */
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Responsivní design pro mobily */
+@media (max-width: 600px) {
+    .modal-content {
+        margin: 20px;
+        padding: 20px;
+        max-width: none;
+        width: calc(100% - 40px);
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .modal-actions .button {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Animace pro loading stav */
+.modal-loading {
+    pointer-events: none;
+}
+
+.modal-loading .modal-content {
+    opacity: 0.7;
+}
+
+.modal-loading .button {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1445,7 +1667,17 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <button id="login-button" class="button" onclick="showAuthModal()">Upravit</button>
         </div>
     </nav>
-     
+     <div id="local-password-modal" class="modal">
+    <div class="modal-content">
+        <h3>Zadejte přístupové heslo</h3>
+        <input type="password" id="local-password-input" placeholder="Heslo">
+        <p id="local-password-error" class="error-message"></p> 
+        <div class="modal-actions">
+            <button id="local-password-ok-btn" class="button btn-primary">OK</button>
+            <button id="local-password-cancel-btn" class="button btn-secondary">Zrušit</button>
+        </div>
+    </div>
+</div>
             
                <!-- Tlačítka správy dat - ready to copy -->
     
@@ -3186,59 +3418,152 @@ async function deletePortfolioItem() {
 })();
     //tady je pomocní script pro heslo pred přechodem k přihlášení a registrace 
 
-    // hypoteticky_lokalni_heslo_script_hardcoded_FINAL.js (nebo ho vložte do javascript.js)
+    // hypoteticky_lokalni_heslo_script_hardcoded_hashed_CUSTOM_MODAL.js (vložit do javascript.js)
 
-(function() { // Okamžitě spuštěná anonymní funkce pro udržení čistého rozsahu
+(function() {
     'use strict';
 
     // !!! EXTRÉMNĚ DŮLEŽITÉ BEZPEČNOSTNÍ UPOZORNĚNÍ !!!
-    // Hardcoding hesla v JavaScriptu je VELMI NEBEZPEČNÉ.
-    // Kdokoli, kdo se podívá na zdrojový kód tvé stránky (např. přes F12 v prohlížeči), toto heslo okamžitě uvidí.
-    // TOTO POUŽÍVEJTE POUZE PRO TESTOVÁNÍ NEBO PRO NAPROSTO NEDŮVĚRNÉ POUŽITÍ.
-    const HARDCODED_ACCESS_PASSWORD = 'jirkamed32369976'; 
+    // Hashing sice skryje původní heslo ze zdrojového kódu,
+    // ale protože hashing logika je klient-side, není to nezničitelná ochrana.
+    // Zkušený útočník by mohl hashe extrahovat a pokusit se je prolomit offline.
+    // Pro skutečné zabezpečení je potřeba ověřování na serveru.
+    const HARDCODED_ACCESS_PASSWORD_HASH = '256b5537a792c98a13c9b32bb6b6c90f0e63531fe77c3b4dee69ee1ca82c984b'; // <--- ZDE MÁŠ SVŮJ HASH
 
-    // Získáme referenci na tlačítko "Upravit stránku" (id="login-button")
     const loginButton = document.getElementById('login-button'); 
 
-    // Kontrola, zda tlačítko existuje
     if (!loginButton) {
         console.warn("Gemini Helper: Tlačítko pro přihlášení (login-button) nebylo nalezeno. Pomocný script se nespustí.");
-        return; // Pokud tlačítko není, script nemá smysl
+        return;
+    }
+
+    // Předpokládáme, že window.showModal, window.hideModal jsou globálně dostupné
+    // a že HTML pro modal s ID 'local-password-modal' a jeho elementy (input, buttons, error span) existuje.
+
+    /**
+     * Pomocná funkce pro hashování textu (asynchronní).
+     * @param {string} text Text k zahashování.
+     * @returns {Promise<string>} Hash textu v hex formátu.
+     */
+    async function hashString(text) {
+        const textEncoder = new TextEncoder();
+        const data = textEncoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hexHash;
     }
 
     /**
-     * Zpracuje pokus o přístup k přihlašovacímu/registračnímu formuláři.
-     * Ověří pevně dané heslo z kódu.
+     * Funkce pro zobrazení vlastního "prompt" modalu a získání vstupu od uživatele.
+     * Vrátí Promise, která se vyřeší zadaným heslem nebo null, pokud je zrušeno.
+     * Tuto funkci jsme již dříve probírali a měla by být v tvém javascript.js,
+     * pokud ne, tak je zde pro kompletnost.
      */
-    async function handleLocalAccessPasswordHardcodedFinal() {
-        // Krok 1: Zkontrolovat, zda uživatel již není přihlášen přes Supabase
-        // Pokud je přihlášen, lokální heslo je zbytečné a přeskakuje se.
+    function showCustomPromptModal(modalId, inputId, errorId = null) {
+        return new Promise(resolve => {
+            const modal = document.getElementById(modalId);
+            const input = document.getElementById(inputId);
+            // Selektory jsou specifické, aby se zabránilo kolizím s jinými modaly
+            const okBtn = modal.querySelector('#' + modalId + ' #local-password-ok-btn'); 
+            const cancelBtn = modal.querySelector('#' + modalId + ' #local-password-cancel-btn'); 
+            const errorEl = errorId ? document.getElementById(errorId) : null;
+
+            if (!modal || !input || !okBtn || !cancelBtn) {
+                console.error(`Chyba: Chybí HTML elementy pro vlastní prompt modal (${modalId}). Zkontrolujte ID.`);
+                resolve(null);
+                return;
+            }
+
+            input.value = ''; 
+            if (errorEl) errorEl.textContent = ''; 
+
+            const clearListeners = () => {
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+                input.removeEventListener('keydown', handleEnterKey);
+            };
+
+            const handleEnterKey = (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    okBtn.click(); 
+                }
+            };
+            input.addEventListener('keydown', handleEnterKey);
+
+            okBtn.onclick = () => {
+                clearListeners();
+                window.hideModal(modal); 
+                resolve(input.value);
+            };
+            cancelBtn.onclick = () => {
+                clearListeners();
+                window.hideModal(modal); 
+                resolve(null);
+            };
+
+            window.showModal(modal); 
+            input.focus();
+        });
+    }
+
+    /**
+     * Hlavní funkce pro zpracování pokusu o přístup k přihlašovacímu/registračnímu formuláři.
+     * Ověří heslo pomocí hashe a vlastního modalu.
+     */
+    async function handleLocalAccessPasswordHashedCustomModal() {
+        // Krok 1: Kontrola přihlášení přes Supabase
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
             console.log("Gemini Helper: Uživatel je již přihlášen přes Supabase. Lokální hardcoded heslo přeskočeno.");
-            window.showAuthModal(); // Zobrazíme autentizační modal přímo
+            window.showAuthModal(); 
+            return;
+        }
+
+        // Krok 2: Zobrazit vlastní modal a vyžádat heslo
+        const enteredPassword = await showCustomPromptModal(
+            'local-password-modal', 
+            'local-password-input', 
+            'local-password-error'  
+        );
+        
+        // Krok 3: Ověřit zadané heslo
+        // Pokud uživatel zrušil zadávání (enteredPassword je null)
+        if (enteredPassword === null) {
+            console.log("Gemini Helper: Zadání hesla zrušeno uživatelem.");
+            // Nechceme zobrazovat alert, když uživatel zrušil.
+            // Pokud by byla chyba v local-password-error, skryj ji.
+            const errorEl = document.getElementById('local-password-error');
+            if (errorEl) errorEl.textContent = ''; 
             return; // Konec funkce
         }
 
-        // Krok 2: Vyžádat heslo od uživatele
-        const enteredPassword = prompt("Zadejte prosím přístupové heslo k formuláři úprav:");
+        const enteredPasswordHash = await hashString(enteredPassword); 
         
-        // Krok 3: Ověřit zadané heslo proti pevně danému v kódu
-        if (enteredPassword === HARDCODED_ACCESS_PASSWORD) {
-            alert("Přístup povolen!");
-            console.log("Gemini Helper: Lokální hardcoded heslo správně, přístup povolen.");
-            window.showAuthModal(); // Heslo správné, zobrazíme formulář
+        if (enteredPasswordHash === HARDCODED_ACCESS_PASSWORD_HASH) {
+            console.log("Gemini Helper: Lokální heslo (hash) správně, přístup povolen.");
+            window.showAuthModal(); 
         } else {
-            alert("Chybné heslo. Přístup zamítnut.");
-            console.log("Gemini Helper: Lokální hardcoded heslo chybné, přístup zamítnut.");
+            // Zobrazení chyby přímo v modalu
+            const errorEl = document.getElementById('local-password-error');
+            if (errorEl) {
+                errorEl.textContent = "Chybné heslo! Zkuste to znovu.";
+                // Znovu zobrazit modal, aby uživatel mohl zkusit znovu
+                window.showModal(document.getElementById('local-password-modal'));
+                document.getElementById('local-password-input').focus();
+            } else {
+                // Fallback, pokud error element neexistuje
+                alert("Chybné heslo. Přístup zamítnut.");
+            }
+            console.log("Gemini Helper: Lokální heslo (hash) chybné, přístup zamítnut.");
         }
     }
 
-    // Krok 4: Přepíšeme původní chování tlačítka "Upravit stránku"
-    // Původní onclick="showAuthModal()" v HTML bude ignorován, protože ho přepíšeme JavaScriptem.
-    loginButton.onclick = handleLocalAccessPasswordHardcodedFinal;
+    // Krok 4: Přepíšeme onclick událost tlačítka "Upravit stránku"
+    loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
-})(); // Okamžité spuštění scriptu při načtení
+})();
 
     </script>
 </body>
