@@ -1929,15 +1929,14 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     </div>
 </div>
 
+<!-- Firebase SDKs pro Firestore a Auth -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script> <!-- Změněno na firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script> <!-- Přidáno pro auth -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // ZACHOVAT MOJE SUBASE KONSTANTY A FIREBASE KONFIGURACI TY VŠECHNY ČÁSTI MAM UŽ Z CLOUD FIRESTORE VEPSANY??
-
-// --- Supabase Konstanty ---
+    // --- Supabase Konstanty ---
 const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1947,17 +1946,9 @@ let isEditMode = false;
 const EDIT_MODE_KEY = 'portfolio_edit_mode_active'; // Klíč pro uložení stavu edit módu
 
 // --- Firebase Konfigurace a inicializace ---
-// ZDE NAHRAĎ SVÉ VLASTNÍ FIREBASE KONFIGURAČNÍ ÚDAJE!
-const firebaseConfig = {
-      apiKey: "AIzaSyCu5iBjQg01lxiiGpB-eXi4_N7kb4WLs4E",
-  authDomain: "fir-test-2bb95.firebaseapp.com",
-  databaseURL: "https://fir-test-2bb95-default-rtdb.firebaseio.com", // Tento řádek už není pro Firestore potřeba, ale necháme ho tam, aby se zachovala původní struktura
-  projectId: "fir-test-2bb95",
-  storageBucket: "fir-test-2bb95.firebasestorage.app",
-  messagingSenderId: "494805653679",
-  appId: "1:494805653679:web:3ef725a964ffe979711c5a",
-  measurementId: "G-ZXGPW0995N"
-};
+// Tyto globální proměnné jsou poskytovány Canvas prostředím
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
 // Inicializuj Firebase
 firebase.initializeApp(firebaseConfig);
@@ -1965,37 +1956,28 @@ const db = firebase.firestore(); // Získání instance Cloud Firestore
 const auth = firebase.auth(); // Získání instance Firebase Auth
 
 // Ukládání dat na Firebase
-// Data budou uložena pod cestou users/<supabase_user_id>/portfolio_data (Firestore document ID)
-// To zajistí, že každý přihlášený uživatel má svá vlastní data.
-let currentSupabaseUserId = null; // Zde budeme držet ID aktuálně přihlášeného uživatele
+// Data budou uložena pod cestou artifacts/{appId}/public/data/main_portfolio_content
+// To zajistí, že všichni uživatelé (přihlášení i nepřihlášení) uvidí stejný aktualizovaný obsah.
+let currentSupabaseUserId = null; // Zde budeme držet ID aktuálně přihlášeného uživatele (pro editaci)
 
 /**
- * Vrátí referenci na dokument Cloud Firestore pro daného uživatele.
- * @param {string} userId ID uživatele ze Supabase.
+ * Vrátí referenci na dokument Cloud Firestore pro VEŘEJNÁ data.
+ * Všichni mohou číst, ale jen přihlášení uživatelé v edit režimu mohou zapisovat.
  * @returns {firebase.firestore.DocumentReference} Reference na Firestore dokument.
  */
-function getUserDataDocRef(userId) {
-    if (!userId) {
-        console.warn("Attempted to get Firestore document reference without a user ID. Using a generic path (not user-specific).");
-        // Fallback pro případ, že není user ID, ale pro produkci by se to nemělo stávat u uživatelských dat
-        return db.collection('public_data').doc('portfolio_data'); 
-    }
-    return db.collection('users').doc(userId);
+function getPublicDataDocRef() {
+    return db.collection('artifacts').doc(appId).collection('public').doc('data').collection('portfolio_content').doc('main_content');
 }
 
-// Funkce pro načítání dat z Firebase Firestore
+// Funkce pro načítání dat z Firebase Firestore (veřejná data)
 async function loadDataFromFirebase() {
-    if (!currentSupabaseUserId) {
-        console.warn("User not logged in, skipping Firebase data load.");
-        return;
-    }
     showLoading("Načítám data z vesmíru...");
-    const userDocRef = getUserDataDocRef(currentSupabaseUserId);
+    const publicDocRef = getPublicDataDocRef();
     try {
-        const docSnapshot = await userDocRef.get();
+        const docSnapshot = await publicDocRef.get();
         if (docSnapshot.exists) {
             const firebaseData = docSnapshot.data();
-            console.log("Firebase data loaded:", firebaseData);
+            console.log("Veřejná data z Firestore načtena:", firebaseData);
             // Přepíšeme lokální data daty z Firebase
             galleryImagesData = firebaseData.galleryImages || [...initialImageUrls];
             savedCodesData = firebaseData.savedCodes || [];
@@ -2008,43 +1990,36 @@ async function loadDataFromFirebase() {
             renderSavedCodesDisplay();
             renderExternalLinks();
             
-            // --- TENTO ŘÁDEK BYL ZAKOMENTOVÁN/ODSTRANĚN PRO TICHO ---
-            // showAlertModal("Data synchronizována", "Data byla úspěšně načtena z cloudu."); 
         } else {
-            console.log("No data found in Firestore for this user. Loading from localStorage or initial data, then saving to Firestore.");
-            // Pokud na Firestore nejsou data, nahrajeme tam ty z localStorage / defaultní
-            // a poté je uložíme do Firestore pro prvotní synchronizaci.
-            const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
-            galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
-            
-            savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
-            
-            const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
-            externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
-
-            editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
-            applyEditableContent(); // Aplikovat načtený obsah na stránku
-
-            await saveDataToFirebase(); // Uloží nově načtená data do Firestore
+            console.log("Veřejná data v Firestore nenalezena. Načítám z localStorage nebo výchozích dat.");
+            // Pokud na Firestore nejsou veřejná data, načteme z localStorage (jako fallback/první inicializace)
+            // nebo použijeme výchozí data a pokusíme se je uložit veřejně, pokud je přihlášen admin.
+            loadDataFromLocalStorageOnly(); // Načte data pouze z localStorage / výchozí
+            // Pokud je uživatel přihlášen (a je tedy potenciální administrátor), uložíme tato data veřejně.
+            if (currentSupabaseUserId) { 
+                await saveDataToFirebase(); // Uloží nově načtená data do veřejného Firestore
+            }
         }
     } catch (error) {
-        console.error("Error loading data from Firestore:", error);
-        showAlertModal("Chyba synchronizace", `Nepodařilo se načíst data z cloudu: ${error.message}`);
+        console.error("Chyba při načítání veřejných dat z Firestore:", error);
+        showAlertModal("Chyba synchronizace", `Nepodařilo se načíst veřejná data z cloudu: ${error.message}`);
         // Fallback: Pokud se nepodaří načíst z Firestore, pokusíme se načíst z localStorage
-        loadDataFromLocalStorage();
+        loadDataFromLocalStorageOnly();
     } finally {
         hideLoading();
     }
 }
 
-// Funkce pro ukládání dat na Firebase Firestore
+// Funkce pro ukládání dat na Firebase Firestore (veřejná data)
 async function saveDataToFirebase() {
-    if (!currentSupabaseUserId) {
-        console.warn("User not logged in, skipping Firebase data save.");
+    // Umožnit ukládání pouze pokud je uživatel přihlášen a v režimu úprav
+    if (!currentSupabaseUserId || !isEditMode) {
+        console.warn("Uživatel není přihlášen nebo není v režimu úprav. Ukládání veřejných dat přeskočeno.");
+        showAlertModal("Uložení zamítnuto", "Pro uložení dat do cloudu musíte být přihlášen a v režimu úprav.");
         return false;
     }
-    showLoading("Ukládám data do vesmíru...");
-    const userDocRef = getUserDataDocRef(currentSupabaseUserId);
+    showLoading("Ukládám data do vesmíru (pro všechny)...");
+    const publicDocRef = getPublicDataDocRef();
     const dataToSave = {
         galleryImages: galleryImagesData,
         savedCodes: savedCodesData,
@@ -2052,22 +2027,106 @@ async function saveDataToFirebase() {
         editableContent: editableContentData
     };
     try {
-        // Použijeme set() bez merge: true pro kompletní přepsání dokumentu
-        await userDocRef.set(dataToSave);
-        console.log("Data successfully saved to Firestore.");
+        // Použijeme set() bez merge: true pro kompletní přepsání veřejného dokumentu
+        await publicDocRef.set(dataToSave);
+        console.log("Veřejná data úspěšně uložena do Firestore.");
         hideLoading();
         return true;
     } catch (error) {
-        console.error("Error saving data to Firestore:", error);
-        showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
+        console.error("Chyba při ukládání veřejných dat do Firestore:", error);
+        showAlertModal("Chyba ukládání", `Nepodařilo se uložit veřejná data do cloudu: ${error.message}`);
         hideLoading();
         return false;
     }
 }
 
-// --- Supabase autentizace a přesměrování ---
-// Ponecháváme Supabase Auth jako primární přihlašovací systém.
-// Po přihlášení Supabase uživatele získáme jeho ID pro Firebase.
+// Funkce pro vymazání dat
+function clearLocalStorageData() {
+    try {
+        // Nejprve vymažeme lokální úložiště
+        Object.values(STORAGE_KEYS).forEach(key => {
+            localStorage.removeItem(key);
+        });
+        localStorage.removeItem(EDIT_MODE_KEY);
+
+        // Resetujeme lokální proměnné na výchozí/prázdné hodnoty
+        galleryImagesData = [...initialImageUrls];
+        savedCodesData = [];
+        externalLinksData = [...initialExternalLinksData];
+        editableContentData = {};
+        applyEditableContent();
+        updateGalleryDisplay();
+        renderSavedCodesDisplay();
+        renderExternalLinks();
+        
+        // Pokud je uživatel přihlášen a v režimu úprav, vymažeme i veřejná data ve Firestore
+        if (currentSupabaseUserId && isEditMode) { 
+            getPublicDataDocRef().delete()
+                .then(() => {
+                    console.log("Veřejná data v Firestore úspěšně vymazána.");
+                    showAlertModal("Data vymazána", "Všechna data včetně upraveného textu byla vymazána a stránka se vrátila k výchozímu obsahu (a také vymazána z cloudu).");
+                })
+                .catch(error => {
+                    console.error("Chyba při mazání veřejných dat z Firestore:", error);
+                    showAlertModal("Chyba", `Nepodařilo se vymazat veřejná data z cloudu: ${error.message}`);
+                });
+        } else {
+            showAlertModal("Data vymazána", "Všechna data včetně upraveného textu byla vymazána a stránka se vrátila k výchozímu obsahu (pouze lokálně). Pro vymazání dat z cloudu se přihlaste a aktivujte režim úprav.");
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Chyba při mazání localStorage dat:', error);
+        showAlertModal("Chyba", "Nepodařilo se vymazat všechna data.");
+        return false;
+    }
+}
+
+// Helper funkce pro načítání dat POUZE z localStorage (pro fallback)
+function loadDataFromLocalStorageOnly() {
+    const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
+    galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
+    
+    savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
+    
+    const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
+    externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
+
+    editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
+    applyEditableContent();
+    updateGalleryDisplay();
+    renderSavedCodesDisplay();
+    renderExternalLinks();
+}
+
+// Upravená funkce loadDataFromStorage: Nyní vždy načítá z veřejného Firestore
+function loadDataFromStorage() {
+    loadDataFromFirebase(); // Tato funkce nyní vždy načítá veřejná data z Firestore.
+}
+
+// initializeApp nyní vždy načítá veřejná data z Firestore, bez ohledu na stav přihlášení
+function initializeApp() { 
+    setupNavigation();
+    setupHtmlEditor();
+    setupGallery();
+    setupDataManagement();
+    
+    loadDataFromFirebase(); // Vždy se pokusí načíst veřejná data z Firestore.
+
+    // Tyto funkce se spustí po načtení dat z Firestore (díky await v loadDataFromFirebase)
+    // Pokud by se načítání nepodařilo, zobrazí se defaultní HTML nebo lokální data.
+    renderExternalLinks(); 
+    updateGalleryDisplay();
+    renderSavedCodesDisplay();
+
+    const currentYearEl = document.getElementById('currentYear');
+    if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+
+    showSection(activeSection, true);
+    console.log("Aplikace inicializována.");
+}
+
+// --- Supabase autentizace a přizpůsobení UI ---
 document.addEventListener('DOMContentLoaded', function() {
     const loadingIndicatorElement = document.getElementById('loading-indicator');
 
@@ -2078,7 +2137,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Loading indicator element not found!");
     }
     
-    // Kontrola Supabase knihovny (zůstává stejná)
+    // Kontrola Supabase knihovny
     if (typeof supabase === 'undefined' || typeof supabase.createClient !== 'function') {
         console.error('Supabase library not loaded or createClient is not a function.');
         if (loadingIndicatorElement) {
@@ -2098,26 +2157,30 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // --- Supabase autentizace a přesměrování ---
+    // Inicializujeme aplikaci okamžitě pro načtení veřejných dat
+    initializeApp(); 
+
+    // Listener pro změny stavu přihlášení Supabase (pouze pro UI a editaci)
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         console.log('Supabase Auth State Change:', event, session);
         if (event === 'SIGNED_OUT') {
             currentSupabaseUserId = null; // Vymažeme ID uživatele
-            disableEditMode();
-            localStorage.removeItem(EDIT_MODE_KEY);
-            //if (window.location.pathname !== '/login.html' && window.location.pathname !== '/signup.html') {
-                console.log('Uživatel odhlášen, editační režim vypnut.');
-                document.getElementById('login-button')?.classList.remove('hidden');
-                document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
-                document.getElementById('user-id-display')?.classList.add('hidden');
-            //}
-            initializeApp(true); // Inicializujeme aplikaci bez přihlášeného uživatele (načte jen z localStorage)
+            disableEditMode(); // Vždy vypneme režim úprav při odhlášení
+            localStorage.removeItem(EDIT_MODE_KEY); // Vymažeme stav režimu úprav z lokálního úložiště
+            // Zobrazíme tlačítko "Upravit" (pro zadání hesla) a skryjeme "Zavřít" a User ID
+            document.getElementById('login-button')?.classList.remove('hidden');
+            document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
+            document.getElementById('user-id-display')?.classList.add('hidden');
+            // Není třeba znovu inicializovat celou aplikaci, protože veřejná data jsou již načtena.
+            // Pouze aktualizujeme prvky UI závislé na stavu přihlášení.
         } else if (event === 'SIGNED_IN') {
             console.log('Uživatel je přihlášen.');
             currentSupabaseUserId = session.user.id; // Uložíme ID přihlášeného uživatele
+            // Skryjeme tlačítko "Upravit" a zobrazíme "Zavřít"
             document.getElementById('login-button')?.classList.add('hidden');
             document.getElementById('edit-mode-toggle-btn')?.classList.remove('hidden');
             
+            // Zobrazíme User ID
             const userIdDisplaySpan = document.getElementById('firebase-user-id');
             const userIdContainer = document.getElementById('user-id-display');
             if (session && session.user && userIdDisplaySpan && userIdContainer) {
@@ -2125,36 +2188,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 userIdContainer.classList.remove('hidden');
             }
             
-            initializeApp(false); // Inicializujeme aplikaci, protože uživatel je přihlášen
-            // Po inicializaci aplikace (která načte data z Firebase) zkontrolujeme stav edit módu
+            // Obnovíme režim úprav, pokud byl aktivní lokálně před odhlášením/obnovením stránky
             if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                 enableEditMode();
                 document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
             } else {
-                disableEditMode();
+                disableEditMode(); // Zajistíme, že je vypnutý, pokud nebyl explicitně nastaven
                 document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
             }
-            
-            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
-            document.body.style.visibility = 'visible';
+            // Není třeba znovu volat initializeApp, protože veřejná data jsou již načtena.
+            // Synchronizace dat (pokud se liší lokální a veřejná) se řeší při ukládání.
         }
+        if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
+        document.body.style.visibility = 'visible';
     });
 
-    // Kontrola stavu přihlášení při načtení stránky
+    // Počáteční kontrola stavu autentizace po spuštění initializeApp (pro veřejná data)
     async function checkInitialAuthState() {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
         if (error) {
             console.error("Chyba při získávání session:", error);
-            if (loadingIndicatorElement) {
-                loadingIndicatorElement.textContent = `Chyba ověření: ${error.message}. Zkuste obnovit.`;
-            }
-            document.body.style.visibility = 'visible';
-            return;
-        }
-
-        if (session) {
-            console.log('Uživatel je již přihlášen:', session.user.email);
-            currentSupabaseUserId = session.user.id; // Získáme ID uživatele
+            // Chyba, ponecháme indikátor načítání viditelný nebo zobrazíme chybovou zprávu
+        } else if (session) {
+            console.log('Uživatel je již přihlášen na začátku:', session.user.email);
+            currentSupabaseUserId = session.user.id; // Nastavíme User ID
             document.getElementById('login-button')?.classList.add('hidden');
             document.getElementById('edit-mode-toggle-btn')?.classList.remove('hidden');
             
@@ -2165,6 +2222,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 userIdContainer.classList.remove('hidden');
             }
             
+            // Obnovíme režim úprav, pokud byl aktivní
             if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                 enableEditMode();
                 document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
@@ -2172,311 +2230,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 disableEditMode();
                 document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
             }
-            
-            initializeApp(false); // Inicializujeme aplikaci, protože uživatel je přihlášen
-            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
-            document.body.style.visibility = 'visible';
         } else {
-            console.log('Uživatel není přihlášen.');
-            currentSupabaseUserId = null; // Vymažeme ID uživatele
-            initializeApp(true); // Inicializujeme appku bez přihlášeného uživatele
-            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
-            document.body.style.visibility = 'visible';
+            console.log('Uživatel není přihlášen na začátku.');
+            currentSupabaseUserId = null; // Zajistíme, že ID je null
             document.getElementById('login-button')?.classList.remove('hidden');
             document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
             document.getElementById('user-id-display')?.classList.add('hidden');
             disableEditMode();
             localStorage.removeItem(EDIT_MODE_KEY);
         }
+        if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
+        document.body.style.visibility = 'visible';
     }
     checkInitialAuthState();
 });
 
-// --- Funkce pro zobrazení/skrytí přihlašovacího modalu (zůstávají stejné) ---
-function showAuthModal() {
-    showModal(document.getElementById('auth-modal'));
-    document.getElementById('auth-email').focus();
-    document.getElementById('auth-error-message').textContent = '';
-}
-
-function hideAuthModal() {
-    hideModal(document.getElementById('auth-modal'));
-    document.getElementById('auth-email').value = '';
-    document.getElementById('auth-password').value = '';
-    document.getElementById('auth-error-message').textContent = '';
-}
-
-document.getElementById('cancel-auth-btn')?.addEventListener('click', hideAuthModal);
-
-// --- Funkce pro přihlášení (integrujeme s Firebase) ---
-document.getElementById('login-auth-btn')?.addEventListener('click', async () => {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const errorMessageEl = document.getElementById('auth-error-message');
-    errorMessageEl.textContent = '';
-
-    showLoading("Přihlašování...");
-
-    const { error, session } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) {
-        console.error('Chyba při přihlašování:', error.message);
-        errorMessageEl.textContent = `Chyba: ${error.message}`;
-        hideLoading();
-    } else {
-        hideAuthModal();
-        // currentSupabaseUserId je nastaven v onAuthStateChange listeneru
-        // initializeApp je také volán v onAuthStateChange listeneru
-        // enableEditMode je volán v onAuthStateChange listeneru po načtení dat
-        hideLoading();
-    }
-});
-
-// --- Funkce pro registraci (integrujeme s Firebase) ---
-document.getElementById('signup-auth-btn')?.addEventListener('click', async () => {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const errorMessageEl = document.getElementById('auth-error-message');
-    errorMessageEl.textContent = '';
-
-    showLoading("Registrace...");
-
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) {
-        console.error('Chyba při registraci:', error.message);
-        errorMessageEl.textContent = `Chyba: ${error.message}`;
-        hideLoading();
-    } else {
-        if (data && data.user) {
-            // Po úspěšné registraci (a ověření e-mailu, pokud je vyžadováno)
-            // Uživatel bude automaticky přihlášen, a onAuthStateChange to zachytí
-            // a inicializuje appku a načte data z Firebase.
-            showAlertModal("Registrace úspěšná", "Registrace proběhla úspěšně! Nyní se můžete přihlásit.");
-        } else {
-            showAlertModal("Registrace vyžaduje potvrzení", "Zkontrolujte svůj email pro potvrzení registrace. Poté se můžete přihlásit.");
-        }
-        hideAuthModal();
-        hideLoading();
-    }
-});
-
-// --- Funkce pro odhlášení (zůstává stejná, Firebase ID se smaže v onAuthStateChange) ---
-window.signOut = async function() {
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Odhlásit se?", "Opravdu se chcete odhlásit?", { okText: 'Ano, odhlásit', cancelText: 'Zůstat přihlášen' }) :
-        confirm("Opravdu se chcete odhlásit?")
-    );
-
-    if (confirmed) {
-        showLoading("Odhlašování...");
-        const { error } = await supabaseClient.auth.signOut();
-        if (error) {
-            console.error('Chyba při odhlašování:', error.message);
-            showAlertModal("Chyba odhlášení", `Nepodařilo se odhlásit: ${error.message}`);
-            hideLoading();
-        } else {
-            showAlertModal("Odhlášení", "Byli jste úspěšně odhlášeni. Pro úpravy se opět přihlaste.");
-            // currentSupabaseUserId je nastaven na null v onAuthStateChange listeneru
-            // disableEditMode je volán v onAuthStateChange listeneru
-            hideLoading();
-        }
-    }
-};
-
-// --- Globální proměnné a pomocné funkce ---
-let activeSection = 'about';
-let galleryImagesData = [];
-let savedCodesData = [];
-let externalLinksData = [];
-let currentModalImageIndex = 0;
-let editableContentData = {}; // Nový objekt pro ukládání editovatelného obsahu
-
-const STORAGE_KEYS = {
-    GALLERY_IMAGES: 'portfolio_gallery_images',
-    SAVED_CODES: 'portfolio_saved_codes',
-    EXTERNAL_LINKS: 'portfolio_external_links',
-    EDITABLE_CONTENT: 'portfolio_editable_content' // Nový klíč pro editovatelný obsah
-};
-
-const initialImageUrls = [
-    { id: 'initial-1', url: 'https://img.freepik.com/free-photo/futuristic-background-with-colorful-abstract-design_1340-39 futuristic-technology-background-with-neon-lights_76964-11458.jpg?w=826&t=st=1716545000~exp=1716545600~hmac=e6108f60104301f3b2886131029b0f10151707f3020142e9950b1e22704c654a', name: 'Technologie'},
-    { id: 'initial-2', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k18.jpg?ver=0', name: 'Srdce'},
-    { id: 'initial-3', url: 'https://img.freepik.com/free-photo/glowing-spaceship-orbits-planet-starry-galaxy-generated-by-ai_188544-9655.jpg?w=1060&t=st=1716545052~exp=1716545652~hmac=c6a7d107b56da6822f221372f4476a3793075997b820160f494a887688068b14', name: 'Vesmírná loď'},
-    { id: 'initial-4', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k7.jpg?ver=0', name: 'Mlhovina'},
-    { id: 'initial-5', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k8.jpg?ver=0', name: 'Kyberpunk město'},
-    { id: 'initial-6', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k13.jpg?ver=0', name: 'Notebook v akci'},
-    { id: 'initial-7', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k14.jpg?ver=0', name: 'Galaxie'},
-    { id: 'initial-8', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1920x10804.jpg?ver=0', name: 'Lidský mozek'},
-    { id: 'initial-9', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_15360x86402.jpg?ver=0', name: 'Vědecké laboratoře'},
-    { id: 'initial-10', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/misurina-sunset.jpg?ver=0', name: 'Neuronová síť'},
-    { id: 'initial-11', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/snowy-landscape-with-mountains-lake-with-snow-ground.jpg?ver=0', name: 'Datová mřížka'},
-    { id: 'initial-12', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/wet-sphere-reflective-water-abstract-beauty-generated-by-ai.jpg?ver=0', name: 'Futuristické město'},
-    { id: 'initial-13', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/vnon-pozadi-od-admirala-chatbota..jpg?ver=0', name: 'Světelná geometrie'},
-    { id: 'initial-14', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1024x1792.jpg?ver=0', name: 'Digitální plameny'},
-    { id: 'initial-15', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_300x3001_2.jpg?ver=0', name: 'Exoplaneta'},
-    { id: 'initial-16', url: 'https://img36.rajce.idnes.cz/d3603/10/10185/10185286_0147349ad505c43a2d9f6eb372624417/images/CIMG0039.jpg?ver=3', name: 'Kybernetická maska'},
-];
-
-let initialExternalLinksData = [
-    { title: 'Claude AI', url: 'https://claude.ai/' }, { title: 'SledujSerialy', url: 'https://sledujserialy.sx/' },
-    { title: 'Kukaj.me', url: 'https://serial.kukaj.me/' }, { title: 'ProSebe.cz', url: 'https://prosebe.cz/user/project' },
-    { title: 'Populace.cz', url: 'https://www.populace.cz' }, { title: 'My-Map.eu', url: 'https://www.my-map.eu/odmeny' },
-    { title: 'Národní Panel', url: 'https://www.narodnipanel.cz/?backlink=expx2' }, { title: 'Lifepoints Panel', url: 'https://app.lifepointspanel.com/en-US/login' },
-    { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
-    { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
-];
-
-// --- Funkce pro ukládání a načítání z localStorage (s upravenou logikou pro editableContent) ---
-// Tyto funkce nyní budou volány primárně pro práci s lokální cache, zatímco saveAllData/loadDataFromStorage
-// budou volány pro inicializaci a konečné uložení na Firebase.
-function saveToLocalStorage(key, data) {
-    try {
-        localStorage.setItem(key, JSON.stringify(data));
-        return true;
-    } catch (error) {
-        console.error('Chyba při ukládání do localStorage:', error);
-        if (window.showAlertModal) showAlertModal("Chyba ukládání", "Nepodařilo se uložit data do trvalého úložiště. Možná je úložiště plné.");
-        else alert("Chyba ukládání do localStorage.");
-        return false;
-    }
-}
-
-function loadFromLocalStorage(key, defaultValue = []) {
-    try {
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : defaultValue;
-    } catch (error) {
-        console.error('Chyba při načítání z localStorage:', error);
-        return defaultValue;
-    }
-}
-
-function clearLocalStorageData() {
-    try {
-        Object.values(STORAGE_KEYS).forEach(key => {
-            localStorage.removeItem(key);
-        });
-        localStorage.removeItem(EDIT_MODE_KEY);
-
-        if (window.showAlertModal) showAlertModal("Data vymazána", "Všechna uložená data byla úspěšně vymazána z trvalého úložiště.");
-        else alert("Data vymazána.");
-        
-        // Po vymazání se vrátíme k výchozím datům a obnovíme zobrazení
-        galleryImagesData = [...initialImageUrls];
-        savedCodesData = [];
-        externalLinksData = [...initialExternalLinksData];
-        editableContentData = {};
-        applyEditableContent();
-
-        updateGalleryDisplay();
-        renderSavedCodesDisplay();
-        renderExternalLinks();
-        showAlertModal("Data vymazána", "Všechna data včetně upraveného textu byla vymazána a stránka se vrátila k výchozímu obsahu.");
-        
-        // Také smažeme data z Firestore pro aktuálního uživatele (pokud je přihlášen)
-        if (currentSupabaseUserId) {
-            getUserDataDocRef(currentSupabaseUserId).delete()
-                .then(() => console.log("Firestore data for user also cleared."))
-                .catch(error => console.error("Error clearing Firestore data:", error));
-        }
-
-        return true;
-    } catch (error) {
-        console.error('Chyba při mazání localStorage dat:', error);
-        if (window.showAlertModal) showAlertModal("Chyba", "Nepodařilo se vymazat všechna data.");
-        else alert("Chyba při mazání dat.");
-        return false;
-    }
-}
-
-// Upravená funkce loadDataFromStorage: Nyní načítá i z Firebase, pokud je uživatel přihlášen
-function loadDataFromStorage() {
-    // 1. Vždy načti lokální data (pro okamžité zobrazení / offline fallback)
-    const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
-    galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
-    
-    savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
-    
-    const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
-    externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
-
-    editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
-    applyEditableContent();
-
-    // 2. Pokud je uživatel přihlášen, zkus načíst/synchronizovat z Firestore
-    if (currentSupabaseUserId) {
-        loadDataFromFirebase();
-    }
-}
-
-// --- Funkce pro aplikaci editovatelného obsahu (zůstává stejná) ---
-function applyEditableContent() {
-    for (const id in editableContentData) {
-        const element = document.querySelector(`[data-editable="${id}"]`);
-        if (element) {
-            if (element.tagName === 'A' && element.classList.contains('editable-link')) {
-                element.href = editableContentData[id].url || '#';
-                element.innerHTML = `${editableContentData[id].text || ''}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
-            } else {
-                element.innerHTML = editableContentData[id];
-            }
-        }
-    }
-
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    portfolioItems.forEach(item => {
-        const itemId = item.dataset.itemId;
-        if (editableContentData[`${itemId}-title`]) {
-            item.querySelector(`[data-editable="${itemId}-title"]`).innerHTML = editableContentData[`${itemId}-title`];
-        }
-        if (editableContentData[`${itemId}-desc-1`]) {
-            item.querySelector(`[data-editable="${itemId}-desc-1"]`).innerHTML = editableContentData[`${itemId}-desc-1`];
-        }
-        const desc2Element = item.querySelector(`[data-editable="${itemId}-desc-2"]`);
-        if (desc2Element && editableContentData[`${itemId}-desc-2`]) {
-            desc2Element.innerHTML = editableContentData[`${itemId}-desc-2`];
-        }
-
-        const linkElement = item.querySelector(`[data-link-id="${itemId}-link"]`);
-        if (linkElement && editableContentData[`${itemId}-link-url`]) {
-            linkElement.href = editableContentData[`${itemId}-link-url`];
-            linkElement.innerHTML = `${editableContentData[`${itemId}-link-text`]}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
-        }
-    });
-}
-
-// initializeApp nyní přijímá parametr, zda se má načíst z Firebase
-function initializeApp(loadOnlyLocalStorage = false) {
-    setupNavigation();
-    setupHtmlEditor();
-    setupGallery();
-    setupDataManagement();
-    
-    // Pokud je uživatel přihlášen, loadDataFromStorage to vezme v potaz a zkusí Firebase
-    // Pokud loadOnlyLocalStorage je true (uživatel není přihlášen), načteme jen z localStorage
-    if (loadOnlyLocalStorage) {
-        const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
-        galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
-        savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
-        const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
-        externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
-        editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
-        applyEditableContent(); // Aplikovat načtený obsah na stránku
-    } else {
-        loadDataFromStorage(); // Tato funkce již volá Firestore, pokud je uživatel přihlášen
-    }
-
-    renderExternalLinks();
-    updateGalleryDisplay();
-    renderSavedCodesDisplay();
-
-    const currentYearEl = document.getElementById('currentYear');
-    if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
-
-    showSection(activeSection, true);
-    console.log("Aplikace inicializována.");
-}
-
-// --- Funkce pro přepínání editačního módu (zůstávají stejné) ---
+// --- Funkce pro přepínání editačního módu ---
 function toggleEditMode() {
     if (isEditMode) {
         disableEditMode();
@@ -2524,7 +2293,7 @@ function disableEditMode() {
     document.body.classList.remove('edit-mode');
     document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
     supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        if (!session) {
+        if (!session) { // Pokud uživatel není přihlášen, tlačítka pro editaci se skryjí
             document.getElementById('login-button')?.classList.remove('hidden');
             document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
         }
@@ -2564,7 +2333,7 @@ function disableEditMode() {
     localStorage.removeItem(EDIT_MODE_KEY);
 }
 
-// --- Funkce pro načítání a skrývání indikátoru (zůstávají stejné) ---
+// --- Funkce pro načítání a skrývání indikátoru ---
 function showLoading(message = "Načítání...") {
     const loadingIndicatorElement = document.getElementById('loading-indicator');
     if (loadingIndicatorElement) {
@@ -2579,7 +2348,7 @@ function hideLoading() {
     }
 }
 
-// --- Funkcionalita tlačítek správy dat (jen JavaScript logika) ---
+// --- Funkcionalita tlačítek správy dat ---
  function setupDataManagement() {
     // Připojení event listenerů k tlačítkům s danými ID
     document.getElementById('save-all-data-btn')?.addEventListener('click', saveAllDataToStorage);
@@ -2590,7 +2359,7 @@ function hideLoading() {
     });
     document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
 }
-// saveAllDataToStorage nyní volá i saveDataToFirebase
+// saveAllDataToStorage nyní volá saveDataToFirebase s kontrolou přihlášení a edit módu
 function saveAllDataToStorage() {
     document.querySelectorAll('[data-editable]').forEach(el => {
         const id = el.dataset.editable;
@@ -2611,21 +2380,22 @@ function saveAllDataToStorage() {
     
     const message = savedCount === 4 ? "Všechna data byla úspěšně uložena." : `Uloženo ${savedCount} ze 4 kategorií dat.`;
     
-    // Uložíme i na Firestore, pokud je uživatel přihlášen
-    if (currentSupabaseUserId) {
+    // Uložíme na Firestore, POUZE pokud je uživatel přihlášen a v režimu úprav
+    if (currentSupabaseUserId && isEditMode) { 
         saveDataToFirebase().then(success => {
             if (success) {
-                showAlertModal("Data uložena", `${message} A také synchronizována s cloudem.`);
+                showAlertModal("Data uložena", `${message} A také synchronizována s cloudem (veřejně viditelné).`);
             } else {
                 showAlertModal("Uloženo lokálně", `${message} Ale nepodařilo se synchronizovat s cloudem.`);
             }
         });
     } else {
-        showAlertModal(savedCount === 4 ? "Data uložena" : "Částečné uložení", `${message} Pro synchronizaci se přihlaste.`);
+        // Pokud není přihlášen nebo není v edit režimu, jen lokální uložení
+        showAlertModal(savedCount === 4 ? "Data uložena" : "Částečné uložení", `${message} (pouze lokálně). Pro synchronizaci s cloudem se přihlaste a aktivujte režim úprav.`);
     }
 }
 
-// handleClearAllData nyní volá i clearLocalStorageData, která maže i z Firestore
+// handleClearAllData nyní volá clearLocalStorageData, která maže i z Firestore (s kontrolou)
 async function handleClearAllData() {
     const confirmed = await (window.showConfirmModal ?
         showConfirmModal("Vymazat všechna data?", "Opravdu chcete vymazat všechna uložená data? Tato akce je nevratná! Zahrnuje i texty upravené na stránce a data v cloudu.", { okText: 'Ano, vymazat', cancelText: 'Zrušit' }) :
@@ -2633,7 +2403,13 @@ async function handleClearAllData() {
     );
     
     if (confirmed) {
-        clearLocalStorageData();
+        // Kontrola, zda je uživatel přihlášen a v edit režimu pro smazání dat z cloudu
+        if (currentSupabaseUserId && isEditMode) { 
+            clearLocalStorageData(); // Tato funkce nyní zpracovává i mazání veřejných dat z Firestore.
+        } else {
+            showAlertModal("Vymazání zamítnuto", "Pro vymazání dat z cloudu musíte být přihlášen a v režimu úprav. Lokální data budou vymazána.");
+            clearLocalStorageData(); // Vymaže lokální data i bez přihlášení pro zajištění funkčnosti.
+        }
     }
 }
 
@@ -2789,9 +2565,9 @@ function saveHtmlCodeLocally(title, code) {
     };
     savedCodesData.unshift(newCode);
     saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData); // Uloží lokálně
-    // A také na Firestore
-    if (currentSupabaseUserId) {
-        saveDataToFirebase(); // Uloží všechna data, včetně savedCodesData
+    // A také na Firestore, pokud je přihlášen a v edit režimu
+    if (currentSupabaseUserId && isEditMode) { 
+        saveDataToFirebase(); 
     }
     renderSavedCodesDisplay();
     if(window.showAlertModal) showAlertModal("Kód uložen", `Kód "${title}" byl trvale uložen.`);
@@ -2801,8 +2577,8 @@ function saveHtmlCodeLocally(title, code) {
 function deleteHtmlCodeLocally(id) {
     savedCodesData = savedCodesData.filter(code => code.id !== id);
     saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData); // Uloží lokálně
-    // A také na Firestore
-    if (currentSupabaseUserId) {
+    // A také na Firestore, pokud je přihlášen a v edit režimu
+    if (currentSupabaseUserId && isEditMode) { 
         saveDataToFirebase();
     }
     renderSavedCodesDisplay();
@@ -2886,8 +2662,8 @@ async function handleAddImageUrl() {
         };
         galleryImagesData.unshift(newImage);
         saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
-        // A také na Firestore
-        if (currentSupabaseUserId) {
+        // A také na Firestore, pokud je přihlášen a v edit režimu
+        if (currentSupabaseUserId && isEditMode) { 
             saveDataToFirebase();
         }
         updateGalleryDisplay();
@@ -2918,8 +2694,8 @@ async function deleteGalleryImageLocally(id) {
     if (confirmed) {
         galleryImagesData = galleryImagesData.filter(img => img.id !== id);
         saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
-        // A také na Firestore
-        if (currentSupabaseUserId) {
+        // A také na Firestore, pokud je přihlášen a v edit režimu
+        if (currentSupabaseUserId && isEditMode) { 
             saveDataToFirebase();
         }
         updateGalleryDisplay();
@@ -2977,8 +2753,8 @@ function saveEditedImage() {
         galleryImagesData[index].url = url;
         galleryImagesData[index].name = name;
         saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
-        // A také na Firestore
-        if (currentSupabaseUserId) {
+        // A také na Firestore, pokud je přihlášen a v edit režimu
+        if (currentSupabaseUserId && isEditMode) { 
             saveDataToFirebase();
         }
         updateGalleryDisplay();
@@ -3034,8 +2810,7 @@ function renderExternalLinks() {
     }
 
     externalLinksData.forEach((link, index) => {
-        const div = document.createElement('div'); // This div is not used in the original. It should be a table row.
-        const row = tableBody.insertRow(); // Re-inserting the row
+        const row = tableBody.insertRow(); 
         row.insertCell().innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3 -3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
         
         const titleCell = row.insertCell();
@@ -3097,8 +2872,8 @@ function saveEditedLink() {
     }
     
     saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData); // Uloží lokálně
-    // A také na Firestore
-    if (currentSupabaseUserId) {
+    // A také na Firestore, pokud je přihlášen a v edit režimu
+    if (currentSupabaseUserId && isEditMode) { 
         saveDataToFirebase();
     }
     renderExternalLinks();
@@ -3117,8 +2892,8 @@ async function deleteLink(index) {
     if (confirmed) {
         externalLinksData.splice(index, 1);
         saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData); // Uloží lokálně
-        // A také na Firestore
-        if (currentSupabaseUserId) {
+        // A také na Firestore, pokud je přihlášen a v edit režimu
+        if (currentSupabaseUserId && isEditMode) { 
             saveDataToFirebase();
         }
         renderExternalLinks();
@@ -3330,8 +3105,8 @@ function saveEditedPortfolioItem() {
     }
 
     saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData); // Uloží lokálně
-    // A také na Firestore
-    if (currentSupabaseUserId) {
+    // A také na Firestore, pokud je přihlášen a v edit režimu
+    if (currentSupabaseUserId && isEditMode) { 
         saveDataToFirebase();
     }
     hideModal(document.getElementById('edit-portfolio-modal'));
@@ -3356,8 +3131,8 @@ async function deletePortfolioItem() {
             delete editableContentData[`${editingPortfolioItemId}-link-text`];
             delete editableContentData[`${editingPortfolioItemId}-link-url`];
             saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData); // Uloží lokálně
-            // A také na Firestore
-            if (currentSupabaseUserId) {
+            // A také na Firestore, pokud je přihlášen a v edit režimu
+            if (currentSupabaseUserId && isEditMode) { 
                 saveDataToFirebase();
             }
             showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána.");
@@ -3458,9 +3233,6 @@ async function deletePortfolioItem() {
         return;
     }
 
-    // Předpokládáme, že window.showModal, window.hideModal jsou globálně dostupné
-    // a že HTML pro modal s ID 'local-password-modal' a jeho elementy (input, buttons, error span) existuje.
-
     /**
      * Pomocná funkce pro hashování textu (asynchronní).
      * @param {string} text Text k zahashování.
@@ -3478,14 +3250,11 @@ async function deletePortfolioItem() {
     /**
      * Funkce pro zobrazení vlastního "prompt" modalu a získání vstupu od uživatele.
      * Vrátí Promise, která se vyřeší zadaným heslem nebo null, pokud je zrušeno.
-     * Tuto funkci jsme již dříve probírali a měla by být v tvém javascript.js,
-     * pokud ne, tak je zde pro kompletnost.
      */
     function showCustomPromptModal(modalId, inputId, errorId = null) {
         return new Promise(resolve => {
             const modal = document.getElementById(modalId);
             const input = document.getElementById(inputId);
-            // Selektory jsou specifické, aby se zabránilo kolizím s jinými modaly
             const okBtn = modal.querySelector('#' + modalId + ' #local-password-ok-btn'); 
             const cancelBtn = modal.querySelector('#' + modalId + ' #local-password-cancel-btn'); 
             const errorEl = errorId ? document.getElementById(errorId) : null;
@@ -3553,8 +3322,6 @@ async function deletePortfolioItem() {
         // Pokud uživatel zrušil zadávání (enteredPassword je null)
         if (enteredPassword === null) {
             console.log("Gemini Helper: Zadání hesla zrušeno uživatelem.");
-            // Nechceme zobrazovat alert, když uživatel zrušil.
-            // Pokud by byla chyba v local-password-error, skryj ji.
             const errorEl = document.getElementById('local-password-error');
             if (errorEl) errorEl.textContent = ''; 
             return; // Konec funkce
@@ -3570,11 +3337,9 @@ async function deletePortfolioItem() {
             const errorEl = document.getElementById('local-password-error');
             if (errorEl) {
                 errorEl.textContent = "Chybné heslo! Zkuste to znovu.";
-                // Znovu zobrazit modal, aby uživatel mohl zkusit znovu
                 window.showModal(document.getElementById('local-password-modal'));
                 document.getElementById('local-password-input').focus();
             } else {
-                // Fallback, pokud error element neexistuje
                 alert("Chybné heslo. Přístup zamítnut.");
             }
             console.log("Gemini Helper: Lokální heslo (hash) chybné, přístup zamítnut.");
