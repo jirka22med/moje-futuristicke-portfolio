@@ -1688,6 +1688,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         <button id="clear-all-data-btn" class="button btn-danger" >🗑️ Vymazat vše</button>
         <button id="export-data-btn" class="button btn-secondary" >📤 Export</button>
         <button id="import-data-btn" class="button btn-secondary" >📥 Import</button>
+        <button id="logout-button" class="button btn-danger hidden" onclick="signOut()">Odhlásit se</button>
     </div>
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
 </div>
@@ -3572,6 +3573,55 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
     })();
+
+//tady je pomocní scrip pro tlačítko odhlásit se!
+
+ 
+// Specializovaný pomocný script pro správu viditelnosti tlačítka "Odhlásit se"
+
+(function() {
+    'use strict';
+
+    // Získáme referenci na tlačítko "Odhlásit se"
+    const logoutButton = document.getElementById('logout-button');
+
+    // Pokud tlačítko neexistuje, script se nespustí, aby nedošlo k chybě.
+    if (!logoutButton) {
+        console.warn("Logout Button Helper: Tlačítko s ID 'logout-button' nebylo nalezeno. Script se nespustí.");
+        return;
+    }
+
+    // Supabase klient by měl být globálně dostupný (jak je nastaveno v hlavním scriptu)
+    if (typeof supabaseClient === 'undefined') {
+        console.error("Logout Button Helper: supabaseClient není definován. Ujistěte se, že Supabase SDK je načteno a inicializováno před tímto scriptem.");
+        logoutButton.classList.add('hidden'); // Skryjeme tlačítko pro jistotu
+        return;
+    }
+
+    // Nasloucháme změnám stavu autentizace od Supabase
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session && session.user) {
+            // Uživatel je přihlášen, zobrazíme tlačítko "Odhlásit se"
+            logoutButton.classList.remove('hidden');
+            console.log("Logout Button Helper: Uživatel přihlášen, tlačítko 'Odhlásit se' zobrazeno.");
+        } else {
+            // Uživatel není přihlášen, skryjeme tlačítko "Odhlásit se"
+            logoutButton.classList.add('hidden');
+            console.log("Logout Button Helper: Uživatel odhlášen, tlačítko 'Odhlásit se' skryto.");
+        }
+    });
+
+    // Počáteční kontrola stavu při načtení stránky, aby se tlačítko správně zobrazilo/skrylo
+    // (tato kontrola se spustí i z onAuthStateChange, ale pro jistotu ji lze nechat i zde pro okamžitou reakci DOM)
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session && session.user) {
+            logoutButton.classList.remove('hidden');
+        } else {
+            logoutButton.classList.add('hidden');
+        }
+    });
+
+})(); // Okamžitě spuštěná anonymní funkce
 
 </script>
 </body>
