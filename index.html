@@ -1668,7 +1668,29 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         </div>
     </nav>
     
+        <div id="local-password-modal" class="modal">
+    <div class="modal-content">
+        <h3>Zadejte přístupové heslo</h3>
+        <input type="password" id="local-password-input" placeholder="Heslo">
+        <p id="local-password-error" class="error-message"></p> 
+        <div class="modal-actions">
+            <button id="local-password-ok-btn" class="button btn-primary">OK</button>
+            <button id="local-password-cancel-btn" class="button btn-secondary">Zrušit</button>
+        </div>
+    </div>
+</div>
             
+               <!-- Tlačítka správy dat - ready to copy -->
+    
+<div class="function-setupDataManagement">
+    <div class="data-management-container">
+        <button id="save-all-data-btn" class="button btn-primary" >💾 Uložit vše</button>
+        <button id="clear-all-data-btn" class="button btn-danger" >🗑️ Vymazat vše</button>
+        <button id="export-data-btn" class="button btn-secondary" >📤 Export</button>
+        <button id="import-data-btn" class="button btn-secondary" >📥 Import</button>
+    </div>
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+</div>
                <!-- Tlačítka správy dat - ready to copy -->
     
 
@@ -2505,16 +2527,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     // --- Správa dat (nyní vše do/z Firestore) ---
     function setupDataManagement() {
         const dataManagementContainer = document.getElementById('data-management');
-        if (dataManagementContainer) {
-            dataManagementContainer.innerHTML = `
-                <div class="data-management-buttons" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem;">
-                    <button id="save-all-data-btn" class="button btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">💾 Uložit vše do cloudu</button>
-                    <button id="clear-all-data-btn" class="button btn-danger" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🗑️ Vymazat vše (cloud)</button>
-                    <button id="export-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📤 Export do JSON</button>
-                    <button id="import-data-btn" class="button btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">📥 Import z JSON</button>
-                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                </div>
-            `;
+        
             
             document.getElementById('save-all-data-btn')?.addEventListener('click', saveDataToFirestore);
             document.getElementById('clear-all-data-btn')?.addEventListener('click', handleClearAllData);
@@ -2524,7 +2537,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             });
             document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
         }
-    }
+    
 
     async function handleClearAllData() {
         if (!currentUserId) {
@@ -3438,6 +3451,224 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     // v kolekci `publicContent`. Tím se zjednoduší real-time synchronizace.
     // Jediný listener `setupFirestoreRealtimeListener()` tak stačí pro aktualizaci celého obsahu.
 
+
+// --- Pomocný script pro správu viditelnosti tlačítek ---
+(function() {
+    'use strict';
+    
+    // Funkce pro skrytí tlačítek správy dat
+    function hideDataManagementButtons() {
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container) {
+            container.style.display = 'none';
+        }
+    }
+    
+    // Funkce pro zobrazení tlačítek správy dat
+    function showDataManagementButtons() {
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container) {
+            container.style.display = 'flex';
+        }
+    }
+    
+    // Sledování změn na body elementu
+    function observeEditMode() {
+        const body = document.body;
+        
+        // MutationObserver pro sledování změn tříd
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (body.classList.contains('edit-mode')) {
+                        showDataManagementButtons();
+                    } else {
+                        hideDataManagementButtons();
+                    }
+                }
+            });
+        });
+        
+        // Spuštění observeru
+        observer.observe(body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+        
+        // Kontrola současného stavu
+        if (body.classList.contains('edit-mode')) {
+            showDataManagementButtons();
+        } else {
+            hideDataManagementButtons();
+        }
+    }
+    
+    // Inicializace
+    function initDataManagementVisibility() {
+        hideDataManagementButtons();
+        observeEditMode();
+    }
+    
+    // Spuštění při načtení DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDataManagementVisibility);
+    } else {
+        initDataManagementVisibility();
+    }
+    
+    // Export funkcí pro ruční použití
+    window.hideDataManagementButtons = hideDataManagementButtons;
+    window.showDataManagementButtons = showDataManagementButtons;
+    
+})();
+    //tady je pomocní script pro heslo pred přechodem k přihlášení a registrace 
+
+    // hypoteticky_lokalni_heslo_script_hardcoded_hashed_CUSTOM_MODAL.js (vložit do javascript.js)
+
+(function() {
+    'use strict';
+
+    // !!! EXTRÉMNĚ DŮLEŽITÉ BEZPEČNOSTNÍ UPOZORNĚNÍ !!!
+    // Hashing sice skryje původní heslo ze zdrojového kódu,
+    // ale protože hashing logika je klient-side, není to nezničitelná ochrana.
+    // Zkušený útočník by mohl hashe extrahovat a pokusit se je prolomit offline.
+    // Pro skutečné zabezpečení je potřeba ověřování na serveru.
+    const HARDCODED_ACCESS_PASSWORD_HASH = '256b5537a792c98a13c9b32bb6b6c90f0e63531fe77c3b4dee69ee1ca82c984b'; // <--- ZDE MÁŠ SVŮJ HASH
+
+    const loginButton = document.getElementById('login-button'); 
+
+    if (!loginButton) {
+        console.warn("Gemini Helper: Tlačítko pro přihlášení (login-button) nebylo nalezeno. Pomocný script se nespustí.");
+        return;
+    }
+
+    // Předpokládáme, že window.showModal, window.hideModal jsou globálně dostupné
+    // a že HTML pro modal s ID 'local-password-modal' a jeho elementy (input, buttons, error span) existuje.
+
+    /**
+     * Pomocná funkce pro hashování textu (asynchronní).
+     * @param {string} text Text k zahashování.
+     * @returns {Promise<string>} Hash textu v hex formátu.
+     */
+    async function hashString(text) {
+        const textEncoder = new TextEncoder();
+        const data = textEncoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hexHash;
+    }
+
+    /**
+     * Funkce pro zobrazení vlastního "prompt" modalu a získání vstupu od uživatele.
+     * Vrátí Promise, která se vyřeší zadaným heslem nebo null, pokud je zrušeno.
+     * Tuto funkci jsme již dříve probírali a měla by být v tvém javascript.js,
+     * pokud ne, tak je zde pro kompletnost.
+     */
+    function showCustomPromptModal(modalId, inputId, errorId = null) {
+        return new Promise(resolve => {
+            const modal = document.getElementById(modalId);
+            const input = document.getElementById(inputId);
+            // Selektory jsou specifické, aby se zabránilo kolizím s jinými modaly
+            const okBtn = modal.querySelector('#' + modalId + ' #local-password-ok-btn'); 
+            const cancelBtn = modal.querySelector('#' + modalId + ' #local-password-cancel-btn'); 
+            const errorEl = errorId ? document.getElementById(errorId) : null;
+
+            if (!modal || !input || !okBtn || !cancelBtn) {
+                console.error(`Chyba: Chybí HTML elementy pro vlastní prompt modal (${modalId}). Zkontrolujte ID.`);
+                resolve(null);
+                return;
+            }
+
+            input.value = ''; 
+            if (errorEl) errorEl.textContent = ''; 
+
+            const clearListeners = () => {
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+                input.removeEventListener('keydown', handleEnterKey);
+            };
+
+            const handleEnterKey = (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    okBtn.click(); 
+                }
+            };
+            input.addEventListener('keydown', handleEnterKey);
+
+            okBtn.onclick = () => {
+                clearListeners();
+                window.hideModal(modal); 
+                resolve(input.value);
+            };
+            cancelBtn.onclick = () => {
+                clearListeners();
+                window.hideModal(modal); 
+                resolve(null);
+            };
+
+            window.showModal(modal); 
+            input.focus();
+        });
+    }
+
+    /**
+     * Hlavní funkce pro zpracování pokusu o přístup k přihlašovacímu/registračnímu formuláři.
+     * Ověří heslo pomocí hashe a vlastního modalu.
+     */
+    async function handleLocalAccessPasswordHashedCustomModal() {
+        // Krok 1: Kontrola přihlášení přes Supabase
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+            console.log("Gemini Helper: Uživatel je již přihlášen přes Supabase. Lokální hardcoded heslo přeskočeno.");
+            window.showAuthModal(); 
+            return;
+        }
+
+        // Krok 2: Zobrazit vlastní modal a vyžádat heslo
+        const enteredPassword = await showCustomPromptModal(
+            'local-password-modal', 
+            'local-password-input', 
+            'local-password-error'  
+        );
+        
+        // Krok 3: Ověřit zadané heslo
+        // Pokud uživatel zrušil zadávání (enteredPassword je null)
+        if (enteredPassword === null) {
+            console.log("Gemini Helper: Zadání hesla zrušeno uživatelem.");
+            // Nechceme zobrazovat alert, když uživatel zrušil.
+            // Pokud by byla chyba v local-password-error, skryj ji.
+            const errorEl = document.getElementById('local-password-error');
+            if (errorEl) errorEl.textContent = ''; 
+            return; // Konec funkce
+        }
+
+        const enteredPasswordHash = await hashString(enteredPassword); 
+        
+        if (enteredPasswordHash === HARDCODED_ACCESS_PASSWORD_HASH) {
+            console.log("Gemini Helper: Lokální heslo (hash) správně, přístup povolen.");
+            window.showAuthModal(); 
+        } else {
+            // Zobrazení chyby přímo v modalu
+            const errorEl = document.getElementById('local-password-error');
+            if (errorEl) {
+                errorEl.textContent = "Chybné heslo! Zkuste to znovu.";
+                // Znovu zobrazit modal, aby uživatel mohl zkusit znovu
+                window.showModal(document.getElementById('local-password-modal'));
+                document.getElementById('local-password-input').focus();
+            } else {
+                // Fallback, pokud error element neexistuje
+                alert("Chybné heslo. Přístup zamítnut.");
+            }
+            console.log("Gemini Helper: Lokální heslo (hash) chybné, přístup zamítnut.");
+        }
+    }
+
+    // Krok 4: Přepíšeme onclick událost tlačítka "Upravit stránku"
+    loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
+
+})();
 </script>
 </body>
 </html>
