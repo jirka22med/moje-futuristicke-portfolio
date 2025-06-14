@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
-     /* Reset a základní styly */
+ /* Reset a základní styly */
 * {
     margin: 0;
     padding: 0;
@@ -1643,6 +1643,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     opacity: 0.5;
     cursor: not-allowed;
 }
+        
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1668,18 +1669,18 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         </div>
     </nav>
     <div id="local-password-modal" class="modal">
-    <div class="modal-content">
-        <h3>Zadejte přístupové heslo</h3>
-        <input type="password" id="local-password-input" placeholder="Heslo">
-        <p id="local-password-error" class="error-message"></p> 
-        <div class="modal-actions">
-            <button id="local-password-ok-btn" class="button btn-primary">OK</button>
-            <button id="local-password-cancel-btn" class="button btn-secondary">Zrušit</button>
+        <div class="modal-content">
+            <h3>Zadejte přístupové heslo</h3>
+            <input type="password" id="local-password-input" placeholder="Heslo">
+            <p id="local-password-error" class="error-message"></p> 
+            <div class="modal-actions">
+                <button id="local-password-ok-btn" class="button btn-primary">OK</button>
+                <button id="local-password-cancel-btn" class="button btn-secondary">Zrušit</button>
+            </div>
         </div>
     </div>
-</div>
             
-               <!-- Tlačítka správy dat - ready to copy -->
+                <!-- Tlačítka správy dat - ready to copy -->
     
 <div class="function-setupDataManagement">
     <div class="data-management-container">
@@ -1860,8 +1861,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 <button id="confirm-modal-cancel-btn" class="button btn-secondary">Zrušit</button>
                 <button id="confirm-modal-ok-btn" class="button btn-danger">Potvrdit</button>
             </div>
+        </div>
     </div>
-</div>
 
 <div id="auth-modal" class="modal">
     <div class="modal-content">
@@ -1929,12 +1930,12 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script> <!-- Změněno na firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script> <!-- Přidáno pro auth -->
     
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-   // javascript.js
-// Obsahuje veškerou logiku webové stránky s integrací Firebase pro synchronizaci dat.
+    // ZACHOVAT MOJE SUBASE KONSTANTY A FIREBASE KONFIGURACI TY VŠECHNY ČÁSTI MAM UŽ Z CLOUD FIRESTORE VEPSANY??
 
 // --- Supabase Konstanty ---
 const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
@@ -1948,9 +1949,9 @@ const EDIT_MODE_KEY = 'portfolio_edit_mode_active'; // Klíč pro uložení stav
 // --- Firebase Konfigurace a inicializace ---
 // ZDE NAHRAĎ SVÉ VLASTNÍ FIREBASE KONFIGURAČNÍ ÚDAJE!
 const firebaseConfig = {
-     apiKey: "AIzaSyCu5iBjQg01lxiiGpB-eXi4_N7kb4WLs4E",
+      apiKey: "AIzaSyCu5iBjQg01lxiiGpB-eXi4_N7kb4WLs4E",
   authDomain: "fir-test-2bb95.firebaseapp.com",
-  databaseURL: "https://fir-test-2bb95-default-rtdb.firebaseio.com",
+  databaseURL: "https://fir-test-2bb95-default-rtdb.firebaseio.com", // Tento řádek už není pro Firestore potřeba, ale necháme ho tam, aby se zachovala původní struktura
   projectId: "fir-test-2bb95",
   storageBucket: "fir-test-2bb95.firebasestorage.app",
   messagingSenderId: "494805653679",
@@ -1960,33 +1961,40 @@ const firebaseConfig = {
 
 // Inicializuj Firebase
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database(); // Získání instance Realtime Database
+const db = firebase.firestore(); // Získání instance Cloud Firestore
+const auth = firebase.auth(); // Získání instance Firebase Auth
 
 // Ukládání dat na Firebase
-// Data budou uložena pod cestou users/<supabase_user_id>/portfolio_data
+// Data budou uložena pod cestou users/<supabase_user_id>/portfolio_data (Firestore document ID)
 // To zajistí, že každý přihlášený uživatel má svá vlastní data.
 let currentSupabaseUserId = null; // Zde budeme držet ID aktuálně přihlášeného uživatele
 
-function getFirebaseDataPath(userId) {
+/**
+ * Vrátí referenci na dokument Cloud Firestore pro daného uživatele.
+ * @param {string} userId ID uživatele ze Supabase.
+ * @returns {firebase.firestore.DocumentReference} Reference na Firestore dokument.
+ */
+function getUserDataDocRef(userId) {
     if (!userId) {
-        console.warn("Attempted to get Firebase data path without a user ID. Data will be saved to a generic path (not user-specific).");
-        return 'public_portfolio_data'; // Fallback pro test, pokud není user ID
+        console.warn("Attempted to get Firestore document reference without a user ID. Using a generic path (not user-specific).");
+        // Fallback pro případ, že není user ID, ale pro produkci by se to nemělo stávat u uživatelských dat
+        return db.collection('public_data').doc('portfolio_data'); 
     }
-    return `users/${userId}/portfolio_data`;
+    return db.collection('users').doc(userId);
 }
 
-// Funkce pro načítání dat z Firebase
+// Funkce pro načítání dat z Firebase Firestore
 async function loadDataFromFirebase() {
     if (!currentSupabaseUserId) {
         console.warn("User not logged in, skipping Firebase data load.");
         return;
     }
     showLoading("Načítám data z vesmíru...");
-    const path = getFirebaseDataPath(currentSupabaseUserId);
+    const userDocRef = getUserDataDocRef(currentSupabaseUserId);
     try {
-        const snapshot = await database.ref(path).once('value');
-        const firebaseData = snapshot.val();
-        if (firebaseData) {
+        const docSnapshot = await userDocRef.get();
+        if (docSnapshot.exists) {
+            const firebaseData = docSnapshot.data();
             console.log("Firebase data loaded:", firebaseData);
             // Přepíšeme lokální data daty z Firebase
             galleryImagesData = firebaseData.galleryImages || [...initialImageUrls];
@@ -2003,28 +2011,40 @@ async function loadDataFromFirebase() {
             // --- TENTO ŘÁDEK BYL ZAKOMENTOVÁN/ODSTRANĚN PRO TICHO ---
             // showAlertModal("Data synchronizována", "Data byla úspěšně načtena z cloudu."); 
         } else {
-            console.log("No data found in Firebase for this user. Loading from localStorage or initial data.");
-            // Pokud na Firebase nejsou data, nahrajeme tam ty z localStorage / defaultní
-            await saveDataToFirebase();
+            console.log("No data found in Firestore for this user. Loading from localStorage or initial data, then saving to Firestore.");
+            // Pokud na Firestore nejsou data, nahrajeme tam ty z localStorage / defaultní
+            // a poté je uložíme do Firestore pro prvotní synchronizaci.
+            const savedImages = loadFromLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, []);
+            galleryImagesData = savedImages.length > 0 ? savedImages : [...initialImageUrls];
+            
+            savedCodesData = loadFromLocalStorage(STORAGE_KEYS.SAVED_CODES, []);
+            
+            const savedLinks = loadFromLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, []);
+            externalLinksData = savedLinks.length > 0 ? savedLinks : [...initialExternalLinksData];
+
+            editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
+            applyEditableContent(); // Aplikovat načtený obsah na stránku
+
+            await saveDataToFirebase(); // Uloží nově načtená data do Firestore
         }
     } catch (error) {
-        console.error("Error loading data from Firebase:", error);
+        console.error("Error loading data from Firestore:", error);
         showAlertModal("Chyba synchronizace", `Nepodařilo se načíst data z cloudu: ${error.message}`);
-        // Fallback: Pokud se nepodaří načíst z Firebase, pokusíme se načíst z localStorage
+        // Fallback: Pokud se nepodaří načíst z Firestore, pokusíme se načíst z localStorage
         loadDataFromLocalStorage();
     } finally {
         hideLoading();
     }
 }
 
-// Funkce pro ukládání dat na Firebase
+// Funkce pro ukládání dat na Firebase Firestore
 async function saveDataToFirebase() {
     if (!currentSupabaseUserId) {
         console.warn("User not logged in, skipping Firebase data save.");
         return false;
     }
     showLoading("Ukládám data do vesmíru...");
-    const path = getFirebaseDataPath(currentSupabaseUserId);
+    const userDocRef = getUserDataDocRef(currentSupabaseUserId);
     const dataToSave = {
         galleryImages: galleryImagesData,
         savedCodes: savedCodesData,
@@ -2032,12 +2052,13 @@ async function saveDataToFirebase() {
         editableContent: editableContentData
     };
     try {
-        await database.ref(path).set(dataToSave);
-        console.log("Data successfully saved to Firebase.");
+        // Použijeme set() bez merge: true pro kompletní přepsání dokumentu
+        await userDocRef.set(dataToSave);
+        console.log("Data successfully saved to Firestore.");
         hideLoading();
         return true;
     } catch (error) {
-        console.error("Error saving data to Firebase:", error);
+        console.error("Error saving data to Firestore:", error);
         showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
         hideLoading();
         return false;
@@ -2067,11 +2088,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Kontrola Firebase knihovny
-    if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function') {
-        console.error('Firebase library not loaded or initializeApp is not a function. Check your HTML script tags.');
+    // Kontrola Firebase knihovny a Firestore/Auth modulů
+    if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function' || !firebase.firestore || !firebase.auth) {
+        console.error('Firebase library, Firestore, or Auth not loaded. Check your HTML script tags.');
         if (loadingIndicatorElement) {
-            loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Firebase se nenačetla.';
+            loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Firebase (Firestore/Auth) se nenačetla.';
         }
         document.body.style.visibility = 'visible';
         return;
@@ -2084,12 +2105,12 @@ document.addEventListener('DOMContentLoaded', function() {
             currentSupabaseUserId = null; // Vymažeme ID uživatele
             disableEditMode();
             localStorage.removeItem(EDIT_MODE_KEY);
-            if (window.location.pathname !== '/login.html' && window.location.pathname !== '/signup.html') {
+            //if (window.location.pathname !== '/login.html' && window.location.pathname !== '/signup.html') {
                 console.log('Uživatel odhlášen, editační režim vypnut.');
                 document.getElementById('login-button')?.classList.remove('hidden');
                 document.getElementById('edit-mode-toggle-btn')?.classList.add('hidden');
                 document.getElementById('user-id-display')?.classList.add('hidden');
-            }
+            //}
             initializeApp(true); // Inicializujeme aplikaci bez přihlášeného uživatele (načte jen z localStorage)
         } else if (event === 'SIGNED_IN') {
             console.log('Uživatel je přihlášen.');
@@ -2351,11 +2372,11 @@ function clearLocalStorageData() {
         renderExternalLinks();
         showAlertModal("Data vymazána", "Všechna data včetně upraveného textu byla vymazána a stránka se vrátila k výchozímu obsahu.");
         
-        // Také smažeme data z Firebase pro aktuálního uživatele (pokud je přihlášen)
+        // Také smažeme data z Firestore pro aktuálního uživatele (pokud je přihlášen)
         if (currentSupabaseUserId) {
-            database.ref(getFirebaseDataPath(currentSupabaseUserId)).remove()
-                .then(() => console.log("Firebase data for user also cleared."))
-                .catch(error => console.error("Error clearing Firebase data:", error));
+            getUserDataDocRef(currentSupabaseUserId).delete()
+                .then(() => console.log("Firestore data for user also cleared."))
+                .catch(error => console.error("Error clearing Firestore data:", error));
         }
 
         return true;
@@ -2381,7 +2402,7 @@ function loadDataFromStorage() {
     editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
     applyEditableContent();
 
-    // 2. Pokud je uživatel přihlášen, zkus načíst/synchronizovat z Firebase
+    // 2. Pokud je uživatel přihlášen, zkus načíst/synchronizovat z Firestore
     if (currentSupabaseUserId) {
         loadDataFromFirebase();
     }
@@ -2441,7 +2462,7 @@ function initializeApp(loadOnlyLocalStorage = false) {
         editableContentData = loadFromLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, {});
         applyEditableContent(); // Aplikovat načtený obsah na stránku
     } else {
-        loadDataFromStorage(); // Tato funkce již volá Firebase, pokud je uživatel přihlášen
+        loadDataFromStorage(); // Tato funkce již volá Firestore, pokud je uživatel přihlášen
     }
 
     renderExternalLinks();
@@ -2590,7 +2611,7 @@ function saveAllDataToStorage() {
     
     const message = savedCount === 4 ? "Všechna data byla úspěšně uložena." : `Uloženo ${savedCount} ze 4 kategorií dat.`;
     
-    // Uložíme i na Firebase, pokud je uživatel přihlášen
+    // Uložíme i na Firestore, pokud je uživatel přihlášen
     if (currentSupabaseUserId) {
         saveDataToFirebase().then(success => {
             if (success) {
@@ -2604,7 +2625,7 @@ function saveAllDataToStorage() {
     }
 }
 
-// handleClearAllData nyní volá i clearLocalStorageData, která maže i z Firebase
+// handleClearAllData nyní volá i clearLocalStorageData, která maže i z Firestore
 async function handleClearAllData() {
     const confirmed = await (window.showConfirmModal ?
         showConfirmModal("Vymazat všechna data?", "Opravdu chcete vymazat všechna uložená data? Tato akce je nevratná! Zahrnuje i texty upravené na stránce a data v cloudu.", { okText: 'Ano, vymazat', cancelText: 'Zrušit' }) :
@@ -2735,7 +2756,7 @@ function showSection(id, isInitial = false) {
     }
 }
 
-// --- HTML Editor (upravujeme pro Firebase) ---
+// --- HTML Editor (upravujeme pro Firestore) ---
 function setupHtmlEditor() {
     const editor = document.getElementById('html-editor');
     const preview = document.getElementById('html-preview');
@@ -2768,7 +2789,7 @@ function saveHtmlCodeLocally(title, code) {
     };
     savedCodesData.unshift(newCode);
     saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData); // Uloží lokálně
-    // A také na Firebase
+    // A také na Firestore
     if (currentSupabaseUserId) {
         saveDataToFirebase(); // Uloží všechna data, včetně savedCodesData
     }
@@ -2780,7 +2801,7 @@ function saveHtmlCodeLocally(title, code) {
 function deleteHtmlCodeLocally(id) {
     savedCodesData = savedCodesData.filter(code => code.id !== id);
     saveToLocalStorage(STORAGE_KEYS.SAVED_CODES, savedCodesData); // Uloží lokálně
-    // A také na Firebase
+    // A také na Firestore
     if (currentSupabaseUserId) {
         saveDataToFirebase();
     }
@@ -2830,7 +2851,7 @@ function renderSavedCodesDisplay() {
     });
 }
 
-// --- Galerie (upravujeme pro Firebase) ---
+// --- Galerie (upravujeme pro Firestore) ---
 function setupGallery() {
     const addBtn = document.getElementById('addImageUrlBtn');
     const closeBtn = document.getElementById('close-modal-btn');
@@ -2865,7 +2886,7 @@ async function handleAddImageUrl() {
         };
         galleryImagesData.unshift(newImage);
         saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
-        // A také na Firebase
+        // A také na Firestore
         if (currentSupabaseUserId) {
             saveDataToFirebase();
         }
@@ -2897,7 +2918,7 @@ async function deleteGalleryImageLocally(id) {
     if (confirmed) {
         galleryImagesData = galleryImagesData.filter(img => img.id !== id);
         saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
-        // A také na Firebase
+        // A také na Firestore
         if (currentSupabaseUserId) {
             saveDataToFirebase();
         }
@@ -2956,7 +2977,7 @@ function saveEditedImage() {
         galleryImagesData[index].url = url;
         galleryImagesData[index].name = name;
         saveToLocalStorage(STORAGE_KEYS.GALLERY_IMAGES, galleryImagesData); // Uloží lokálně
-        // A také na Firebase
+        // A také na Firestore
         if (currentSupabaseUserId) {
             saveDataToFirebase();
         }
@@ -2994,7 +3015,7 @@ function navigateImageModal(direction) {
     }
 }
 
-// --- Externí odkazy (upravujeme pro Firebase) ---
+// --- Externí odkazy (upravujeme pro Firestore) ---
 function renderExternalLinks() {
     const tableBody = document.querySelector('#links-table tbody');
     if (!tableBody) {
@@ -3076,7 +3097,7 @@ function saveEditedLink() {
     }
     
     saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData); // Uloží lokálně
-    // A také na Firebase
+    // A také na Firestore
     if (currentSupabaseUserId) {
         saveDataToFirebase();
     }
@@ -3096,7 +3117,7 @@ async function deleteLink(index) {
     if (confirmed) {
         externalLinksData.splice(index, 1);
         saveToLocalStorage(STORAGE_KEYS.EXTERNAL_LINKS, externalLinksData); // Uloží lokálně
-        // A také na Firebase
+        // A také na Firestore
         if (currentSupabaseUserId) {
             saveDataToFirebase();
         }
@@ -3218,7 +3239,7 @@ if(confirmModalEl && confirmModalTitleEl && confirmModalMessageEl && confirmModa
 
 window.showSection = showSection;
 
-// --- Nové funkce pro editaci portfolia (upravujeme pro Firebase) ---
+// --- Nové funkce pro editaci portfolia (upravujeme pro Firestore) ---
 let editingPortfolioItemId = null; // ID položky, kterou právě editujeme
 
 function editPortfolioItem(itemId) {
@@ -3309,7 +3330,7 @@ function saveEditedPortfolioItem() {
     }
 
     saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData); // Uloží lokálně
-    // A také na Firebase
+    // A také na Firestore
     if (currentSupabaseUserId) {
         saveDataToFirebase();
     }
@@ -3335,7 +3356,7 @@ async function deletePortfolioItem() {
             delete editableContentData[`${editingPortfolioItemId}-link-text`];
             delete editableContentData[`${editingPortfolioItemId}-link-url`];
             saveToLocalStorage(STORAGE_KEYS.EDITABLE_CONTENT, editableContentData); // Uloží lokálně
-            // A také na Firebase
+            // A také na Firestore
             if (currentSupabaseUserId) {
                 saveDataToFirebase();
             }
@@ -3425,7 +3446,7 @@ async function deletePortfolioItem() {
 
     // !!! EXTRÉMNĚ DŮLEŽITÉ BEZPEČNOSTNÍ UPOZORNĚNÍ !!!
     // Hashing sice skryje původní heslo ze zdrojového kódu,
-    // ale protože hashing logika je klient-side, není to nezničitelná ochrana.
+    // ale protože hashing logika je klient-side, není to nezničitelné ochrana.
     // Zkušený útočník by mohl hashe extrahovat a pokusit se je prolomit offline.
     // Pro skutečné zabezpečení je potřeba ověřování na serveru.
     const HARDCODED_ACCESS_PASSWORD_HASH = '256b5537a792c98a13c9b32bb6b6c90f0e63531fe77c3b4dee69ee1ca82c984b'; // <--- ZDE MÁŠ SVŮJ HASH
@@ -3539,7 +3560,7 @@ async function deletePortfolioItem() {
             return; // Konec funkce
         }
 
-        const enteredPasswordHash = await hashString(enteredPassword); 
+        const enteredPasswordHash = await hashString(enteredPassword);  
         
         if (enteredPasswordHash === HARDCODED_ACCESS_PASSWORD_HASH) {
             console.log("Gemini Helper: Lokální heslo (hash) správně, přístup povolen.");
@@ -3564,7 +3585,6 @@ async function deletePortfolioItem() {
     loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
 })();
-
     </script>
 </body>
 </html>
