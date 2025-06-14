@@ -2024,10 +2024,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 // Zkontrolujeme, jestli byl edit mód aktivní při posledním zavření
                 if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                     enableEditMode(); // Zapneme edit mód, pokud byl uložen jako aktivní
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
                 } else {
                     disableEditMode(); // Jinak zajistíme, že je vypnutý (a zobrazí se "Přejít do editace")
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
                 }
             } else {
                 console.log('Uživatel není přihlášen přes Supabase.');
@@ -2437,7 +2437,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         isEditMode = true;
         document.body.classList.add('edit-mode');
         document.getElementById('login-button').classList.add('hidden');
-        document.getElementById('edit-mode-toggle-btn').textContent = 'Ukončit editaci';
+        document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
         document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
 
         document.querySelectorAll('[data-editable]').forEach(el => {
@@ -2468,7 +2468,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     function disableEditMode() {
         isEditMode = false;
         document.body.classList.remove('edit-mode');
-        document.getElementById('edit-mode-toggle-btn').textContent = 'Přejít do editace';
+        document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
 
         if (!currentUserId) { // Kontrola, zda je uživatel přihlášen přes Supabase
             document.getElementById('login-button').classList.remove('hidden');
@@ -3665,7 +3665,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         }
     }
 
-    // Krok 4: Přepíšeme onclick událost tlačítka "Upravit stránku"
+    // Krok 4: Přepíšeme onclick událost tlačítka "Upravit STR"
     loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
 })();
