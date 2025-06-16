@@ -1939,318 +1939,591 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
 <script>
-// --- Supabase Konstanty pro AUTENTIZACI ---
-const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
- 
-// --- Firebase Konfigurace pro FIRESTORE DATABÁZI ---
-const firebaseConfig = {
-    apiKey: "AIzaSyBBep6Nyn9jEp_Q1bryULEbfuWfngMT07Y",
-    authDomain: "muj-osobni-web-pokus-10.firebaseapp.com",
-    projectId: "muj-osobni-web-pokus-10",
-    storageBucket: "muj-osobni-web-pokus-10.firebasestorage.app",
-    messagingSenderId: "546998884348",
-    appId: "1:546998884348:web:c5efd177dc1144b80cc479",
-    measurementId: "G-1PCS4F72KJ"
-};
+ // --- Supabase Konstanty pro AUTENTIZACI ---
+    const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // --- Firebase Konfigurace pro FIRESTORE DATABÁZI ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBep6Nyn9jEp_Q1bryULEbfuWfngMT07Y",
+        authDomain: "muj-osobni-web-pokus-10.firebaseapp.com",
+        projectId: "muj-osobni-web-pokus-10",
+        storageBucket: "muj-osobni-web-pokus-10.firebasestorage.app",
+        messagingSenderId: "546998884348",
+        appId: "1:546998884348:web:c5efd177dc1144b80cc479",
+        measurementId: "G-1PCS4F72KJ"
+    };
 
-// Inicializujeme Firebase App a Firestore
-let fbApp;
-let db;
-let currentUserId = null;
+    // Inicializujeme Firebase App a Firestore
+    let fbApp;
+    let db;
+    let currentUserId = null;
 
-try {
-    fbApp = firebase.initializeApp(firebaseConfig);
-    db = fbApp.firestore();
-    console.log("Firebase Firestore úspěšně inicializován.");
-} catch (error) {
-    console.error("Chyba při inicializaci Firebase Firestore:", error);
-    const loadingIndicatorElement = document.getElementById('loading-indicator');
-    if (loadingIndicatorElement) {
-        loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Firebase Firestore se nenačetla.';
+    try {
+        fbApp = firebase.initializeApp(firebaseConfig);
+        db = fbApp.firestore();
+        console.log("Firebase Firestore úspěšně inicializován.");
+    } catch (error) {
+        console.error("Chyba při inicializaci Firebase Firestore:", error);
+        document.getElementById('loading-indicator').textContent = 'Kritická chyba: Knihovna Firebase Firestore se nenačetla.';
+        document.body.style.visibility = 'visible';
     }
-    document.body.style.visibility = 'visible';
-}
 
-// Globální proměnná pro stav editačního módu
-let isEditMode = false;
-const EDIT_MODE_KEY = 'portfolio_edit_mode_active';
+    // Globální proměnná pro stav editačního módu
+    let isEditMode = false;
+    const EDIT_MODE_KEY = 'portfolio_edit_mode_active';
 
-// Identifikátor pro hlavní dokument s editovatelným obsahem stránky ve Firestore
-const DOC_ID = 'mainContent';
+    // Identifikátor pro hlavní dokument s editovatelným obsahem stránky ve Firestore
+    const DOC_ID = 'mainContent';
 
-// --- Globální proměnné pro data aplikace ---
-let activeSection = 'about';
-let galleryImagesData = [];
-let savedCodesData = [];
-let externalLinksData = [];
-let editableContentData = {};
-let currentModalImageIndex = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        const loadingIndicatorElement = document.getElementById('loading-indicator');
 
-const initialImageUrls = [ 
-    { id: 'initial-1', url: 'https://img.freepik.com/free-photo/futuristic-background-with-colorful-abstract-design_1340-39 futuristic-technology-background-with-neon-lights_76964-11458.jpg?w=826&t=st=1716545000~exp=1716545600~hmac=e6108f60104301f3b2886131029b0f10151707f3020142e9950b1e22704c654a', name: 'Technologie'},
-    { id: 'initial-2', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k18.jpg?ver=0', name: 'Srdce'},
-    { id: 'initial-3', url: 'https://img.freepik.com/free-photo/glowing-spaceship-orbits-planet-starry-galaxy-generated-by-ai_188544-9655.jpg?w=1060&t=st=1716545052~exp=1716545652~hmac=c6a7d107b56da6822f221372f4476a3793075997b820160f494a887688068b14', name: 'Vesmírná loď'},
-    { id: 'initial-4', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k7.jpg?ver=0', name: 'Mlhovina'},
-    { id: 'initial-5', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k8.jpg?ver=0', name: 'Kyberpunk město'},
-    { id: 'initial-6', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k13.jpg?ver=0', name: 'Notebook v akci'},
-    { id: 'initial-7', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k14.jpg?ver=0', name: 'Galaxie'},
-    { id: 'initial-8', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1920x10804.jpg?ver=0', name: 'Lidský mozek'},
-    { id: 'initial-9', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_15360x86402.jpg?ver=0', name: 'Vědecké laboratoře'},
-    { id: 'initial-10', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/misurina-sunset.jpg?ver=0', name: 'Neuronová síť'},
-    { id: 'initial-11', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/snowy-landscape-with-mountains-lake-with-snow-ground.jpg?ver=0', name: 'Datová mřížka'},
-    { id: 'initial-12', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/wet-sphere-reflective-water-abstract-beauty-generated-by-ai.jpg?ver=0', name: 'Futuristické město'},
-    { id: 'initial-13', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/vnon-pozadi-od-admirala-chatbota..jpg?ver=0', name: 'Světelná geometrie'},
-    { id: 'initial-14', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1024x1792.jpg?ver=0', name: 'Digitální plameny'},
-    { id: 'initial-15', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_300x3001_2.jpg?ver=0', name: 'Exoplaneta'},
-    { id: 'initial-16', url: 'https://img36.rajce.idnes.cz/d3603/10/10185/10185286_0147349ad505c43a2d9f6eb372624417/images/CIMG0039.jpg?ver=3', name: 'Kybernetická maska'},
-];
-
-let initialExternalLinksData = [
-    { title: 'Claude AI', url: 'https://claude.ai/' }, { title: 'SledujSerialy', url: 'https://sledujserialy.sx/' },
-    { title: 'Kukaj.me', url: 'https://serial.kukaj.me/' }, { title: 'ProSebe.cz', url: 'https://prosebe.cz/user/project' },
-    { title: 'Populace.cz', url: 'https://www.populace.cz' }, { title: 'My-Map.eu', url: 'https://www.my-map.eu/odmeny' },
-    { title: 'Národní Panel', url: 'https://www.narodnipanel.cz/?backlink=expx2' }, { title: 'Lifepoints Panel', url: 'https://app.lifepointspanel.com/en-US/login' },
-    { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
-    { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
-];
-
-const STORAGE_KEYS = { // Toto se nyní použije pro export/import JSON, ne pro primární úložiště
-    GALLERY_IMAGES: 'portfolio_gallery_images',
-    SAVED_CODES: 'portfolio_saved_codes',
-    EXTERNAL_LINKS: 'portfolio_external_links',
-    EDITABLE_CONTENT: 'portfolio_editable_content'
-};
-
-// --- Pomocné globální funkce ---
-function formatTimestamp(timestamp) {
-    if (!timestamp) return 'Neznámé datum';
-    if (typeof timestamp.toDate === 'function') { // Firebase Timestamp object
-        return new Date(timestamp.toDate()).toLocaleString('cs-CZ');
-    }
-    return new Date(timestamp).toLocaleString('cs-CZ'); // JavaScript timestamp (number) or Date object
-}
-
-function showModal(modalElement) {
-    if(modalElement) modalElement.classList.add('visible');
-}
-function hideModal(modalElement) {
-    if(modalElement) modalElement.classList.remove('visible');
-}
-
-function isValidHttpUrl(string) {
-    let url;
-    try { url = new URL(string); }
-    catch (_) { return false; }
-    return url.protocol === "http:" || url.protocol === "https:";
-}
-
-// --- Funkce pro showAlertModal a showConfirmModal (nyní definované přímo zde) ---
-function showAlertModal(title, message) {
-    return new Promise((resolve) => {
-        const alertModalEl = document.getElementById('alert-modal');
-        const alertModalTitleEl = document.getElementById('alert-modal-title');
-        const alertModalMessageEl = document.getElementById('alert-modal-message');
-        let alertModalOkBtnEl = document.getElementById('alert-modal-ok-btn');
-
-        if(alertModalEl && alertModalTitleEl && alertModalMessageEl && alertModalOkBtnEl) {
-            alertModalTitleEl.textContent = title;
-            alertModalMessageEl.textContent = message;
-            
-            const newOkBtn = alertModalOkBtnEl.cloneNode(true);
-            alertModalOkBtnEl.parentNode.replaceChild(newOkBtn, alertModalOkBtnEl);
-            alertModalOkBtnEl = newOkBtn;
-            
-            alertModalOkBtnEl.onclick = () => {
-                hideModal(alertModalEl);
-                resolve(true);
-            };
-            showModal(alertModalEl);
+        if (loadingIndicatorElement) {
+            loadingIndicatorElement.textContent = "Načítání stránky a dat...";
+            loadingIndicatorElement.classList.remove('hidden');
         } else {
-            console.warn("Custom showAlertModal not fully initialized, using native alert.");
-            alert(`${title}\n\n${message}`);
-            resolve(true);
+            console.error("Loading indicator element not found!");
         }
-    });
-}
-
-function showConfirmModal(title, message, buttonTexts = {}) {
-    return new Promise((resolve) => {
-        const confirmModalEl = document.getElementById('confirm-modal');
-        const confirmModalTitleEl = document.getElementById('confirm-modal-title');
-        const confirmModalMessageEl = document.getElementById('confirm-modal-message');
-        let confirmModalOkBtnEl = document.getElementById('confirm-modal-ok-btn');
-        let confirmModalCancelBtnEl = document.getElementById('confirm-modal-cancel-btn');
-
-        if(confirmModalEl && confirmModalTitleEl && confirmModalMessageEl && confirmModalOkBtnEl && confirmModalCancelBtnEl) {
-            confirmModalTitleEl.textContent = title;
-            confirmModalMessageEl.textContent = message;
-
-            const newOkBtn = confirmModalOkBtnEl.cloneNode(true);
-            newOkBtn.textContent = buttonTexts.okText || 'Potvrdit';
-            confirmModalOkBtnEl.parentNode.replaceChild(newOkBtn, confirmModalOkBtnEl);
-            confirmModalOkBtnEl = newOkBtn;
-            
-            const newCancelBtn = confirmModalCancelBtnEl.cloneNode(true);
-            newCancelBtn.textContent = buttonTexts.cancelText || 'Zrušit';
-            confirmModalCancelBtnEl.parentNode.replaceChild(newCancelBtn, confirmModalCancelBtnEl);
-            confirmModalCancelBtnEl = newCancelBtn;
-
-            confirmModalOkBtnEl.onclick = () => {
-                hideModal(confirmModalEl);
-                resolve(true);
-            };
-            confirmModalCancelBtnEl.onclick = () => {
-                hideModal(confirmModalEl);
-                resolve(false);
-            };
-            showModal(confirmModalEl);
-        } else {
-            console.warn("Custom showConfirmModal not fully initialized, using native confirm.");
-            resolve(confirm(`${title}\n\n${message}`));
+        
+        if (typeof supabase === 'undefined' || typeof supabase.createClient !== 'function') {
+            console.error('Supabase library not loaded or createClient is not a function.');
+            if (loadingIndicatorElement) {
+                loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Supabase se nenačetla.';
+            }
+            document.body.style.visibility = 'visible';
+            return;
         }
-    });
-}
+        if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function') {
+            console.error('Firebase library not loaded or initializeApp is not a function.');
+            if (loadingIndicatorElement) {
+                loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Firebase se nenačetla.';
+            }
+            document.body.style.visibility = 'visible';
+            return;
+        }
 
-// Připojujeme modální funkce k window pro globální přístup (pokud volány z HTML)
-window.showAlertModal = showAlertModal;
-window.showConfirmModal = showConfirmModal;
-
-
-// --- Funkce pro zobrazení/skrytí přihlašovacího modalu ---
-function showAuthModal() {
-    showModal(document.getElementById('auth-modal'));
-    document.getElementById('auth-email').focus();
-    document.getElementById('auth-error-message').textContent = '';
-}
-
-function hideAuthModal() {
-    hideModal(document.getElementById('auth-modal'));
-    document.getElementById('auth-email').value = '';
-    document.getElementById('auth-password').value = '';
-    document.getElementById('auth-error-message').textContent = '';
-}
-
-// --- Funkce pro načítání a skrývání indikátoru ---
-function showLoading(message = "Načítání...") {
-    const loadingIndicatorElement = document.getElementById('loading-indicator');
-    if (loadingIndicatorElement) {
-        loadingIndicatorElement.textContent = message;
-        loadingIndicatorElement.classList.remove('hidden');
-    }
-}
-function hideLoading() {
-    const loadingIndicatorElement = document.getElementById('loading-indicator');
-    if (loadingIndicatorElement) {
-        loadingIndicatorElement.classList.add('hidden');
-    }
-}
-
-
-// --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
-async function saveDataToFirestore() {
-    if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
-        return false;
-    }
-
-    showLoading("Ukládám data do cloudu...");
-
-    document.querySelectorAll('[data-editable]').forEach(el => {
-        const id = el.dataset.editable;
-        if (id) {
-            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                // Ukládáme url a text odděleně pro odkazy
-                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+        // --- Supabase autentizace (pro správu přihlášení) ---
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('Supabase Auth State Change:', event, session);
+            if (session && session.user) {
+                console.log('Uživatel je přihlášen přes Supabase:', session.user.email);
+                currentUserId = session.user.id;
+                document.getElementById('login-button').classList.add('hidden');
+                document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
+                
+                const userIdDisplaySpan = document.getElementById('firebase-user-id');
+                const userIdContainer = document.getElementById('user-id-display');
+                if (currentUserId && userIdDisplaySpan && userIdContainer) {
+                    userIdDisplaySpan.textContent = currentUserId;
+                    userIdContainer.classList.remove('hidden');
+                }
+                
+                if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
+                    enableEditMode();
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+                } else {
+                    disableEditMode();
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+                }
             } else {
-                editableContentData[id] = el.innerHTML;
+                console.log('Uživatel není přihlášen přes Supabase.');
+                currentUserId = null;
+                document.getElementById('login-button').classList.remove('hidden');
+                document.getElementById('edit-mode-toggle-btn').classList.add('hidden');
+                document.getElementById('user-id-display').classList.add('hidden');
+                disableEditMode();
+                localStorage.removeItem(EDIT_MODE_KEY);
+            }
+            initializeApp();
+            if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
+            document.body.style.visibility = 'visible';
+        });
+
+        async function checkInitialAuthStateSupabase() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error) {
+                console.error("Chyba při získávání Supabase session:", error);
+            } else if (session) {
+                // Stav bude zpracován v onAuthStateChange listeneru
+            }
+        }
+        checkInitialAuthStateSupabase();
+    });
+
+    // --- Pomocná funkce pro formátování časového otisku ---
+    function formatTimestamp(timestamp) {
+        if (!timestamp) return 'Neznámé datum';
+        // Pokud je to objekt Firestore Timestamp (z již uložených dat)
+        if (typeof timestamp.toDate === 'function') {
+            return new Date(timestamp.toDate()).toLocaleString('cs-CZ');
+        }
+        // Pokud je to JavaScript timestamp (číslo z Date.now()) nebo Date objekt
+        return new Date(timestamp).toLocaleString('cs-CZ');
+    }
+
+    // --- Funkce pro zobrazení/skrytí přihlašovacího modalu ---
+    function showAuthModal() {
+        showModal(document.getElementById('auth-modal'));
+        document.getElementById('auth-email').focus();
+        document.getElementById('auth-error-message').textContent = '';
+    }
+
+    function hideAuthModal() {
+        hideModal(document.getElementById('auth-modal'));
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+        document.getElementById('auth-error-message').textContent = '';
+    }
+
+    document.getElementById('cancel-auth-btn')?.addEventListener('click', hideAuthModal);
+
+    // --- Funkce pro přihlášení (pouze Supabase) ---
+    document.getElementById('login-auth-btn')?.addEventListener('click', async () => {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const errorMessageEl = document.getElementById('auth-error-message');
+        errorMessageEl.textContent = '';
+
+        showLoading("Přihlašování přes Supabase...");
+
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            console.error('Chyba při přihlašování:', error.message);
+            errorMessageEl.textContent = `Chyba: ${error.message}`;
+            hideLoading();
+        } else {
+            hideAuthModal();
+            hideLoading();
+        }
+    });
+
+    // --- Funkce pro registraci (pouze Supabase) ---
+    document.getElementById('signup-auth-btn')?.addEventListener('click', async () => {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const errorMessageEl = document.getElementById('auth-error-message');
+        errorMessageEl.textContent = '';
+
+        showLoading("Registrace přes Supabase...");
+
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) {
+            console.error('Chyba při registraci:', error.message);
+            errorMessageEl.textContent = `Chyba: ${error.message}`;
+            hideLoading();
+        } else {
+            if (data && data.user) {
+                showAlertModal("Registrace úspěšná", "Registrace proběhla úspěšně! Nyní se můžete přihlásit.");
+                hideAuthModal();
+                hideLoading();
+            } else {
+                showAlertModal("Registrace vyžaduje potvrzení", "Zkontrolujte svůj email pro potvrzení registrace. Poté se můžete přihlásit.");
+                hideAuthModal();
+                hideLoading();
             }
         }
     });
-    
-    const dataToSave = {
-        galleryImages: galleryImagesData,
-        savedCodes: savedCodesData,
-        externalLinks: externalLinksData,
-        editableContent: editableContentData,
-        editorUserId: currentUserId,
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp() // Firestore server timestamp
+
+    // --- Funkce pro odhlášení (pouze Supabase) ---
+    window.signOut = async function() {
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Odhlásit se?", "Opravdu se chcete odhlásit?", { okText: 'Ano, odhlásit', cancelText: 'Zůstat přihlášen' }) :
+            confirm("Opravdu se chcete odhlásit?")
+        );
+
+        if (confirmed) {
+            showLoading("Odhlašování přes Supabase...");
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                console.error('Chyba při odhlašování:', error.message);
+                showAlertModal("Chyba odhlášení", `Nepodařilo se odhlásit: ${error.message}`);
+                hideLoading();
+            } else {
+                showAlertModal("Odhlášení", "Byli jste úspěšně odhlášeni. Pro úpravy se opět přihlaste.");
+                hideLoading();
+            }
+        }
     };
 
-    try {
-        await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
-        hideLoading();
-        showAlertModal("Uloženo do cloudu", "Všechna data byla úspěšně uložena do Cloud Firestore.");
-        return true;
-    } catch (error) {
-        console.error('Chyba při ukládání do Firestore:', error);
-        hideLoading();
-        showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
-        return false;
-    }
-}
+    // --- Globální proměnné a pomocné funkce ---
+    let activeSection = 'about';
+    let galleryImagesData = [];
+    let savedCodesData = [];
+    let externalLinksData = [];
+    let currentModalImageIndex = 0;
+    let editableContentData = {};
 
-// --- Funkce pro načítání dat z Firestore (všichni vidí) ---
-async function loadDataFromFirestore() {
-    showLoading("Načítám data z cloudu...");
-    try {
-        const docRef = db.collection('publicContent').doc(DOC_ID);
-        const doc = await docRef.get();
+    const initialImageUrls = [
+        { id: 'initial-1', url: 'https://img.freepik.com/free-photo/futuristic-background-with-colorful-abstract-design_1340-39 futuristic-technology-background-with-neon-lights_76964-11458.jpg?w=826&t=st=1716545000~exp=1716545600~hmac=e6108f60104301f3b2886131029b0f10151707f3020142e9950b1e22704c654a', name: 'Technologie'},
+        { id: 'initial-2', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k18.jpg?ver=0', name: 'Srdce'},
+        { id: 'initial-3', url: 'https://img.freepik.com/free-photo/glowing-spaceship-orbits-planet-starry-galaxy-generated-by-ai_188544-9655.jpg?w=1060&t=st=1716545052~exp=1716545652~hmac=c6a7d107b56da6822f221372f4476a3793075997b820160f494a887688068b14', name: 'Vesmírná loď'},
+        { id: 'initial-4', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k7.jpg?ver=0', name: 'Mlhovina'},
+        { id: 'initial-5', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k8.jpg?ver=0', name: 'Kyberpunk město'},
+        { id: 'initial-6', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k13.jpg?ver=0', name: 'Notebook v akci'},
+        { id: 'initial-7', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k14.jpg?ver=0', name: 'Galaxie'},
+        { id: 'initial-8', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1920x10804.jpg?ver=0', name: 'Lidský mozek'},
+        { id: 'initial-9', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_15360x86402.jpg?ver=0', name: 'Vědecké laboratoře'},
+        { id: 'initial-10', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/misurina-sunset.jpg?ver=0', name: 'Neuronová síť'},
+        { id: 'initial-11', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/snowy-landscape-with-mountains-lake-with-snow-ground.jpg?ver=0', name: 'Datová mřížka'},
+        { id: 'initial-12', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/wet-sphere-reflective-water-abstract-beauty-generated-by-ai.jpg?ver=0', name: 'Futuristické město'},
+        { id: 'initial-13', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/vnon-pozadi-od-admirala-chatbota..jpg?ver=0', name: 'Světelná geometrie'},
+        { id: 'initial-14', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1024x1792.jpg?ver=0', name: 'Digitální plameny'},
+        { id: 'initial-15', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_300x3001_2.jpg?ver=0', name: 'Exoplaneta'},
+        { id: 'initial-16', url: 'https://img36.rajce.idnes.cz/d3603/10/10185/10185286_0147349ad505c43a2d9f6eb372624417/images/CIMG0039.jpg?ver=3', name: 'Kybernetická maska'},
+    ];
 
-        if (doc.exists) {
-            const data = doc.data();
-            galleryImagesData = data.galleryImages || [...initialImageUrls];
-            savedCodesData = data.savedCodes || [];
-            externalLinksData = data.externalLinks || [...initialExternalLinksData];
-            editableContentData = data.editableContent || {};
-            console.log("Data načtena z Firestore.");
-        } else {
-            console.log("Žádná data v Firestore, použiji výchozí lokální data.");
-            galleryImagesData = [...initialImageUrls];
-            savedCodesData = [];
-            externalLinksData = [...initialExternalLinksData];
-            editableContentData = {};
+    let initialExternalLinksData = [
+        { title: 'Claude AI', url: 'https://claude.ai/' }, { title: 'SledujSerialy', url: 'https://sledujserialy.sx/' },
+        { title: 'Kukaj.me', url: 'https://serial.kukaj.me/' }, { title: 'ProSebe.cz', url: 'https://prosebe.cz/user/project' },
+        { title: 'Populace.cz', url: 'https://www.populace.cz' }, { title: 'My-Map.eu', url: 'https://www.my-map.eu/odmeny' },
+        { title: 'Národní Panel', url: 'https://www.narodnipanel.cz/?backlink=expx2' }, { title: 'Lifepoints Panel', url: 'https://app.lifepointspanel.com/en-US/login' },
+        { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
+        { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
+    ];
+
+    // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
+    async function saveDataToFirestore() {
+        if (!currentUserId) {
+            showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
+            return false;
         }
-        // Po načtení dat vždy aplikujeme na DOM a aktualizujeme zobrazení
-        applyEditableContent();
-        updateGalleryDisplay();
-        renderSavedCodesDisplay();
-        renderExternalLinks();
-        hideLoading();
-        return true;
-    } catch (error) {
-        console.error('Chyba při načítání z Firestore:', error);
-        hideLoading();
-        showAlertModal("Chyba načítání", `Nepodařilo se načíst data z cloudu: ${error.message}. Používám výchozí data.`);
-        return false;
+
+        showLoading("Ukládám data do cloudu...");
+
+        document.querySelectorAll('[data-editable]').forEach(el => {
+            const id = el.dataset.editable;
+            if (id) {
+                if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                    editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+                } else {
+                    editableContentData[id] = el.innerHTML;
+                }
+            }
+        });
+        
+        const dataToSave = {
+            galleryImages: galleryImagesData,
+            savedCodes: savedCodesData,
+            externalLinks: externalLinksData,
+            editableContent: editableContentData,
+            // lastUpdated: firebase.firestore.FieldValue.serverTimestamp(), // Ponecháno pro dokument nejvyšší úrovně
+            editorUserId: currentUserId
+        };
+
+        // Přidáme serverTimestamp pro samotný dokument nejvyšší úrovně, ne pro pole uvnitř
+        dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+
+        try {
+            await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
+            hideLoading();
+            showAlertModal("Uloženo do cloudu", "Všechna data byla úspěšně uložena do Cloud Firestore.");
+            return true;
+        } catch (error) {
+            console.error('Chyba při ukládání do Firestore:', error);
+            hideLoading();
+            showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
+            return false;
+        }
     }
-}
 
-// --- Listener pro aktualizace v reálném čase z Firestore ---
-function setupFirestoreRealtimeListener() {
-    // Odhlášení předchozího listeneru, pokud existuje (důležité pro hot-reloading nebo opakovanou inicializaci)
-    // if (typeof window.firestoreUnsubscribe === 'function') {
-    //     window.firestoreUnsubscribe();
-    // }
+    // --- Funkce pro načítání dat z Firestore (všichni vidí) ---
+    async function loadDataFromFirestore() {
+        showLoading("Načítám data z cloudu...");
+        try {
+            const docRef = db.collection('publicContent').doc(DOC_ID);
+            const doc = await docRef.get();
 
-    window.firestoreUnsubscribe = db.collection('publicContent').doc(DOC_ID)
-        .onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-                console.log("Realtime aktualizace z Firestore:", data);
                 galleryImagesData = data.galleryImages || [...initialImageUrls];
                 savedCodesData = data.savedCodes || [];
                 externalLinksData = data.externalLinks || [...initialExternalLinksData];
                 editableContentData = data.editableContent || {};
-
-                applyEditableContent();
-                updateGalleryDisplay();
-                renderSavedCodesDisplay();
-                renderExternalLinks();
-                console.log("Firestore Aktualizace: Obsah stránky byl automaticky aktualizován z cloudu.");
+                console.log("Data načtena z Firestore.");
             } else {
-                console.log("Hlavní dokument v Firestore neexistuje, nebo byl smazán. Obnovuji výchozí data.");
+                console.log("Žádná data v Firestore, použiji výchozí lokální data.");
+                galleryImagesData = [...initialImageUrls];
+                savedCodesData = [];
+                externalLinksData = [...initialExternalLinksData];
+                editableContentData = {};
+            }
+            applyEditableContent();
+            updateGalleryDisplay();
+            renderSavedCodesDisplay();
+            renderExternalLinks();
+            hideLoading();
+            return true;
+        } catch (error) {
+            console.error('Chyba při načítání z Firestore:', error);
+            hideLoading();
+            showAlertModal("Chyba načítání", `Nepodařilo se načíst data z cloudu: ${error.message}. Používám výchozí data.`);
+            return false;
+        }
+    }
+
+    // --- Listener pro aktualizace v reálném čase z Firestore ---
+    function setupFirestoreRealtimeListener() {
+        db.collection('publicContent').doc(DOC_ID)
+            .onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    console.log("Realtime aktualizace z Firestore:", data);
+                    galleryImagesData = data.galleryImages || [...initialImageUrls];
+                    savedCodesData = data.savedCodes || [];
+                    externalLinksData = data.externalLinks || [...initialExternalLinksData];
+                    editableContentData = data.editableContent || {};
+
+                    applyEditableContent();
+                    updateGalleryDisplay();
+                    renderSavedCodesDisplay();
+                    renderExternalLinks();
+                    console.log("Firestore Aktualizace: Obsah stránky byl automaticky aktualizován z cloudu.");
+                } else {
+                    console.log("Hlavní dokument v Firestore neexistuje, nebo byl smazán.");
+                    galleryImagesData = [...initialImageUrls];
+                    savedCodesData = [];
+                    externalLinksData = [...initialExternalLinksData];
+                    editableContentData = {};
+                    applyEditableContent();
+                    updateGalleryDisplay();
+                    renderSavedCodesDisplay();
+                    renderExternalLinks();
+                }
+            }, (error) => {
+                console.error("Chyba při poslouchání realtime aktualizací:", error);
+                showAlertModal("Chyba synchronizace", `Nepodařilo se synchronizovat data v reálném čase: ${error.message}`);
+            });
+    }
+
+    // --- Funkce pro aplikaci editovatelného obsahu ---
+    function applyEditableContent() {
+        for (const id in editableContentData) {
+            const element = document.querySelector(`[data-editable="${id}"]`);
+            if (element) {
+                if (element.tagName === 'A' && element.classList.contains('editable-link')) {
+                    element.href = editableContentData[id].url || '#';
+                    element.innerHTML = `${editableContentData[id].text || ''}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
+                } else {
+                    element.innerHTML = editableContentData[id];
+                }
+            }
+        }
+
+        const portfolioContainer = document.querySelector('.portfolio-items');
+        if (portfolioContainer) {
+            portfolioContainer.innerHTML = '';
+        }
+
+        const portfolioItemIds = new Set();
+        for (const key in editableContentData) {
+            if (key.startsWith('portfolio-item-') && key.endsWith('-title')) {
+                const itemId = key.replace('-title', '');
+                portfolioItemIds.add(itemId);
+            }
+        }
+
+        portfolioItemIds.forEach(itemId => {
+            const title = editableContentData[`${itemId}-title`];
+            const desc1 = editableContentData[`${itemId}-desc-1`];
+            const desc2 = editableContentData[`${itemId}-desc-2`] || '';
+            const linkText = editableContentData[`${itemId}-link-text`];
+            const linkUrl = editableContentData[`${itemId}-link-url`];
+
+            if (!title || !desc1) {
+                console.warn(`Chybí data pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
+                return;
+            }
+
+            const newItemHtml = `
+                <div class="portfolio-item" data-item-id="${itemId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
+                    <h3 data-editable="${itemId}-title">${title}</h3>
+                    <p data-editable="${itemId}-desc-1">${desc1}</p>
+                    ${desc2 ? `<p data-editable="${itemId}-desc-2">${desc2}</p>` : ''}
+                    <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${itemId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt &rarr;'}" target="_blank" rel="noopener noreferrer">
+                        ${linkText || 'Zobrazit projekt &rarr;'}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
+                    </a>
+                    <div class="edit-controls ${isEditMode ? '' : 'hidden'}">
+                        <button onclick="editPortfolioItem('${itemId}')">Editovat</button>
+                    </div>
+                </div>
+            `;
+            portfolioContainer.insertAdjacentHTML('beforeend', newItemHtml);
+        });
+
+        document.querySelectorAll('[data-editable]').forEach(el => {
+            if (isEditMode) {
+                el.setAttribute('contenteditable', 'true');
+            } else {
+                el.removeAttribute('contenteditable');
+            }
+        });
+        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+            if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
+        });
+        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+            if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
+        });
+        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+            if (isEditMode) controls.classList.remove('hidden'); else controls.classList.add('hidden');
+        });
+    }
+
+    async function initializeApp() {
+        setupNavigation();
+        setupHtmlEditor();
+        setupGallery();
+        setupDataManagement();
+        
+        await loadDataFromFirestore();
+        setupFirestoreRealtimeListener();
+
+        const currentYearEl = document.getElementById('currentYear');
+        if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+        
+        showSection(activeSection, true);
+        console.log("Aplikace inicializována.");
+    }
+
+    // --- Funkce pro přepínání editačního módu ---
+    function toggleEditMode() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
+            showAuthModal();
+            return;
+        }
+
+        if (isEditMode) {
+            disableEditMode();
+            saveDataToFirestore();
+            showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do cloudu.");
+        } else {
+            enableEditMode();
+            showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
+        }
+    }
+
+    function enableEditMode() {
+        isEditMode = true;
+        document.body.classList.add('edit-mode');
+        document.getElementById('login-button').classList.add('hidden');
+        document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+        document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
+
+        document.querySelectorAll('[data-editable]').forEach(el => {
+            el.setAttribute('contenteditable', 'true');
+        });
+
+        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+            icon.classList.remove('hidden');
+        });
+        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+            icon.classList.remove('hidden');
+        });
+
+        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+            controls.classList.remove('hidden');
+        });
+        document.getElementById('add-portfolio-item-btn').classList.remove('hidden');
+        document.getElementById('add-link-btn').classList.remove('hidden');
+        document.getElementById('data-management').classList.remove('hidden');
+
+        document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
+            el.style.display = 'table-cell';
+        });
+
+        localStorage.setItem(EDIT_MODE_KEY, 'true');
+    }
+
+    function disableEditMode() {
+        isEditMode = false;
+        document.body.classList.remove('edit-mode');
+        document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+
+        if (!currentUserId) {
+            document.getElementById('login-button').classList.remove('hidden');
+            document.getElementById('edit-mode-toggle-btn').classList.add('hidden');
+        }
+
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.removeAttribute('contenteditable');
+            const id = el.dataset.editable;
+            if (id) {
+                if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                    editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+                } else {
+                    editableContentData[id] = el.innerHTML;
+                }
+            }
+        });
+
+        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+            icon.classList.add('hidden');
+        });
+        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+            icon.classList.add('hidden');
+        });
+
+        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+            controls.classList.add('hidden');
+        });
+        document.getElementById('add-portfolio-item-btn').classList.add('hidden');
+        document.getElementById('add-link-btn').classList.add('hidden');
+        document.getElementById('data-management').classList.add('hidden');
+
+        document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        localStorage.removeItem(EDIT_MODE_KEY);
+    }
+
+    // --- Funkce pro načítání a skrývání indikátoru ---
+    function showLoading(message = "Načítání...") {
+        const loadingIndicatorElement = document.getElementById('loading-indicator');
+        if (loadingIndicatorElement) {
+            loadingIndicatorElement.textContent = message;
+            loadingIndicatorElement.classList.remove('hidden');
+        }
+    }
+    function hideLoading() {
+        const loadingIndicatorElement = document.getElementById('loading-indicator');
+        if (loadingIndicatorElement) {
+            loadingIndicatorElement.classList.add('hidden');
+        }
+    }
+
+    // --- Správa dat (nyní vše do/z Firestore) ---
+    function setupDataManagement() {
+        const dataManagementContainer = document.getElementById('data-management');
+        if (dataManagementContainer) {
+            // HTML pro tlačítka je nyní přímo v HTML struktuře a negeneruje se zde
+            
+            document.getElementById('save-all-data-btn')?.addEventListener('click', saveDataToFirestore);
+            document.getElementById('clear-all-data-btn')?.addEventListener('click', handleClearAllData);
+            document.getElementById('export-data-btn')?.addEventListener('click', exportData);
+            document.getElementById('import-data-btn')?.addEventListener('click', () => {
+                document.getElementById('import-file-input')?.click();
+            });
+            document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
+        }
+    }
+
+    async function handleClearAllData() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro vymazání dat v cloudu se musíte přihlásit.");
+            return;
+        }
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Vymazat všechna data v cloudu?", "Opravdu chcete vymazat všechna uložená data v cloudu? Tato akce je nevratná! Zahrnuje i texty upravené na stránce a smaže je PRO VŠECHNY!", { okText: 'Ano, vymazat', cancelText: 'Zrušit' }) :
+            confirm("Opravdu chcete vymazat všechna uložená data v cloudu? Tato akce je nevratná!")
+        );
+        
+        if (confirmed) {
+            showLoading("Mažu data z cloudu...");
+            try {
+                await db.collection('publicContent').doc(DOC_ID).delete();
                 galleryImagesData = [...initialImageUrls];
                 savedCodesData = [];
                 externalLinksData = [...initialExternalLinksData];
@@ -2259,423 +2532,371 @@ function setupFirestoreRealtimeListener() {
                 updateGalleryDisplay();
                 renderSavedCodesDisplay();
                 renderExternalLinks();
+                hideLoading();
+                showAlertModal("Data vymazána", "Všechna data byla úspěšně vymazána z Cloud Firestore. Stránka se vrátila k výchozímu obsahu.");
+            } catch (error) {
+                console.error('Chyba při mazání z Firestore:', error);
+                hideLoading();
+                showAlertModal("Chyba mazání", `Nepodařilo se vymazat data z cloudu: ${error.message}`);
             }
-        }, (error) => {
-            console.error("Chyba při poslouchání realtime aktualizací:", error);
-            showAlertModal("Chyba synchronizace", `Nepodařilo se synchronizovat data v reálném čase: ${error.message}`);
-        });
-}
-
-
-// --- Funkce pro přepínání editačního módu ---
-function toggleEditMode() {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
-        showAuthModal(); // Zobrazí přihlašovací modal
-        return;
+        }
     }
 
-    if (isEditMode) {
-        isEditMode = false; // Nastavíme isEditMode na false
-        document.body.classList.remove('edit-mode');
-        document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
-
-        // Skryjeme editační prvky
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.removeAttribute('contenteditable');
+    function exportData() {
+        document.querySelectorAll('[data-editable]').forEach(el => {
             const id = el.dataset.editable;
             if (id) {
                 if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                    // Aktualizujeme data z DOM do editableContentData pro odkazy
                     editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
                 } else {
                     editableContentData[id] = el.innerHTML;
                 }
             }
         });
-        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => icon.classList.add('hidden'));
-        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => icon.classList.add('hidden'));
-        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => controls.classList.add('hidden'));
-        document.getElementById('add-portfolio-item-btn')?.classList.add('hidden');
-        document.getElementById('add-link-btn')?.classList.add('hidden');
-        document.getElementById('data-management')?.classList.add('hidden');
-        document.querySelectorAll('#links-table .edit-mode-only').forEach(el => el.style.display = 'none');
 
-        localStorage.removeItem(EDIT_MODE_KEY); // Zrušíme stav v localStorage
-
-        saveDataToFirestore(); // Uložíme změny do cloudu
-        showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do cloudu.");
-    } else {
-        isEditMode = true; // Nastavíme isEditMode na true
-        document.body.classList.add('edit-mode');
-        document.getElementById('login-button').classList.add('hidden'); // Skryjeme přihlašovací tlačítko
-        document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Změníme text tlačítka na "Zavřít"
-        document.getElementById('edit-mode-toggle-btn').classList.remove('hidden'); // Zajistíme, že je tlačítko viditelné
-
-        // Zobrazíme editační prvky a nastavíme contenteditable
-        document.querySelectorAll('[data-editable]').forEach(el => el.setAttribute('contenteditable', 'true'));
-        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => icon.classList.remove('hidden'));
-        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => icon.classList.remove('hidden'));
-        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
-            const itemId = controls.closest('.portfolio-item')?.dataset.itemId;
-            const itemUserId = editableContentData[`${itemId}-userId`];
-            if (itemUserId === currentUserId) { // Zobrazíme jen pro vlastníka
-                controls.classList.remove('hidden');
-            }
-        });
-        document.getElementById('add-portfolio-item-btn')?.classList.remove('hidden');
-        document.getElementById('add-link-btn')?.classList.remove('hidden');
-        document.getElementById('data-management')?.classList.remove('hidden');
-        document.querySelectorAll('#links-table .edit-mode-only').forEach(el => el.style.display = 'table-cell');
-
-        localStorage.setItem(EDIT_MODE_KEY, 'true'); // Uložíme stav do localStorage
-
-        showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
-    }
-    applyEditableContent(); // Aktualizujeme zobrazení po změně módu
-}
-
-// Funkce pro aktivaci a deaktivaci edit módu (voláno z onAuthStateChange)
-function enableEditMode() {
-    isEditMode = true;
-    document.body.classList.add('edit-mode');
-    document.getElementById('login-button').classList.add('hidden');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
-    document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
-
-    document.querySelectorAll('[data-editable]').forEach(el => el.setAttribute('contenteditable', 'true'));
-    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => icon.classList.remove('hidden'));
-    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => icon.classList.remove('hidden'));
-    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
-        const itemId = controls.closest('.portfolio-item')?.dataset.itemId;
-        const itemUserId = editableContentData[`${itemId}-userId`];
-        if (itemUserId === currentUserId) { // Zobrazíme jen pro vlastníka
-            controls.classList.remove('hidden');
-        }
-    });
-    document.getElementById('add-portfolio-item-btn')?.classList.remove('hidden');
-    document.getElementById('add-link-btn')?.classList.remove('hidden');
-    document.getElementById('data-management')?.classList.remove('hidden');
-    document.querySelectorAll('#links-table .edit-mode-only').forEach(el => el.style.display = 'table-cell');
-
-    localStorage.setItem(EDIT_MODE_KEY, 'true');
-    applyEditableContent(); // Znovu aplikovat, aby se propsaly správné ikony a contenteditable
-}
-
-function disableEditMode() {
-    isEditMode = false;
-    document.body.classList.remove('edit-mode');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
-
-    if (!currentUserId) { // Skrývá edit tlačítko, pokud uživatel není přihlášen
-        document.getElementById('login-button').classList.remove('hidden');
-        document.getElementById('edit-mode-toggle-btn').classList.add('hidden');
-    }
-
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-        el.removeAttribute('contenteditable');
-        // Při vypnutí edit módu uložíme aktuální změny z DOM do paměti (do editableContentData)
-        const id = el.dataset.editable;
-        if (id && !id.startsWith('portfolio-item-') && !id.endsWith('-userId') && !id.endsWith('-createdAt')) {
-            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
-            } else {
-                editableContentData[id] = el.innerHTML;
-            }
-        }
-    });
-
-    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => icon.classList.add('hidden'));
-    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => icon.classList.add('hidden'));
-    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => controls.classList.add('hidden'));
-    document.getElementById('add-portfolio-item-btn')?.classList.add('hidden');
-    document.getElementById('add-link-btn')?.classList.add('hidden');
-    document.getElementById('data-management')?.classList.add('hidden');
-    document.querySelectorAll('#links-table .edit-mode-only').forEach(el => el.style.display = 'none');
-
-    localStorage.removeItem(EDIT_MODE_KEY);
-    applyEditableContent(); // Znovu aplikovat, aby se skryly ikony a odebral contenteditable
-}
-
-
-// --- Navigace a sekce ---
-function setupNavigation() {
-    const navLinks = document.querySelectorAll('.nav-container a.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const sectionId = link.dataset.section;
-            showSection(sectionId);
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-        });
-    });
-    const initialActiveLink = document.querySelector(`.nav-container a.nav-link[data-section="${activeSection}"]`);
-    if (initialActiveLink) initialActiveLink.classList.add('active');
-}
-
-function showSection(id, isInitial = false) {
-    if (!id) id = 'about';
-    activeSection = id;
-    document.querySelectorAll('main section').forEach(section => {
-        section.classList.remove('active');
-        if (!(isInitial && section.id === id)) {
-            section.style.display = 'none';
-        }
-    });
-    const sectionElement = document.getElementById(id);
-    if (sectionElement) {
-        sectionElement.style.display = 'block';
-        setTimeout(() => sectionElement.classList.add('active'), 10);
-    } else {
-        console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
-        const aboutSection = document.getElementById('about');
-        if(aboutSection) {
-            aboutSection.style.display = 'block';
-            setTimeout(() => aboutSection.classList.add('active'), 10);
-            activeSection = 'about';
-            document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
-            document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
-        }
-    }
-}
-
-// --- HTML Editor (ukládá do Firestore) ---
-function setupHtmlEditor() {
-    const editor = document.getElementById('html-editor');
-    const preview = document.getElementById('html-preview');
-    const saveBtn = document.getElementById('save-code-btn');
-    
-    if (!editor || !preview || !saveBtn) {
-        console.error("HTML editor elementy nebyly nalezeny!");
-        return;
-    }
-
-    editor.addEventListener('input', () => { preview.srcdoc = editor.value; });
-    preview.srcdoc = editor.value;
-
-    saveBtn.addEventListener('click', () => {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro uložení kódu se musíte přihlásit.");
-            return;
-        }
-        if (!editor.value.trim()) {
-            showAlertModal("Prázdný kód", "Nelze uložit prázdný HTML kód.");
-            return;
-        }
-        const saveModal = document.getElementById('save-code-modal');
-        if(saveModal) showModal(saveModal);
-        document.getElementById('code-title-input')?.focus();
-    });
-}
-
-async function saveHtmlCodeToFirestore(title, code) {
-    if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro uložení kódu se musíte přihlásit.");
-        return;
-    }
-    showLoading("Ukládám HTML kód...");
-    const newCode = {
-        id: `html-code-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-        title,
-        code,
-        createdAt: Date.now(),
-        userId: currentUserId
-    };
-    try {
-        savedCodesData.unshift(newCode); // Přidáme na začátek pole
-        await saveDataToFirestore(); // Uložíme celé pole savedCodesData
-        showAlertModal("Kód uložen", `Kód "${title}" byl úspěšně uložen do cloudu.`);
-        hideLoading();
-    } catch (error) {
-        console.error('Chyba při ukládání kódu do Firestore:', error);
-        showAlertModal("Chyba ukládání", `Nepodařilo se uložit kód do cloudu: ${error.message}`);
-        hideLoading();
-    }
-}
-
-async function deleteHtmlCodeFromFirestore(idToDelete) {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro smazání kódu se musíte přihlásit.");
-        return;
-    }
-    const codeToDelete = savedCodesData.find(code => code.id === idToDelete);
-    if (!codeToDelete || codeToDelete.userId !== currentUserId) {
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tento kód. Můžete smazat pouze své vlastní kódy.");
-        return;
-    }
-
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Smazat kód?", `Opravdu chcete smazat kód "${codeToDelete.title}"? Tato akce je nevratná!`) :
-        confirm(`Smazat kód "${codeToDelete.title}"?`)
-    );
-    if (confirmed) {
-        showLoading("Mažu HTML kód...");
-        try {
-            savedCodesData = savedCodesData.filter(code => code.id !== idToDelete);
-            await saveDataToFirestore();
-            showAlertModal("Kód smazán", "Kód byl úspěšně smazán z cloudu.");
-            hideLoading();
-        } catch (error) {
-            console.error('Chyba při mazání kódu z Firestore:', error);
-            showAlertModal("Chyba mazání", `Nepodařilo se smazat kód: ${error.message}`);
-            hideLoading();
-        }
-    }
-}
-
-function renderSavedCodesDisplay() {
-    const listEl = document.getElementById('saved-codes-list');
-    if(!listEl) return;
-    listEl.innerHTML = savedCodesData.length === 0 ? '<p>Žádné kódy nejsou aktuálně uloženy.</p>' : '';
-    
-    savedCodesData.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'saved-code-item';
-        const isOwner = currentUserId && item.userId === currentUserId;
-
-        div.innerHTML = `
-            <div class="item-header">
-                <h3>${item.title}</h3>
-                <div class="actions">
-                    <button class="button btn-secondary load-code">Načíst</button>
-                    <button class="button btn-danger delete-code ${isEditMode && isOwner ? '' : 'hidden'}">Smazat</button>
-                </div>
-            </div>
-            <p>Uloženo: ${formatTimestamp(item.createdAt)}</p>
-        `;
-        div.querySelector('.load-code').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('html-editor').value = item.code;
-            document.getElementById('html-preview').srcdoc = item.code;
-            showSection('editor');
-            document.querySelector('.nav-container a.nav-link[data-section="editor"]')?.click();
-        });
-        div.querySelector('.delete-code')?.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            deleteHtmlCodeFromFirestore(item.id);
-        });
-        div.addEventListener('click', () => {
-            document.getElementById('html-editor').value = item.code;
-            document.getElementById('html-preview').srcdoc = item.code;
-            showSection('editor');
-            document.querySelector('.nav-container a.nav-link[data-section="editor"]')?.click();
-        });
-        listEl.appendChild(div);
-    });
-}
-
-
-// --- Galerie (ukládá do Firestore) ---
-function setupGallery() {
-    const addBtn = document.getElementById('addImageUrlBtn');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const prevBtn = document.getElementById('prev-image-btn');
-    const nextBtn = document.getElementById('next-image-btn');
-    const saveEditImageBtn = document.getElementById('save-edit-image-btn');
-    const cancelEditImageBtn = document.getElementById('cancel-edit-image-btn');
-
-    if(addBtn) addBtn.addEventListener('click', handleAddImageUrl);
-    if(closeBtn) closeBtn.addEventListener('click', closeImageModal);
-    if(prevBtn) prevBtn.addEventListener('click', () => navigateImageModal(-1));
-    if(nextBtn) nextBtn.addEventListener('click', () => navigateImageModal(1));
-    if(saveEditImageBtn) saveEditImageBtn.addEventListener('click', saveEditedImage);
-    if(cancelEditImageBtn) cancelEditImageBtn.addEventListener('click', () => hideModal(document.getElementById('edit-image-modal')));
-}
-
-async function handleAddImageUrl() {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro přidání obrázku se musíte přihlásit.");
-        return;
-    }
-    const urlInput = document.getElementById('newImageUrl');
-    if (!urlInput) {
-        console.error("Element #newImageUrl not found for adding gallery image.");
-        return;
-    }
-    const imageUrl = urlInput.value.trim();
-
-    if (imageUrl && isValidHttpUrl(imageUrl)) {
-        const imageNamePrompt = prompt(`Zadejte název pro obrázek (URL: ${imageUrl.substring(0,50)}...). Prázdné pro výchozí název.`, `Obrázek ${galleryImagesData.length + 1}`);
-        let imageName = (imageNamePrompt && imageNamePrompt.trim() !== "") ? imageNamePrompt.trim() : `Obrázek ${galleryImagesData.length + 1}_${Math.floor(Math.random()*1000)}`;
+        const exportObject = {
+            galleryImages: galleryImagesData,
+            savedCodes: savedCodesData,
+            externalLinks: externalLinksData,
+            editableContent: editableContentData,
+            exportDate: new Date().toISOString(),
+            version: "1.2"
+        };
         
-        showLoading("Přidávám obrázek...");
-        const newImage = {
-            id: `img-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,
-            url: imageUrl,
-            name: imageName,
-            createdAt: Date.now(),
+        const dataStr = JSON.stringify(exportObject, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `portfolio-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        showAlertModal("Export dokončen", "Data byla exportována do souboru JSON.");
+    }
+
+    function handleImportData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                const confirmed = await (window.showConfirmModal ?
+                    showConfirmModal("Importovat data?", "Importování přepíše všechna současná data (včetně textů na stránce) LOKÁLNĚ! Chcete pokračovat?", { okText: 'Ano, importovat', cancelText: 'Zrušit' }) :
+                    confirm("Importování přepíše data. Pokračovat?")
+                );
+                
+                if (confirmed) {
+                    if (importedData.galleryImages) galleryImagesData = importedData.galleryImages;
+                    if (importedData.savedCodes) savedCodesData = importedData.savedCodes;
+                    if (importedData.externalLinks) externalLinksData = importedData.externalLinks;
+                    if (importedData.editableContent) editableContentData = importedData.editableContent;
+                    
+                    if (currentUserId) {
+                        await saveDataToFirestore(); 
+                    } else {
+                        showAlertModal("Upozornění", "Data byla importována pouze lokálně, protože nejste přihlášeni. Pro trvalé uložení se přihlaste a uložte je do cloudu.");
+                    }
+
+                    applyEditableContent();
+                    updateGalleryDisplay();
+                    renderSavedCodesDisplay();
+                    renderExternalLinks();
+                    
+                    showAlertModal("Import dokončen", "Data byla úspěšně naimportována a aplikována.");
+                }
+            } catch (error) {
+                console.error('Chyba při importu:', error);
+                showAlertModal("Chyba importu", "Nepodařilo se načíst data ze souboru. Zkontrolujte, zda je soubor platný JSON.");
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    // --- Navigace a sekce (beze změny) ---
+    function setupNavigation() {
+        const navLinks = document.querySelectorAll('.nav-container a.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.dataset.section;
+                showSection(sectionId);
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+        const initialActiveLink = document.querySelector(`.nav-container a.nav-link[data-section="${activeSection}"]`);
+        if (initialActiveLink) initialActiveLink.classList.add('active');
+    }
+
+    function showSection(id, isInitial = false) {
+        if (!id) id = 'about';
+        activeSection = id;
+        document.querySelectorAll('main section').forEach(section => {
+            section.classList.remove('active');
+            if (!(isInitial && section.id === id)) {
+                section.style.display = 'none';
+            }
+        });
+        const sectionElement = document.getElementById(id);
+        if (sectionElement) {
+            sectionElement.style.display = 'block';
+            setTimeout(() => sectionElement.classList.add('active'), 10);
+        } else {
+            console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
+            const aboutSection = document.getElementById('about');
+            if(aboutSection) {
+                aboutSection.style.display = 'block';
+                setTimeout(() => aboutSection.classList.add('active'), 10);
+                activeSection = 'about';
+                document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
+            }
+        }
+    }
+
+    // --- HTML Editor (ukládá do Firestore) ---
+    function setupHtmlEditor() {
+        const editor = document.getElementById('html-editor');
+        const preview = document.getElementById('html-preview');
+        const saveBtn = document.getElementById('save-code-btn');
+        
+        if (!editor || !preview || !saveBtn) {
+            console.error("HTML editor elementy nebyly nalezeny!");
+            return;
+        }
+
+        editor.addEventListener('input', () => { preview.srcdoc = editor.value; });
+        preview.srcdoc = editor.value;
+
+        saveBtn.addEventListener('click', () => {
+            if (!currentUserId) {
+                showAlertModal("Přístup zamítnut", "Pro uložení kódu se musíte přihlásit.");
+                return;
+            }
+            if (!editor.value.trim()) {
+                showAlertModal("Prázdný kód", "Nelze uložit prázdný HTML kód.");
+                return;
+            }
+            const saveModal = document.getElementById('save-code-modal');
+            if(saveModal) showModal(saveModal);
+            document.getElementById('code-title-input')?.focus();
+        });
+    }
+
+    async function saveHtmlCodeToFirestore(title, code) {
+        if (!currentUserId) {
+            showAlertModal("Uložení selhalo", "Pro uložení kódu se musíte přihlásit.");
+            return;
+        }
+        showLoading("Ukládám HTML kód...");
+        const newCode = {
+            id: `html-code-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            title,
+            code,
+            createdAt: Date.now(), // ZMĚNA ZDE: Používáme Date.now() pro časový otisk na straně klienta
             userId: currentUserId
         };
         try {
-            galleryImagesData.unshift(newImage);
+            savedCodesData.unshift(newCode);
             await saveDataToFirestore();
-            showAlertModal("Obrázek přidán", `Obrázek "${imageName}" byl uložen do cloudu.`);
-            urlInput.value = '';
+            showAlertModal("Kód uložen", `Kód "${title}" byl úspěšně uložen do cloudu.`);
             hideLoading();
         } catch (error) {
-            console.error('Chyba při přidávání obrázku do Firestore:', error);
-            showAlertModal("Chyba přidání", `Nepodařilo se přidat obrázek: ${error.message}`);
-            hideLoading();
-        }
-    } else {
-        showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
-    }
-}
-
-async function deleteGalleryImageFromFirestore(idToDelete) {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro smazání obrázku se musíte přihlásit.");
-        return;
-    }
-    const imageToDelete = galleryImagesData.find(img => img.id === idToDelete);
-    if (!imageToDelete || imageToDelete.userId !== currentUserId) {
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tento obrázek. Můžete smazat pouze své vlastní obrázky.");
-        return;
-    }
-
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Smazat obrázek?", `Opravdu smazat "${imageToDelete.name || 'tento obrázek'}"? Tato akce je nevratná!`) :
-        confirm(`Smazat obrázek "${imageToDelete.name || 'tento obrázek'}"?`)
-    );
-    if (confirmed) {
-        showLoading("Mažu obrázek...");
-        try {
-            galleryImagesData = galleryImagesData.filter(img => img.id !== idToDelete);
-            await saveDataToFirestore();
-            showAlertModal("Obrázek smazán", "Obrázek byl úspěšně smazán z cloudu.");
-            hideLoading();
-        } catch (error) {
-            console.error('Chyba při mazání obrázku z Firestore:', error);
-            showAlertModal("Chyba mazání", `Nepodařilo se smazat obrázek: ${error.message}`);
+            console.error('Chyba při ukládání kódu do Firestore:', error);
+            showAlertModal("Chyba ukládání", `Nepodařilo se uložit kód do cloudu: ${error.message}`);
             hideLoading();
         }
     }
-}
 
-function updateGalleryDisplay() {
-    const container = document.getElementById('gallery-container');
-    if(!container) return;
-    container.innerHTML = galleryImagesData.length === 0 ? '<p>Galerie je prázdná.</p>' : '';
+    async function deleteHtmlCodeFromFirestore(idToDelete) {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro smazání kódu se musíte přihlásit.");
+            return;
+        }
+        const codeToDelete = savedCodesData.find(code => code.id === idToDelete);
+        if (!codeToDelete || codeToDelete.userId !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tento kód. Můžete smazat pouze své vlastní kódy.");
+            return;
+        }
 
-    galleryImagesData.forEach((imgData, index) => {
-        const div = document.createElement('div');
-        div.className = 'gallery-image-wrapper';
-        // isInitialImage určuje, zda se jedná o obrázek z výchozí sady, který nelze smazat/editovat
-        const isInitialImage = initialImageUrls.some(initialImg => initialImg.id === imgData.id);
-        const isOwner = currentUserId && imgData.userId === currentUserId;
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Smazat kód?", `Opravdu chcete smazat kód "${codeToDelete.title}"? Tato akce je nevratná!`) :
+            confirm(`Smazat kód "${codeToDelete.title}"?`)
+        );
+        if (confirmed) {
+            showLoading("Mažu HTML kód...");
+            try {
+                savedCodesData = savedCodesData.filter(code => code.id !== idToDelete);
+                await saveDataToFirestore();
+                showAlertModal("Kód smazán", "Kód byl úspěšně smazán z cloudu.");
+                hideLoading();
+            } catch (error) {
+                console.error('Chyba při mazání kódu z Firestore:', error);
+                showAlertModal("Chyba mazání", `Nepodařilo se smazat kód: ${error.message}`);
+                hideLoading();
+            }
+        }
+    }
 
-        const deleteButtonHtml = (isEditMode && isOwner && !isInitialImage) ? `<button class="delete-img-btn" title="Smazat obrázek">&times;</button>` : '';
-        const editIconHtml = (isEditMode && isOwner && !isInitialImage) ? `<i class="fas fa-edit edit-icon" data-image-id="${imgData.id}"></i>` : '';
-
-        div.innerHTML = `
-            <img src="${imgData.url}" alt="${imgData.name || 'Obrázek z galerie'}" onerror="this.onerror=null;this.src='https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';this.alt='Obrázek nelze načíst';">
-            ${deleteButtonHtml}
-            ${editIconHtml}
-        `;
-        div.querySelector('img').addEventListener('click', () => openImageModal(index));
+    function renderSavedCodesDisplay() {
+        const listEl = document.getElementById('saved-codes-list');
+        if(!listEl) return;
+        listEl.innerHTML = savedCodesData.length === 0 ? '<p>Žádné kódy nejsou aktuálně uloženy.</p>' : '';
         
-        if (isEditMode && isOwner && !isInitialImage) {
+        savedCodesData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'saved-code-item';
+            const isOwner = currentUserId && item.userId === currentUserId;
+
+            div.innerHTML = `
+                <div class="item-header">
+                    <h3>${item.title}</h3>
+                    <div class="actions">
+                        <button class="button btn-secondary load-code">Načíst</button>
+                        <button class="button btn-danger delete-code ${isEditMode && isOwner ? '' : 'hidden'}">Smazat</button>
+                    </div>
+                </div>
+                <p>Uloženo: ${formatTimestamp(item.createdAt)}</p>
+            `;
+            div.querySelector('.load-code').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('html-editor').value = item.code;
+                document.getElementById('html-preview').srcdoc = item.code;
+                showSection('editor');
+                document.querySelector('.nav-container a.nav-link[data-section="editor"]')?.click();
+            });
+            div.querySelector('.delete-code')?.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                deleteHtmlCodeFromFirestore(item.id);
+            });
+            div.addEventListener('click', () => {
+                document.getElementById('html-editor').value = item.code;
+                document.getElementById('html-preview').srcdoc = item.code;
+                showSection('editor');
+                document.querySelector('.nav-container a.nav-link[data-section="editor"]')?.click();
+            });
+            listEl.appendChild(div);
+        });
+    }
+
+
+    // --- Galerie (ukládá do Firestore) ---
+    function setupGallery() {
+        const addBtn = document.getElementById('addImageUrlBtn');
+        const closeBtn = document.getElementById('close-modal-btn');
+        const prevBtn = document.getElementById('prev-image-btn');
+        const nextBtn = document.getElementById('next-image-btn');
+        const saveEditImageBtn = document.getElementById('save-edit-image-btn');
+        const cancelEditImageBtn = document.getElementById('cancel-edit-image-btn');
+
+        if(addBtn) addBtn.addEventListener('click', handleAddImageUrl);
+        if(closeBtn) closeBtn.addEventListener('click', closeImageModal);
+        if(prevBtn) prevBtn.addEventListener('click', () => navigateImageModal(-1));
+        if(nextBtn) nextBtn.addEventListener('click', () => navigateImageModal(1));
+        if(saveEditImageBtn) saveEditImageBtn.addEventListener('click', saveEditedImage);
+        if(cancelEditImageBtn) cancelEditImageBtn.addEventListener('click', () => hideModal(document.getElementById('edit-image-modal')));
+    }
+
+    async function handleAddImageUrl() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro přidání obrázku se musíte přihlásit.");
+            return;
+        }
+        const urlInput = document.getElementById('newImageUrl');
+        if (!urlInput) {
+            console.error("Element #newImageUrl not found for adding gallery image.");
+            return;
+        }
+        const imageUrl = urlInput.value.trim();
+
+        if (imageUrl && isValidHttpUrl(imageUrl)) {
+            const imageNamePrompt = prompt(`Zadejte název pro obrázek (URL: ${imageUrl.substring(0,50)}...). Prázdné pro výchozí název.`, `Obrázek ${galleryImagesData.length + 1}`);
+            let imageName = (imageNamePrompt && imageNamePrompt.trim() !== "") ? imageNamePrompt.trim() : `Obrázek ${galleryImagesData.length + 1}_${Math.floor(Math.random()*1000)}`;
+            
+            showLoading("Přidávám obrázek...");
+            const newImage = {
+                id: `img-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,
+                url: imageUrl,
+                name: imageName,
+                createdAt: Date.now(), // ZMĚNA ZDE: Používáme Date.now() pro časový otisk na straně klienta
+                userId: currentUserId
+            };
+            try {
+                galleryImagesData.unshift(newImage);
+                await saveDataToFirestore();
+                showAlertModal("Obrázek přidán", `Obrázek "${imageName}" byl uložen do cloudu.`);
+                urlInput.value = '';
+                hideLoading();
+            } catch (error) {
+                console.error('Chyba při přidávání obrázku do Firestore:', error);
+                showAlertModal("Chyba přidání", `Nepodařilo se přidat obrázek: ${error.message}`);
+                hideLoading();
+            }
+        } else {
+            showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
+        }
+    }
+
+    function isValidHttpUrl(string) {
+        let url;
+        try { url = new URL(string); }
+        catch (_) { return false; }
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
+
+    async function deleteGalleryImageFromFirestore(idToDelete) {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro smazání obrázku se musíte přihlásit.");
+            return;
+        }
+        const imageToDelete = galleryImagesData.find(img => img.id === idToDelete);
+        if (!imageToDelete || imageToDelete.userId !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tento obrázek. Můžete smazat pouze své vlastní obrázky.");
+            return;
+        }
+
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Smazat obrázek?", `Opravdu smazat "${imageToDelete.name || 'tento obrázek'}"? Tato akce je nevratná!`) :
+            confirm(`Smazat obrázek "${imageToDelete.name || 'tento obrázek'}"?`)
+        );
+        if (confirmed) {
+            showLoading("Mažu obrázek...");
+            try {
+                galleryImagesData = galleryImagesData.filter(img => img.id !== idToDelete);
+                await saveDataToFirestore();
+                showAlertModal("Obrázek smazán", "Obrázek byl úspěšně smazán z cloudu.");
+                hideLoading();
+            } catch (error) {
+                console.error('Chyba při mazání obrázku z Firestore:', error);
+                showAlertModal("Chyba mazání", `Nepodařilo se smazat obrázek: ${error.message}`);
+                hideLoading();
+            }
+        }
+    }
+
+    function updateGalleryDisplay() {
+        const container = document.getElementById('gallery-container');
+        if(!container) return;
+        container.innerHTML = galleryImagesData.length === 0 ? '<p>Galerie je prázdná.</p>' : '';
+
+        galleryImagesData.forEach((imgData, index) => {
+            const div = document.createElement('div');
+            div.className = 'gallery-image-wrapper';
+            const isOwner = currentUserId && imgData.userId === currentUserId;
+
+            div.innerHTML = `
+                <img src="${imgData.url}" alt="${imgData.name || 'Obrázek z galerie'}" onerror="this.onerror=null;this.src='https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';this.alt='Obrázek nelze načíst';">
+                <button class="delete-img-btn ${isEditMode && isOwner ? '' : 'hidden'}" title="Smazat obrázek">&times;</button>
+                <i class="fas fa-edit edit-icon ${isEditMode && isOwner ? '' : 'hidden'}" data-image-id="${imgData.id}"></i>
+            `;
+            div.querySelector('img').addEventListener('click', () => openImageModal(index));
             div.querySelector('.delete-img-btn')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteGalleryImageFromFirestore(imgData.id);
@@ -2684,611 +2905,723 @@ function updateGalleryDisplay() {
                 e.stopPropagation();
                 editImage(imgData.id);
             });
+            container.appendChild(div);
+        });
+    }
+
+    let editingImageId = null;
+    async function editImage(imageId) {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro úpravu obrázku se musíte přihlásit.");
+            return;
         }
-        container.appendChild(div);
-    });
-}
-
-let editingImageId = null;
-async function editImage(imageId) {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro úpravu obrázku se musíte přihlásit.");
-        return;
-    }
-    editingImageId = imageId;
-    const image = galleryImagesData.find(img => img.id === imageId);
-    if (!image || image.userId !== currentUserId) {
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tento obrázek. Můžete upravit pouze své vlastní obrázky.");
-        return;
-    }
-
-    if (image) {
-        document.getElementById('edit-image-url').value = image.url;
-        document.getElementById('edit-image-name').value = image.name;
-        showModal(document.getElementById('edit-image-modal'));
-    }
-}
-
-async function saveEditedImage() {
-    if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro úpravu obrázku se musíte přihlásit.");
-        return;
-    }
-    const url = document.getElementById('edit-image-url').value.trim();
-    const name = document.getElementById('edit-image-name').value.trim();
-
-    if (!isValidHttpUrl(url)) {
-        showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
-        return;
-    }
-
-    showLoading("Ukládám upravený obrázek...");
-    try {
-        const index = galleryImagesData.findIndex(img => img.id === editingImageId);
-        if (index !== -1 && galleryImagesData[index].userId === currentUserId) {
-            galleryImagesData[index].url = url;
-            galleryImagesData[index].name = name;
-            await saveDataToFirestore();
-            showAlertModal("Obrázek upraven", `Obrázek "${name}" byl úspěšně upraven v cloudu.`);
-        } else {
-            showAlertModal("Chyba", "Obrázek k úpravě nebyl nalezen nebo nemáte oprávnění.");
+        editingImageId = imageId;
+        const image = galleryImagesData.find(img => img.id === imageId);
+        if (!image || image.userId !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tento obrázek. Můžete upravit pouze své vlastní obrázky.");
+            return;
         }
-        hideModal(document.getElementById('edit-image-modal'));
-        hideLoading();
-    } catch (error) {
-        console.error('Chyba při ukládání upraveného obrázku do Firestore:', error);
-        showAlertModal("Chyba ukládání", `Nepodařilo se uložit úpravy obrázku: ${error.message}`);
-        hideLoading();
-    }
-}
 
-
-function openImageModal(index) {
-    if (index < 0 || index >= galleryImagesData.length) return;
-    currentModalImageIndex = index;
-    const modal = document.getElementById('image-modal');
-    const modalImg = document.getElementById('modal-img');
-    if(!modal || !modalImg) return;
-
-    modalImg.src = galleryImagesData[index].url;
-    modalImg.alt = galleryImagesData[index].name || 'Zvětšený obrázek';
-    showModal(modal);
-}
-
-function closeImageModal() {
-    hideModal(document.getElementById('image-modal'));
-}
-
-function navigateImageModal(direction) {
-    const newIndex = currentModalImageIndex + direction;
-    if (newIndex >= 0 && newIndex < galleryImagesData.length) {
-        openImageModal(newIndex);
-    } else if (galleryImagesData.length > 0) {
-        currentModalImageIndex = (newIndex < 0) ? galleryImagesData.length - 1 : 0;
-        openImageModal(currentModalImageIndex);
-    }
-}
-
-// --- Externí odkazy (ukládá do Firestore) ---
-function renderExternalLinks() {
-    const tableBody = document.querySelector('#links-table tbody');
-    if (!tableBody) {
-        console.error("Table body for links not found!");
-        return;
-    }
-    tableBody.innerHTML = '';
-
-    if (externalLinksData.length === 0) {
-        const row = tableBody.insertRow();
-        const cell = row.insertCell();
-        cell.colSpan = 4;
-        cell.textContent = 'Žádné externí odkazy k zobrazení.';
-        cell.style.textAlign = 'center';
-        return;
+        if (image) {
+            document.getElementById('edit-image-url').value = image.url;
+            document.getElementById('edit-image-name').value = image.name;
+            showModal(document.getElementById('edit-image-modal'));
+        }
     }
 
-    externalLinksData.forEach((link, index) => {
-        const row = tableBody.insertRow();
-        const isInitialLink = initialExternalLinksData.some(initialLink => initialLink.title === link.title && initialLink.url === link.url);
-        const isOwner = currentUserId && link.userId === currentUserId; // Zkontroluj, jestli je link vlastněn
+    async function saveEditedImage() {
+        if (!currentUserId) {
+            showAlertModal("Uložení selhalo", "Pro úpravu obrázku se musíte přihlásit.");
+            return;
+        }
+        const url = document.getElementById('edit-image-url').value.trim();
+        const name = document.getElementById('edit-image-name').value.trim();
 
-        row.insertCell().innerHTML = '<i class="fas fa-link"></i>'; // Použijeme Font Awesome ikonu
-        
-        const titleCell = row.insertCell();
-        const anchor = document.createElement('a');
-        anchor.href = link.url;
-        anchor.target = "_blank";
-        anchor.rel = "noopener noreferrer";
-        anchor.textContent = link.title;
-        titleCell.appendChild(anchor);
-        
-        row.insertCell().textContent = link.url;
+        if (!isValidHttpUrl(url)) {
+            showAlertModal("Neplatná URL", "Zadejte platnou URL adresu obrázku (http:// nebo https://).");
+            return;
+        }
 
-        const actionsCell = row.insertCell();
-        actionsCell.className = 'edit-mode-only';
-        // Zobrazíme tlačítka editovat/smazat pouze pokud je uživatel vlastníkem a není to původní odkaz
-        const editButtonHtml = (isEditMode && isOwner && !isInitialLink) ? `<button class="button btn-secondary edit-link-btn">Editovat</button>` : '';
-        const deleteButtonHtml = (isEditMode && isOwner && !isInitialLink) ? `<button class="button btn-danger delete-link-btn">Smazat</button>` : '';
+        showLoading("Ukládám upravený obrázek...");
+        try {
+            const index = galleryImagesData.findIndex(img => img.id === editingImageId);
+            if (index !== -1 && galleryImagesData[index].userId === currentUserId) {
+                galleryImagesData[index].url = url;
+                galleryImagesData[index].name = name;
+                await saveDataToFirestore();
+                showAlertModal("Obrázek upraven", `Obrázek "${name}" byl úspěšně upraven v cloudu.`);
+            } else {
+                showAlertModal("Chyba", "Obrázek k úpravě nebyl nalezen nebo nemáte oprávnění.");
+            }
+            hideModal(document.getElementById('edit-image-modal'));
+            hideLoading();
+        } catch (error) {
+            console.error('Chyba při ukládání upraveného obrázku do Firestore:', error);
+            showAlertModal("Chyba ukládání", `Nepodařilo se uložit úpravy obrázku: ${error.message}`);
+            hideLoading();
+        }
+    }
 
-        actionsCell.innerHTML = `
-            ${editButtonHtml}
-            ${deleteButtonHtml}
-        `;
-        
-        if (isEditMode && isOwner && !isInitialLink) {
+
+    function openImageModal(index) {
+        if (index < 0 || index >= galleryImagesData.length) return;
+        currentModalImageIndex = index;
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-img');
+        if(!modal || !modalImg) return;
+
+        modalImg.src = galleryImagesData[index].url;
+        modalImg.alt = galleryImagesData[index].name || 'Zvětšený obrázek';
+        showModal(modal);
+    }
+
+    function closeImageModal() {
+        hideModal(document.getElementById('image-modal'));
+    }
+
+    function navigateImageModal(direction) {
+        const newIndex = currentModalImageIndex + direction;
+        if (newIndex >= 0 && newIndex < galleryImagesData.length) {
+            openImageModal(newIndex);
+        } else if (galleryImagesData.length > 0) {
+            currentModalImageIndex = (newIndex < 0) ? galleryImagesData.length - 1 : 0;
+            openImageModal(currentModalImageIndex);
+        }
+    }
+
+    // --- Externí odkazy (ukládá do Firestore) ---
+    function renderExternalLinks() {
+        const tableBody = document.querySelector('#links-table tbody');
+        if (!tableBody) {
+            console.error("Table body for links not found!");
+            return;
+        }
+        tableBody.innerHTML = '';
+
+        if (externalLinksData.length === 0) {
+            const row = tableBody.insertRow();
+            const cell = row.insertCell();
+            cell.colSpan = 4;
+            cell.textContent = 'Žádné externí odkazy k zobrazení.';
+            cell.style.textAlign = 'center';
+            return;
+        }
+
+        externalLinksData.forEach((link, index) => {
+            const row = tableBody.insertRow();
+            const isOwner = currentUserId && link.userId === currentUserId;
+
+            row.insertCell().innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
+            
+            const titleCell = row.insertCell();
+            const anchor = document.createElement('a');
+            anchor.href = link.url;
+            anchor.target = "_blank";
+            anchor.rel = "noopener noreferrer";
+            anchor.textContent = link.title;
+            titleCell.appendChild(anchor);
+            
+            row.insertCell().textContent = link.url;
+
+            const actionsCell = row.insertCell();
+            actionsCell.className = 'edit-mode-only';
+            actionsCell.innerHTML = `
+                <button class="button btn-secondary edit-link-btn ${isOwner ? '' : 'hidden'}" data-index="${index}">Editovat</button>
+                <button class="button btn-danger delete-link-btn ${isOwner ? '' : 'hidden'}" data-index="${index}">Smazat</button>
+            `;
             actionsCell.querySelector('.edit-link-btn')?.addEventListener('click', () => editLink(link.id));
             actionsCell.querySelector('.delete-link-btn')?.addEventListener('click', () => deleteLinkFromFirestore(link.id));
+        });
+    }
+
+    document.getElementById('add-link-btn')?.addEventListener('click', addLink);
+
+    function addLink() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro přidání odkazu se musíte přihlásit.");
+            return;
         }
-    });
-}
-
-document.getElementById('add-link-btn')?.addEventListener('click', addLink);
-
-let editingLinkFirebaseId = null;
-function addLink() {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro přidání odkazu se musíte přihlásit.");
-        return;
-    }
-    editingLinkFirebaseId = null;
-    document.getElementById('edit-link-title').value = '';
-    document.getElementById('edit-link-url').value = '';
-    showModal(document.getElementById('edit-link-modal'));
-}
-
-async function editLink(linkId) {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro úpravu odkazu se musíte přihlásit.");
-        return;
-    }
-    editingLinkFirebaseId = linkId;
-    const link = externalLinksData.find(l => l.id === linkId);
-    if (!link || link.userId !== currentUserId) { // Kontrola vlastnictví
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tento odkaz. Můžete upravit pouze své vlastní odkazy.");
-        return;
-    }
-    if (link) {
-        document.getElementById('edit-link-title').value = link.title;
-        document.getElementById('edit-link-url').value = link.url;
+        editingLinkFirebaseId = null;
+        document.getElementById('edit-link-title').value = '';
+        document.getElementById('edit-link-url').value = '';
         showModal(document.getElementById('edit-link-modal'));
     }
-}
 
-async function saveEditedLink() {
-    if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro úpravu odkazu se musíte přihlásit.");
-        return;
+    let editingLinkFirebaseId = null;
+    async function editLink(linkId) {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro úpravu odkazu se musíte přihlásit.");
+            return;
+        }
+        editingLinkFirebaseId = linkId;
+        const link = externalLinksData.find(l => l.id === linkId);
+        if (!link || link.userId !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tento odkaz. Můžete upravit pouze své vlastní odkazy.");
+            return;
+        }
+        if (link) {
+            document.getElementById('edit-link-title').value = link.title;
+            document.getElementById('edit-link-url').value = link.url;
+            showModal(document.getElementById('edit-link-modal'));
+        }
     }
-    const title = document.getElementById('edit-link-title').value.trim();
-    const url = document.getElementById('edit-link-url').value.trim();
 
-    if (!title || !url || !isValidHttpUrl(url)) {
-        showAlertModal("Chybějící/neplatné údaje", "Zadejte platný název a URL (http:// nebo https://) pro odkaz.");
-        return;
-    }
+    async function saveEditedLink() {
+        if (!currentUserId) {
+            showAlertModal("Uložení selhalo", "Pro úpravu odkazu se musíte přihlásit.");
+            return;
+        }
+        const title = document.getElementById('edit-link-title').value.trim();
+        const url = document.getElementById('edit-link-url').value.trim();
 
-    showLoading("Ukládám odkaz...");
-    try {
-        if (editingLinkFirebaseId === null) { // Přidání nového odkazu
-            const newLink = {
-                id: `link-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,
-                title, url,
-                createdAt: Date.now(),
-                userId: currentUserId
-            };
-            externalLinksData.push(newLink);
-            showAlertModal("Odkaz přidán", `Odkaz "${title}" byl přidán do cloudu.`);
-        } else { // Úprava existujícího odkazu
-            const index = externalLinksData.findIndex(l => l.id === editingLinkFirebaseId);
-            if (index !== -1 && externalLinksData[index].userId === currentUserId) { // Kontrola vlastnictví
-                externalLinksData[index].title = title;
-                externalLinksData[index].url = url;
-                showAlertModal("Odkaz upraven", `Odkaz "${title}" byl upraven v cloudu.`);
+        if (!title || !url || !isValidHttpUrl(url)) {
+            showAlertModal("Chybějící/neplatné údaje", "Zadejte platný název a URL (http:// nebo https://) pro odkaz.");
+            return;
+        }
+
+        showLoading("Ukládám odkaz...");
+        try {
+            if (editingLinkFirebaseId === null) {
+                const newLink = {
+                    id: `link-${Date.now()}-${Math.random().toString(36).substr(2,5)}`,
+                    title, url,
+                    createdAt: Date.now(), // ZMĚNA ZDE: Používáme Date.now() pro časový otisk na straně klienta
+                    userId: currentUserId
+                };
+                externalLinksData.push(newLink);
+                showAlertModal("Odkaz přidán", `Odkaz "${title}" byl přidán do cloudu.`);
             } else {
-                showAlertModal("Chyba", "Odkaz k úpravě nebyl nalezen nebo nemáte oprávnění.");
-            }
-        }
-        await saveDataToFirestore();
-        hideModal(document.getElementById('edit-link-modal'));
-        hideLoading();
-    } catch (error) {
-        console.error('Chyba při ukládání odkazu do Firestore:', error);
-        showAlertModal("Chyba ukládání", `Nepodařilo se uložit odkaz: ${error.message}`);
-        hideLoading();
-    }
-}
-document.getElementById('save-edit-link-btn')?.addEventListener('click', saveEditedLink);
-document.getElementById('cancel-edit-link-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-link-modal')));
-
-async function deleteLinkFromFirestore(idToDelete) {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro smazání odkazu se musíte přihlásit.");
-        return;
-    }
-    const linkToDelete = externalLinksData.find(l => l.id === idToDelete);
-    if (!linkToDelete || linkToDelete.userId !== currentUserId) { // Kontrola vlastnictví
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tento odkaz. Můžete smazat pouze své vlastní odkazy.");
-        return;
-    }
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Smazat odkaz?", `Opravdu smazat odkaz "${linkToDelete.title}"? Tato akce je nevratná!`) :
-        confirm(`Smazat odkaz "${linkToDelete.title}"?`)
-    );
-    if (confirmed) {
-        showLoading("Mažu odkaz...");
-        try {
-            externalLinksData = externalLinksData.filter(link => link.id !== idToDelete);
-            await saveDataToFirestore();
-            showAlertModal("Odkaz smazán", "Odkaz byl úspěšně smazán z cloudu.");
-            hideLoading();
-        } catch (error) {
-            console.error('Chyba při mazání odkazu z Firestore:', error);
-            showAlertModal("Chyba mazání", `Nepodařilo se smazat odkaz: ${error.message}`);
-            hideLoading();
-        }
-    }
-}
-
-// --- Nové funkce pro editaci portfolia (ukládá do Firestore) ---
-let editingPortfolioItemId = null;
-
-// Připojíme k window, aby se dala volat přímo z HTML onclick atributu
-window.editPortfolioItem = async function(itemId) {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro úpravu položky se musíte přihlásit.");
-        return;
-    }
-    editingPortfolioItemId = itemId;
-    const item = {
-        title: editableContentData[`${itemId}-title`] || '',
-        desc1: editableContentData[`${itemId}-desc-1`] || '',
-        desc2: editableContentData[`${itemId}-desc-2`] || '',
-        linkText: editableContentData[`${itemId}-link-text`] || '',
-        linkUrl: editableContentData[`${itemId}-link-url`] || '',
-        userId: editableContentData[`${itemId}-userId`] // Uložený userId pro kontrolu vlastnictví
-    };
-
-    if (!item.title || item.userId !== currentUserId) { // Kontrola vlastnictví
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tuto položku portfolia. Můžete upravit pouze své vlastní položky.");
-        return;
-    }
-
-    document.getElementById('edit-portfolio-title').value = item.title;
-    document.getElementById('edit-portfolio-desc-1').value = item.desc1;
-    document.getElementById('edit-portfolio-desc-2').value = item.desc2;
-    document.getElementById('edit-portfolio-link-text').value = item.linkText;
-    document.getElementById('edit-portfolio-link-url').value = item.linkUrl;
-
-    document.getElementById('delete-portfolio-btn').classList.remove('hidden');
-    showModal(document.getElementById('edit-portfolio-modal'));
-}
-
-document.getElementById('save-edit-portfolio-btn')?.addEventListener('click', saveEditedPortfolioItem);
-document.getElementById('cancel-edit-portfolio-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-portfolio-modal')));
-document.getElementById('delete-portfolio-btn')?.addEventListener('click', deletePortfolioItem);
-document.getElementById('add-portfolio-item-btn')?.addEventListener('click', addPortfolioItem); // Přesunuto nahoru k ostatním listenerům v DOMContentLoaded
-
-function addPortfolioItem() {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro přidání položky se musíte přihlásit.");
-        return;
-    }
-    editingPortfolioItemId = null;
-    document.getElementById('edit-portfolio-title').value = '';
-    document.getElementById('edit-portfolio-desc-1').value = '';
-    document.getElementById('edit-portfolio-desc-2').value = '';
-    document.getElementById('edit-portfolio-link-text').value = '';
-    document.getElementById('edit-portfolio-link-url').value = '';
-    document.getElementById('delete-portfolio-btn').classList.add('hidden');
-    showModal(document.getElementById('edit-portfolio-modal'));
-}
-
-async function saveEditedPortfolioItem() {
-    if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro úpravu položky se musíte přihlásit.");
-        return;
-    }
-    const title = document.getElementById('edit-portfolio-title').value.trim();
-    const desc1 = document.getElementById('edit-portfolio-desc-1').value.trim();
-    const desc2 = document.getElementById('edit-portfolio-desc-2').value.trim();
-    const linkText = document.getElementById('edit-portfolio-link-text').value.trim();
-    const linkUrl = document.getElementById('edit-portfolio-link-url').value.trim();
-
-    if (!title || !desc1) {
-        showAlertModal("Chybějící údaje", "Vyplňte prosím název a první popis položky portfolia.");
-        return;
-    }
-    if (linkUrl && !isValidHttpUrl(linkUrl)) {
-        showAlertModal("Neplatná URL", "Zadejte platnou URL adresu pro odkaz (http:// nebo https://).");
-        return;
-    }
-
-    showLoading("Ukládám položku portfolia...");
-    try {
-        const newId = editingPortfolioItemId || `portfolio-item-${Date.now()}`;
-        
-        editableContentData[`${newId}-title`] = title;
-        editableContentData[`${newId}-desc-1`] = desc1;
-        editableContentData[`${newId}-desc-2`] = desc2;
-        editableContentData[`${newId}-link-text`] = linkText;
-        editableContentData[`${newId}-link-url`] = linkUrl;
-        editableContentData[`${newId}-userId`] = currentUserId; // Uložení userId s položkou
-        editableContentData[`${newId}-createdAt`] = Date.now();
-
-        await saveDataToFirestore();
-
-        if (!editingPortfolioItemId) {
-            showAlertModal("Položka přidána", `Nová položka portfolia "${title}" byla přidána do cloudu.`);
-        } else {
-            showAlertModal("Položka upravena", `Položka portfolia "${title}" byla upravena v cloudu.`);
-        }
-        hideModal(document.getElementById('edit-portfolio-modal'));
-        hideLoading();
-        editingPortfolioItemId = null;
-    } catch (error) {
-        console.error('Chyba při ukládání položky portfolia do Firestore:', error);
-        showAlertModal("Chyba ukládání", `Nepodařilo se uložit položku portfolia: ${error.message}`);
-        hideLoading();
-    }
-}
-
-async function deletePortfolioItem() {
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
-        return;
-    }
-    if (!editingPortfolioItemId) return;
-
-    if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) { // Kontrola vlastnictví
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
-        return;
-    }
-
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
-        confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
-    );
-
-    if (confirmed) {
-        showLoading("Mažu položku portfolia...");
-        try {
-            // Smažeme všechny související záznamy pro danou portfolio položku
-            for (const key in editableContentData) {
-                if (key.startsWith(editingPortfolioItemId)) {
-                    delete editableContentData[key];
+                const index = externalLinksData.findIndex(l => l.id === editingLinkFirebaseId);
+                if (index !== -1 && externalLinksData[index].userId === currentUserId) {
+                    externalLinksData[index].title = title;
+                    externalLinksData[index].url = url;
+                    showAlertModal("Odkaz upraven", `Odkaz "${title}" byl upraven v cloudu.`);
+                } else {
+                    showAlertModal("Chyba", "Odkaz k úpravě nebyl nalezen nebo nemáte oprávnění.");
                 }
             }
-
             await saveDataToFirestore();
-            showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu.");
+            hideModal(document.getElementById('edit-link-modal'));
             hideLoading();
         } catch (error) {
-            console.error('Chyba při mazání položky portfolia z Firestore:', error);
-            showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
+            console.error('Chyba při ukládání odkazu do Firestore:', error);
+            showAlertModal("Chyba ukládání", `Nepodařilo se uložit odkaz: ${error.message}`);
             hideLoading();
         }
-        hideModal(document.getElementById('edit-portfolio-modal'));
-        editingPortfolioItemId = null;
     }
-}
 
-// --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
-// Nyní integrováno přímo do hlavního souboru, ale stále jako IIFE pro izolaci scope.
-(function() {
-    'use strict';
-    
-    // Funkce pro skrytí tlačítek správy dat
-    function hideDataManagementButtons() {
-        const container = document.getElementById('data-management'); // Používáme ID, ne třídu
-        if (container) {
-            container.style.display = 'none';
+    async function deleteLinkFromFirestore(idToDelete) {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro smazání odkazu se musíte přihlásit.");
+            return;
+        }
+        const linkToDelete = externalLinksData.find(l => l.id === idToDelete);
+        if (!linkToDelete || linkToDelete.userId !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tento odkaz. Můžete smazat pouze své vlastní odkazy.");
+            return;
+        }
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Smazat odkaz?", `Opravdu smazat odkaz "${linkToDelete.title}"? Tato akce je nevratná!`) :
+            confirm(`Smazat odkaz "${linkToDelete.title}"?`)
+        );
+        if (confirmed) {
+            showLoading("Mažu odkaz...");
+            try {
+                externalLinksData = externalLinksData.filter(link => link.id !== idToDelete);
+                await saveDataToFirestore();
+                showAlertModal("Odkaz smazán", "Odkaz byl úspěšně smazán z cloudu.");
+                hideLoading();
+            } catch (error) {
+                console.error('Chyba při mazání odkazu z Firestore:', error);
+                showAlertModal("Chyba mazání", `Nepodařilo se smazat odkaz: ${error.message}`);
+                hideLoading();
+            }
         }
     }
-    
-    // Funkce pro zobrazení tlačítek správy dat
-    function showDataManagementButtons() {
-        const container = document.getElementById('data-management'); // Používáme ID, ne třídu
-        if (container) {
-            container.style.display = 'flex'; // Změna na flex, pokud používáš flexbox pro layout
-        }
+
+
+    // --- Modální okna (beze změny, jen se teď volají s novou logikou) ---
+    function showModal(modalElement) {
+        if(modalElement) modalElement.classList.add('visible');
     }
-    
-    // Sledování změn na body elementu
-    function observeEditModeClass() {
-        const body = document.body;
-        
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    if (body.classList.contains('edit-mode')) {
-                        showDataManagementButtons();
-                        // Tyto tlačítka se nyní zobrazují/skrývají v applyEditableContent()
-                        // document.getElementById('add-portfolio-item-btn')?.classList.remove('hidden');
-                        // document.getElementById('add-link-btn')?.classList.remove('hidden');
-                    } else {
-                        hideDataManagementButtons();
-                        // document.getElementById('add-portfolio-item-btn')?.classList.add('hidden');
-                        // document.getElementById('add-link-btn')?.classList.add('hidden');
-                    }
-                }
+    function hideModal(modalElement) {
+        if(modalElement) modalElement.classList.remove('visible');
+    }
+
+    const saveCodeModalEl = document.getElementById('save-code-modal');
+    const codeTitleInputEl = document.getElementById('code-title-input');
+    const confirmSaveCodeBtnEl = document.getElementById('confirm-save-code-btn');
+    const cancelSaveCodeBtnEl = document.getElementById('cancel-save-code-btn');
+
+    if(confirmSaveCodeBtnEl && codeTitleInputEl) {
+        confirmSaveCodeBtnEl.addEventListener('click', () => {
+            const title = codeTitleInputEl.value.trim();
+            const editor = document.getElementById('html-editor');
+            const code = editor ? editor.value : '';
+            if (title && code) {
+                saveHtmlCodeToFirestore(title, code);
+                if(saveCodeModalEl) hideModal(saveCodeModalEl);
+                codeTitleInputEl.value = '';
+            } else {
+                showAlertModal("Chybějící údaje", "Zadejte název a ujistěte se, že kód není prázdný.");
+            }
+        });
+    }
+    if(cancelSaveCodeBtnEl) cancelSaveCodeBtnEl.addEventListener('click', () => {
+        if(saveCodeModalEl) hideModal(saveCodeModalEl);
+        if(codeTitleInputEl) codeTitleInputEl.value = '';
+    });
+
+    if (!window.showAlertModal) {
+        window.showAlertModal = (title, message) => {
+            console.warn("Custom showAlertModal not fully initialized, using native alert.");
+            return new Promise((resolve) => {
+                alert(`${title}\n\n${message}`);
+                resolve(true);
             });
-        });
-        
-        observer.observe(body, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-        
-        // Kontrola současného stavu při načtení
-        if (body.classList.contains('edit-mode')) {
-            showDataManagementButtons();
-            // document.getElementById('add-portfolio-item-btn')?.classList.remove('hidden');
-            // document.getElementById('add-link-btn')?.classList.remove('hidden');
-        } else {
-            hideDataManagementButtons();
-            // document.getElementById('add-portfolio-item-btn')?.classList.add('hidden');
-            // document.getElementById('add-link-btn')?.classList.add('hidden');
-        }
+        };
+    }
+    if (!window.showConfirmModal) {
+        window.showConfirmModal = (title, message, buttonTexts = {}) => {
+            console.warn("Custom showConfirmModal not fully initialized, using native confirm.");
+            return new Promise((resolve) => {
+                resolve(confirm(`${title}\n\n${message}`));
+            });
+        };
+    }
+
+    const alertModalEl = document.getElementById('alert-modal');
+    const alertModalTitleEl = document.getElementById('alert-modal-title');
+    const alertModalMessageEl = document.getElementById('alert-modal-message');
+    let alertModalOkBtnEl = document.getElementById('alert-modal-ok-btn');
+
+    if(alertModalEl && alertModalTitleEl && alertModalMessageEl && alertModalOkBtnEl) {
+        window.showAlertModal = (title, message) => {
+            return new Promise((resolve) => {
+                alertModalTitleEl.textContent = title;
+                alertModalMessageEl.textContent = message;
+                
+                const newOkBtn = alertModalOkBtnEl.cloneNode(true);
+                alertModalOkBtnEl.parentNode.replaceChild(newOkBtn, alertModalOkBtnEl);
+                alertModalOkBtnEl = newOkBtn;
+                
+                alertModalOkBtnEl.onclick = () => {
+                    hideModal(alertModalEl);
+                    resolve(true);
+                };
+                showModal(alertModalEl);
+            });
+        };
+    }
+
+
+    const confirmModalEl = document.getElementById('confirm-modal');
+    const confirmModalTitleEl = document.getElementById('confirm-modal-title');
+    const confirmModalMessageEl = document.getElementById('confirm-modal-message');
+    let confirmModalOkBtnEl = document.getElementById('confirm-modal-ok-btn');
+    let confirmModalCancelBtnEl = document.getElementById('confirm-modal-cancel-btn');
+
+    if(confirmModalEl && confirmModalTitleEl && confirmModalMessageEl && confirmModalOkBtnEl && confirmModalCancelBtnEl) {
+        window.showConfirmModal = (title, message, buttonTexts = {}) => {
+            return new Promise((resolve) => {
+                confirmModalTitleEl.textContent = title;
+                confirmModalMessageEl.textContent = message;
+
+                const newOkBtn = confirmModalOkBtnEl.cloneNode(true);
+                newOkBtn.textContent = buttonTexts.okText || 'Potvrdit';
+                confirmModalOkBtnEl.parentNode.replaceChild(newOkBtn, confirmModalOkBtnEl);
+                confirmModalOkBtnEl = newOkBtn;
+                
+                const newCancelBtn = confirmModalCancelBtnEl.cloneNode(true);
+                newCancelBtn.textContent = buttonTexts.cancelText || 'Zrušit';
+                confirmModalCancelBtnEl.parentNode.replaceChild(newCancelBtn, confirmModalCancelBtnEl);
+                confirmModalCancelBtnEl = newCancelBtn;
+
+                confirmModalOkBtnEl.onclick = () => {
+                    hideModal(confirmModalEl);
+                    resolve(true);
+                };
+                confirmModalCancelBtnEl.onclick = () => {
+                    hideModal(confirmModalEl);
+                    resolve(false);
+                };
+                showModal(confirmModalEl);
+            });
+        };
     }
     
-    // Inicializace
-    document.addEventListener('DOMContentLoaded', observeEditModeClass); // Spustí se, až je DOM připraven
-    
-    // Připojujeme tyto pomocné funkce k window pro případné budoucí volání z HTML nebo jiných skriptů
-    window.hideDataManagementButtons = hideDataManagementButtons;
-    window.showDataManagementButtons = showDataManagementButtons;
-    
-})();
+    window.showSection = showSection;
 
-// --- Pomocní script pro heslo před přechodem k přihlášení a registrace (od Claude.AI) ---
-(function() {
-    'use strict';
 
-    const HARDCODED_ACCESS_PASSWORD_HASH = '256b5537a792c98a13c9b32bb6b6c90f0e63531fe77c3b4dee69ee1ca82c984b';
+    // --- Nové funkce pro editaci portfolia (ukládá do Firestore) ---
+    let editingPortfolioItemId = null;
 
-    const loginButton = document.getElementById('login-button');
+    async function editPortfolioItem(itemId) {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro úpravu položky se musíte přihlásit.");
+            return;
+        }
+        editingPortfolioItemId = itemId;
+        const item = {
+            title: editableContentData[`${itemId}-title`] || '',
+            desc1: editableContentData[`${itemId}-desc-1`] || '',
+            desc2: editableContentData[`${itemId}-desc-2`] || '',
+            linkText: editableContentData[`${itemId}-link-text`] || '',
+            linkUrl: editableContentData[`${itemId}-link-url`] || '',
+            userId: editableContentData[`${itemId}-userId`]
+        };
 
-    // Inicializace hashování a přihlašovacího modalu se provede až po DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', () => {
+        if (!item.title || item.userId !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tuto položku portfolia. Můžete upravit pouze své vlastní položky.");
+            return;
+        }
+
+        document.getElementById('edit-portfolio-title').value = item.title;
+        document.getElementById('edit-portfolio-desc-1').value = item.desc1;
+        document.getElementById('edit-portfolio-desc-2').value = item.desc2;
+        document.getElementById('edit-portfolio-link-text').value = item.linkText;
+        document.getElementById('edit-portfolio-link-url').value = item.linkUrl;
+
+        document.getElementById('delete-portfolio-btn').classList.remove('hidden');
+        showModal(document.getElementById('edit-portfolio-modal'));
+    }
+
+    document.getElementById('save-edit-portfolio-btn')?.addEventListener('click', saveEditedPortfolioItem);
+    document.getElementById('cancel-edit-portfolio-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-portfolio-modal')));
+    document.getElementById('delete-portfolio-btn')?.addEventListener('click', deletePortfolioItem);
+    document.getElementById('add-portfolio-item-btn')?.addEventListener('click', addPortfolioItem);
+
+    function addPortfolioItem() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro přidání položky se musíte přihlásit.");
+            return;
+        }
+        editingPortfolioItemId = null;
+        document.getElementById('edit-portfolio-title').value = '';
+        document.getElementById('edit-portfolio-desc-1').value = '';
+        document.getElementById('edit-portfolio-desc-2').value = '';
+        document.getElementById('edit-portfolio-link-text').value = '';
+        document.getElementById('edit-portfolio-link-url').value = '';
+        document.getElementById('delete-portfolio-btn').classList.add('hidden');
+        showModal(document.getElementById('edit-portfolio-modal'));
+    }
+
+    async function saveEditedPortfolioItem() {
+        if (!currentUserId) {
+            showAlertModal("Uložení selhalo", "Pro úpravu položky se musíte přihlásit.");
+            return;
+        }
+        const title = document.getElementById('edit-portfolio-title').value.trim();
+        const desc1 = document.getElementById('edit-portfolio-desc-1').value.trim();
+        const desc2 = document.getElementById('edit-portfolio-desc-2').value.trim();
+        const linkText = document.getElementById('edit-portfolio-link-text').value.trim();
+        const linkUrl = document.getElementById('edit-portfolio-link-url').value.trim();
+
+        if (!title || !desc1) {
+            showAlertModal("Chybějící údaje", "Vyplňte prosím název a první popis položky portfolia.");
+            return;
+        }
+        if (linkUrl && !isValidHttpUrl(linkUrl)) {
+            showAlertModal("Neplatná URL", "Zadejte platnou URL adresu pro odkaz (http:// nebo https://).");
+            return;
+        }
+
+        showLoading("Ukládám položku portfolia...");
+        try {
+            const newId = editingPortfolioItemId || `portfolio-item-${Date.now()}`;
+            
+            editableContentData[`${newId}-title`] = title;
+            editableContentData[`${newId}-desc-1`] = desc1;
+            editableContentData[`${newId}-desc-2`] = desc2;
+            editableContentData[`${newId}-link-text`] = linkText;
+            editableContentData[`${newId}-link-url`] = linkUrl;
+            editableContentData[`${newId}-userId`] = currentUserId;
+            editableContentData[`${newId}-createdAt`] = Date.now(); // ZMĚNA ZDE: Používáme Date.now()
+
+            await saveDataToFirestore(); 
+
+            if (!editingPortfolioItemId) {
+                showAlertModal("Položka přidána", `Nová položka portfolia "${title}" byla přidána do cloudu.`);
+            } else {
+                showAlertModal("Položka upravena", `Položka portfolia "${title}" byla upravena v cloudu.`);
+            }
+            hideModal(document.getElementById('edit-portfolio-modal'));
+            hideLoading();
+            editingPortfolioItemId = null;
+        } catch (error) {
+            console.error('Chyba při ukládání položky portfolia do Firestore:', error);
+            showAlertModal("Chyba ukládání", `Nepodařilo se uložit položku portfolia: ${error.message}`);
+            hideLoading();
+        }
+    }
+
+    async function deletePortfolioItem() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
+            return;
+        }
+        if (!editingPortfolioItemId) return;
+
+        if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
+            return;
+        }
+
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
+            confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
+        );
+
+        if (confirmed) {
+            showLoading("Mažu položku portfolia...");
+            try {
+                delete editableContentData[`${editingPortfolioItemId}-title`];
+                delete editableContentData[`${editingPortfolioItemId}-desc-1`];
+                delete editableContentData[`${editingPortfolioItemId}-desc-2`];
+                delete editableContentData[`${editingPortfolioItemId}-link-text`];
+                delete editableContentData[`${editingPortfolioItemId}-link-url`];
+                delete editableContentData[`${editingPortfolioItemId}-userId`];
+                delete editableContentData[`${editingPortfolioItemId}-createdAt`]; // ZMĚNA ZDE: Smažeme i createdAt
+
+                await saveDataToFirestore();
+                showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu.");
+                hideLoading();
+            } catch (error) {
+                console.error('Chyba při mazání položky portfolia z Firestore:', error);
+                showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
+                hideLoading();
+            }
+            hideModal(document.getElementById('edit-portfolio-modal'));
+            editingPortfolioItemId = null;
+        }
+    }
+
+    // --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
+    (function() {
+        'use strict';
+        
+        // Funkce pro skrytí tlačítek správy dat
+        function hideDataManagementButtons() {
+            const container = document.querySelector('.function-setupDataManagement');
+            if (container) {
+                container.style.display = 'none';
+            }
+        }
+        
+        // Funkce pro zobrazení tlačítek správy dat
+        function showDataManagementButtons() {
+            const container = document.querySelector('.function-setupDataManagement');
+            if (container) {
+                container.style.display = 'flex'; // Změna na flex, pokud používáš flexbox pro layout
+            }
+        }
+        
+        // Sledování změn na body elementu
+        function observeEditMode() {
+            const body = document.body;
+            
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        if (body.classList.contains('edit-mode')) {
+                            showDataManagementButtons();
+                        } else {
+                            hideDataManagementButtons();
+                        }
+                    }
+                });
+            });
+            
+            observer.observe(body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+            
+            // Kontrola současného stavu při načtení
+            if (body.classList.contains('edit-mode')) {
+                showDataManagementButtons();
+            } else {
+                hideDataManagementButtons();
+            }
+        }
+        
+        // Inicializace
+        function initDataManagementVisibility() {
+            hideDataManagementButtons();
+            observeEditMode();
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDataManagementVisibility);
+        } else {
+            initDataManagementVisibility();
+        }
+        
+        window.hideDataManagementButtons = hideDataManagementButtons;
+        window.showDataManagementButtons = showDataManagementButtons;
+        
+    })();
+
+    // --- Pomocní script pro heslo před přechodem k přihlášení a registrace (od Claude.AI) ---
+    (function() {
+        'use strict';
+
+        const HARDCODED_ACCESS_PASSWORD_HASH = '256b5537a792c98a13c9b32bb6b6c90f0e63531fe77c3b4dee69ee1ca82c984b';
+
+        const loginButton = document.getElementById('login-button');
+
         if (!loginButton) {
             console.warn("Gemini Helper: Tlačítko pro přihlášení (login-button) nebylo nalezeno. Pomocný script se nespustí.");
             return;
         }
-        loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
-    });
 
+        async function hashString(text) {
+            const textEncoder = new TextEncoder();
+            const data = textEncoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hexHash;
+        }
 
-    async function hashString(text) {
-        const textEncoder = new TextEncoder();
-        const data = textEncoder.encode(text);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hexHash;
-    }
+        function showCustomPromptModal(modalId, inputId, errorId = null) {
+            return new Promise(resolve => {
+                const modal = document.getElementById(modalId);
+                const input = document.getElementById(inputId);
+                const okBtn = modal.querySelector('#' + modalId + ' #local-password-ok-btn');
+                const cancelBtn = modal.querySelector('#' + modalId + ' #local-password-cancel-btn');
+                const errorEl = errorId ? document.getElementById(errorId) : null;
 
-    function showCustomPromptModal(modalId, inputId, errorId = null) {
-        return new Promise(resolve => {
-            const modal = document.getElementById(modalId);
-            const input = document.getElementById(inputId);
-            // Query selectory pro tlačítka v custom prompt modalu
-            const okBtn = modal.querySelector('#' + modalId + ' #local-password-ok-btn');
-            const cancelBtn = modal.querySelector('#' + modalId + ' #local-password-cancel-btn');
-            const errorEl = errorId ? document.getElementById(errorId) : null;
+                if (!modal || !input || !okBtn || !cancelBtn) {
+                    console.error(`Chyba: Chybí HTML elementy pro vlastní prompt modal (${modalId}). Zkontrolujte ID.`);
+                    resolve(null);
+                    return;
+                }
 
-            if (!modal || !input || !okBtn || !cancelBtn) {
-                console.error(`Chyba: Chybí HTML elementy pro vlastní prompt modal (${modalId}). Zkontrolujte ID.`);
-                resolve(null);
+                input.value = '';
+                if (errorEl) errorEl.textContent = '';
+
+                const clearListeners = () => {
+                    okBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    input.removeEventListener('keydown', handleEnterKey);
+                };
+
+                const handleEnterKey = (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        okBtn.click();
+                    }
+                };
+                input.addEventListener('keydown', handleEnterKey);
+
+                okBtn.onclick = () => {
+                    clearListeners();
+                    window.hideModal(modal);
+                    resolve(input.value);
+                };
+                cancelBtn.onclick = () => {
+                    clearListeners();
+                    window.hideModal(modal);
+                    resolve(null);
+                };
+
+                window.showModal(modal);
+                input.focus();
+            });
+        }
+
+        async function handleLocalAccessPasswordHashedCustomModal() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                console.log("Gemini Helper: Uživatel je již přihlášen přes Supabase. Lokální hardcoded heslo přeskočeno.");
+                window.showAuthModal();
                 return;
             }
 
-            input.value = '';
-            if (errorEl) errorEl.textContent = '';
-
-            const clearListeners = () => {
-                okBtn.onclick = null;
-                cancelBtn.onclick = null;
-                input.removeEventListener('keydown', handleEnterKey);
-            };
-
-            const handleEnterKey = (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    okBtn.click();
-                }
-            };
-            input.addEventListener('keydown', handleEnterKey);
-
-            okBtn.onclick = () => {
-                clearListeners();
-                hideModal(modal);
-                resolve(input.value);
-            };
-            cancelBtn.onclick = () => {
-                clearListeners();
-                hideModal(modal);
-                resolve(null);
-            };
-
-            showModal(modal);
-            input.focus();
-        });
-    }
-
-    async function handleLocalAccessPasswordHashedCustomModal() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && session.user) {
-            console.log("Gemini Helper: Uživatel je již přihlášen přes Supabase. Lokální hardcoded heslo přeskočeno.");
-            showAuthModal();
-            return;
-        }
-
-        const enteredPassword = await showCustomPromptModal(
-            'local-password-modal',
-            'local-password-input',
-            'local-password-error'
-        );
-        
-        if (enteredPassword === null) {
-            console.log("Gemini Helper: Zadání hesla zrušeno uživatelem.");
-            const errorEl = document.getElementById('local-password-error');
-            if (errorEl) errorEl.textContent = '';
-            return;
-        }
-
-        const enteredPasswordHash = await hashString(enteredPassword);
-        
-        if (enteredPasswordHash === HARDCODED_ACCESS_PASSWORD_HASH) {
-            console.log("Gemini Helper: Lokální heslo (hash) správně, přístup povolen.");
-            showAuthModal();
-        } else {
-            const errorEl = document.getElementById('local-password-error');
-            if (errorEl) {
-                errorEl.textContent = "Chybné heslo! Zkuste to znovu.";
-                showModal(document.getElementById('local-password-modal'));
-                document.getElementById('local-password-input').focus();
-            } else {
-                alert("Chybné heslo. Přístup zamítnut.");
+            const enteredPassword = await showCustomPromptModal(
+                'local-password-modal',
+                'local-password-input',
+                'local-password-error'
+            );
+            
+            if (enteredPassword === null) {
+                console.log("Gemini Helper: Zadání hesla zrušeno uživatelem.");
+                const errorEl = document.getElementById('local-password-error');
+                if (errorEl) errorEl.textContent = '';
+                return;
             }
-            console.log("Gemini Helper: Lokální heslo (hash) chybné, přístup zamítnut.");
+
+            const enteredPasswordHash = await hashString(enteredPassword);
+            
+            if (enteredPasswordHash === HARDCODED_ACCESS_PASSWORD_HASH) {
+                console.log("Gemini Helper: Lokální heslo (hash) správně, přístup povolen.");
+                window.showAuthModal();
+            } else {
+                const errorEl = document.getElementById('local-password-error');
+                if (errorEl) {
+                    errorEl.textContent = "Chybné heslo! Zkuste to znovu.";
+                    window.showModal(document.getElementById('local-password-modal'));
+                    document.getElementById('local-password-input').focus();
+                } else {
+                    alert("Chybné heslo. Přístup zamítnut.");
+                }
+                console.log("Gemini Helper: Lokální heslo (hash) chybné, přístup zamítnut.");
+            }
         }
-    }
 
-})();
+        loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
-// --- Pomocný script pro tlačítko odhlásit se ---
+    })();
+
+//tady je pomocní scrip pro tlačítko odhlásit se!
+
+ 
+// Specializovaný pomocný script pro správu viditelnosti tlačítka "Odhlásit se"
+
 (function() {
     'use strict';
 
+    // Získáme referenci na tlačítko "Odhlásit se"
     const logoutButton = document.getElementById('logout-button');
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!logoutButton) {
-            console.warn("Logout Button Helper: Tlačítko s ID 'logout-button' nebylo nalezeno. Script se nespustí.");
-            return;
+    // Pokud tlačítko neexistuje, script se nespustí, aby nedošlo k chybě.
+    if (!logoutButton) {
+        console.warn("Logout Button Helper: Tlačítko s ID 'logout-button' nebylo nalezeno. Script se nespustí.");
+        return;
+    }
+
+    // Supabase klient by měl být globálně dostupný (jak je nastaveno v hlavním scriptu)
+    if (typeof supabaseClient === 'undefined') {
+        console.error("Logout Button Helper: supabaseClient není definován. Ujistěte se, že Supabase SDK je načteno a inicializováno před tímto scriptem.");
+        logoutButton.classList.add('hidden'); // Skryjeme tlačítko pro jistotu
+        return;
+    }
+
+    // Nasloucháme změnám stavu autentizace od Supabase
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session && session.user) {
+            // Uživatel je přihlášen, zobrazíme tlačítko "Odhlásit se"
+            logoutButton.classList.remove('hidden');
+            console.log("Logout Button Helper: Uživatel přihlášen, tlačítko 'Odhlásit se' zobrazeno.");
+        } else {
+            // Uživatel není přihlášen, skryjeme tlačítko "Odhlásit se"
+            logoutButton.classList.add('hidden');
+            console.log("Logout Button Helper: Uživatel odhlášen, tlačítko 'Odhlásit se' skryto.");
         }
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (session && session.user) {
-                logoutButton.classList.remove('hidden');
-                console.log("Logout Button Helper: Uživatel přihlášen, tlačítko 'Odhlásit se' zobrazeno.");
-            } else {
-                logoutButton.classList.add('hidden');
-                console.log("Logout Button Helper: Uživatel odhlášen, tlačítko 'Odhlásit se' skryto.");
-            }
-        });
-
-        // Počáteční kontrola stavu při načtení stránky
-        supabaseClient.auth.getSession().then(({ data: { session } }) => {
-            if (session && session.user) {
-                logoutButton.classList.remove('hidden');
-            } else {
-                logoutButton.classList.add('hidden');
-            }
-        });
     });
 
-})();
+    // Počáteční kontrola stavu při načtení stránky, aby se tlačítko správně zobrazilo/skrylo
+    // (tato kontrola se spustí i z onAuthStateChange, ale pro jistotu ji lze nechat i zde pro okamžitou reakci DOM)
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session && session.user) {
+            logoutButton.classList.remove('hidden');
+        } else {
+            logoutButton.classList.add('hidden');
+        }
+    });
+
+})(); // Okamžitě spuštěná anonymní funkce
 
 </script>
 </body>
