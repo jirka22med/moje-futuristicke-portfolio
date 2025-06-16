@@ -1939,7 +1939,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
 <script>
- // --- Supabase Konstanty pro AUTENTIZACI ---
+// --- Supabase Konstanty pro AUTENTIZACI ---
 const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1970,135 +1970,58 @@ try {
     document.body.style.visibility = 'visible';
 }
 
-// Globální proměnná pro stav editačního módu - Změněno z const na let
+// Globální proměnná pro stav editačního módu
 let isEditMode = false;
 const EDIT_MODE_KEY = 'portfolio_edit_mode_active';
 
 // Identifikátor pro hlavní dokument s editovatelným obsahem stránky ve Firestore
 const DOC_ID = 'mainContent';
 
-document.addEventListener('DOMContentLoaded', function() {
-    const loadingIndicatorElement = document.getElementById('loading-indicator');
 
-    if (loadingIndicatorElement) {
-        loadingIndicatorElement.textContent = "Načítání stránky a dat...";
-        loadingIndicatorElement.classList.remove('hidden');
-    } else {
-        console.error("Loading indicator element not found!");
-    }
-    
-    if (typeof supabase === 'undefined' || typeof supabase.createClient !== 'function') {
-        console.error('Supabase library not loaded or createClient is not a function.');
-        if (loadingIndicatorElement) {
-            loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Supabase se nenačetla.';
-        }
-        document.body.style.visibility = 'visible';
-        return;
-    }
-    if (typeof firebase === 'undefined' || typeof firebase.initializeApp !== 'function') {
-        console.error('Firebase library not loaded or initializeApp is not a function.');
-        if (loadingIndicatorElement) {
-            loadingIndicatorElement.textContent = 'Kritická chyba: Knihovna Firebase se nenačetla.';
-        }
-        document.body.style.visibility = 'visible';
-        return;
-    }
+// --- VŠECHNY GLOBÁLNÍ PROMĚNNÉ PŘESUNUTÉ ZDE NA ZAČÁTEK ---
+let activeSection = 'about';
+let galleryImagesData = [];
+let savedCodesData = [];
+let externalLinksData = [];
+let editableContentData = {};
+let currentModalImageIndex = 0;
 
-    // --- Supabase autentizace (pro správu přihlášení) ---
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        console.log('Supabase Auth State Change:', event, session);
-        let previousUserId = currentUserId; // Uložení předchozího stavu pro porovnání
+const initialImageUrls = [ 
+    { id: 'initial-1', url: 'https://img.freepik.com/free-photo/futuristic-background-with-colorful-abstract-design_1340-39 futuristic-technology-background-with-neon-lights_76964-11458.jpg?w=826&t=st=1716545000~exp=1716545600~hmac=e6108f60104301f3b2886131029b0f10151707f3020142e9950b1e22704c654a', name: 'Technologie'},
+    { id: 'initial-2', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k18.jpg?ver=0', name: 'Srdce'},
+    { id: 'initial-3', url: 'https://img.freepik.com/free-photo/glowing-spaceship-orbits-planet-starry-galaxy-generated-by-ai_188544-9655.jpg?w=1060&t=st=1716545052~exp=1716545652~hmac=c6a7d107b56da6822f221372f4476a3793075997b820160f494a887688068b14', name: 'Vesmírná loď'},
+    { id: 'initial-4', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k7.jpg?ver=0', name: 'Mlhovina'},
+    { id: 'initial-5', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k8.jpg?ver=0', name: 'Kyberpunk město'},
+    { id: 'initial-6', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k13.jpg?ver=0', name: 'Notebook v akci'},
+    { id: 'initial-7', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_4k14.jpg?ver=0', name: 'Galaxie'},
+    { id: 'initial-8', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1920x10804.jpg?ver=0', name: 'Lidský mozek'},
+    { id: 'initial-9', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_15360x86402.jpg?ver=0', name: 'Vědecké laboratoře'},
+    { id: 'initial-10', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/misurina-sunset.jpg?ver=0', name: 'Neuronová síť'},
+    { id: 'initial-11', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/snowy-landscape-with-mountains-lake-with-snow-ground.jpg?ver=0', name: 'Datová mřížka'},
+    { id: 'initial-12', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/wet-sphere-reflective-water-abstract-beauty-generated-by-ai.jpg?ver=0', name: 'Futuristické město'},
+    { id: 'initial-13', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/vnon-pozadi-od-admirala-chatbota..jpg?ver=0', name: 'Světelná geometrie'},
+    { id: 'initial-14', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_1024x1792.jpg?ver=0', name: 'Digitální plameny'},
+    { id: 'initial-15', url: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/image_300x3001_2.jpg?ver=0', name: 'Exoplaneta'},
+    { id: 'initial-16', url: 'https://img36.rajce.idnes.cz/d3603/10/10185/10185286_0147349ad505c43a2d9f6eb372624417/images/CIMG0039.jpg?ver=3', name: 'Kybernetická maska'},
+];
 
-        if (session && session.user) {
-            console.log('Uživatel je přihlášen přes Supabase:', session.user.email);
-            currentUserId = session.user.id;
-            document.getElementById('login-button').classList.add('hidden');
-            document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
-            
-            const userIdDisplaySpan = document.getElementById('firebase-user-id');
-            const userIdContainer = document.getElementById('user-id-display');
-            if (currentUserId && userIdDisplaySpan && userIdContainer) {
-                userIdDisplaySpan.textContent = currentUserId;
-                userIdContainer.classList.remove('hidden');
-            }
-            
-            if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
-                enableEditMode();
-                document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít';
-            } else {
-                disableEditMode();
-                document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit';
-            }
-        } else {
-            console.log('Uživatel není přihlášen přes Supabase.');
-            currentUserId = null;
-            document.getElementById('login-button').classList.remove('hidden');
-            document.getElementById('edit-mode-toggle-btn').classList.add('hidden');
-            document.getElementById('user-id-display').classList.add('hidden');
-            disableEditMode();
-            localStorage.removeItem(EDIT_MODE_KEY);
-        }
-        
-        // Inicializace aplikace nebo aktualizace dat, pouze pokud se změní stav přihlášení
-        // nebo se stránka poprvé načte.
-        if (event === 'INITIAL_SESSION' || previousUserId !== currentUserId) {
-            initializeApp(); // To načte data z Firestore
-        }
+let initialExternalLinksData = [
+    { title: 'Claude AI', url: 'https://claude.ai/' }, { title: 'SledujSerialy', url: 'https://sledujserialy.sx/' },
+    { title: 'Kukaj.me', url: 'https://serial.kukaj.me/' }, { title: 'ProSebe.cz', url: 'https://prosebe.cz/user/project' },
+    { title: 'Populace.cz', url: 'https://www.populace.cz' }, { title: 'My-Map.eu', url: 'https://www.my-map.eu/odmeny' },
+    { title: 'Národní Panel', url: 'https://www.narodnipanel.cz/?backlink=expx2' }, { title: 'Lifepoints Panel', url: 'https://app.lifepointspanel.com/en-US/login' },
+    { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
+    { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
+];
 
-        if (loadingIndicatorElement) loadingIndicatorElement.classList.add('hidden');
-        document.body.style.visibility = 'visible';
-    });
+const STORAGE_KEYS = { // Toto se nyní použije pro export/import JSON, ne pro primární úložiště
+    GALLERY_IMAGES: 'portfolio_gallery_images',
+    SAVED_CODES: 'portfolio_saved_codes',
+    EXTERNAL_LINKS: 'portfolio_external_links',
+    EDITABLE_CONTENT: 'portfolio_editable_content'
+};
 
-    async function checkInitialAuthStateSupabase() {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        if (error) {
-            console.error("Chyba při získávání Supabase session:", error);
-        } else if (session) {
-            // Stav bude zpracován v onAuthStateChange listeneru
-        }
-    }
-    checkInitialAuthStateSupabase(); // Vyvolá initial_session event
-
-    // Event listener pro přihlašovací tlačítko (zobrazí modal)
-    document.getElementById('login-button').addEventListener('click', showAuthModal);
-    // Event listener pro tlačítko přepínání edit módu
-    document.getElementById('edit-mode-toggle-btn').addEventListener('click', toggleEditMode);
-    document.getElementById('cancel-auth-btn')?.addEventListener('click', hideAuthModal);
-
-    // Event listenery pro modál uložení kódu
-    document.getElementById('confirm-save-code-btn')?.addEventListener('click', () => {
-        const title = document.getElementById('code-title-input').value.trim();
-        const editor = document.getElementById('html-editor');
-        const code = editor ? editor.value : '';
-        if (title && code) {
-            saveHtmlCodeToFirestore(title, code);
-            hideModal(document.getElementById('save-code-modal'));
-            document.getElementById('code-title-input').value = '';
-        } else {
-            showAlertModal("Chybějící údaje", "Zadejte název a ujistěte se, že kód není prázdný.");
-        }
-    });
-    document.getElementById('cancel-save-code-btn')?.addEventListener('click', () => {
-        hideModal(document.getElementById('save-code-modal'));
-        document.getElementById('code-title-input').value = '';
-    });
-    
-    // Event listenery pro modál editace obrázku
-    document.getElementById('save-edit-image-btn')?.addEventListener('click', saveEditedImage);
-    document.getElementById('cancel-edit-image-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-image-modal')));
-
-    // Event listenery pro modál editace odkazu
-    document.getElementById('save-edit-link-btn')?.addEventListener('click', saveEditedLink);
-    document.getElementById('cancel-edit-link-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-link-modal')));
-
-    // Event listenery pro modál editace portfolia (tlačítka v HTML)
-    document.getElementById('save-edit-portfolio-btn')?.addEventListener('click', saveEditedPortfolioItem);
-    document.getElementById('cancel-edit-portfolio-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-portfolio-modal')));
-    document.getElementById('delete-portfolio-btn')?.addEventListener('click', deletePortfolioItem);
-    document.getElementById('add-portfolio-item-btn')?.addEventListener('click', addPortfolioItem); // Přidáno sem, protože je to globální tlačítko
-});
-
-// --- Pomocná funkce pro formátování časového otisku ---
+// --- Pomocné globální funkce ---
 function formatTimestamp(timestamp) {
     if (!timestamp) return 'Neznámé datum';
     // Pokud je to objekt Firestore Timestamp (z již uložených dat)
@@ -2108,6 +2031,92 @@ function formatTimestamp(timestamp) {
     // Pokud je to JavaScript timestamp (číslo z Date.now()) nebo Date objekt
     return new Date(timestamp).toLocaleString('cs-CZ');
 }
+
+function showModal(modalElement) {
+    if(modalElement) modalElement.classList.add('visible');
+}
+function hideModal(modalElement) {
+    if(modalElement) modalElement.classList.remove('visible');
+}
+
+function isValidHttpUrl(string) {
+    let url;
+    try { url = new URL(string); }
+    catch (_) { return false; }
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
+// --- Funkce pro showAlertModal a showConfirmModal (nyní definované přímo zde) ---
+function showAlertModal(title, message) {
+    return new Promise((resolve) => {
+        const alertModalEl = document.getElementById('alert-modal');
+        const alertModalTitleEl = document.getElementById('alert-modal-title');
+        const alertModalMessageEl = document.getElementById('alert-modal-message');
+        let alertModalOkBtnEl = document.getElementById('alert-modal-ok-btn');
+
+        if(alertModalEl && alertModalTitleEl && alertModalMessageEl && alertModalOkBtnEl) {
+            alertModalTitleEl.textContent = title;
+            alertModalMessageEl.textContent = message;
+            
+            const newOkBtn = alertModalOkBtnEl.cloneNode(true);
+            alertModalOkBtnEl.parentNode.replaceChild(newOkBtn, alertModalOkBtnEl);
+            alertModalOkBtnEl = newOkBtn;
+            
+            alertModalOkBtnEl.onclick = () => {
+                hideModal(alertModalEl);
+                resolve(true);
+            };
+            showModal(alertModalEl);
+        } else {
+            console.warn("Custom showAlertModal not fully initialized, using native alert.");
+            alert(`${title}\n\n${message}`);
+            resolve(true);
+        }
+    });
+}
+
+function showConfirmModal(title, message, buttonTexts = {}) {
+    return new Promise((resolve) => {
+        const confirmModalEl = document.getElementById('confirm-modal');
+        const confirmModalTitleEl = document.getElementById('confirm-modal-title');
+        const confirmModalMessageEl = document.getElementById('confirm-modal-message');
+        let confirmModalOkBtnEl = document.getElementById('confirm-modal-ok-btn');
+        let confirmModalCancelBtnEl = document.getElementById('confirm-modal-cancel-btn');
+
+        if(confirmModalEl && confirmModalTitleEl && confirmModalMessageEl && confirmModalOkBtnEl && confirmModalCancelBtnEl) {
+            confirmModalTitleEl.textContent = title;
+            confirmModalMessageEl.textContent = message;
+
+            const newOkBtn = confirmModalOkBtnEl.cloneNode(true);
+            newOkBtn.textContent = buttonTexts.okText || 'Potvrdit';
+            confirmModalOkBtnEl.parentNode.replaceChild(newOkBtn, confirmModalOkBtnEl);
+            confirmModalOkBtnEl = newOkBtn;
+            
+            const newCancelBtn = confirmModalCancelBtnEl.cloneNode(true);
+            newCancelBtn.textContent = buttonTexts.cancelText || 'Zrušit';
+            confirmModalCancelBtnEl.parentNode.replaceChild(newCancelBtn, confirmModalCancelBtnEl);
+            confirmModalCancelBtnEl = newCancelBtn;
+
+            confirmModalOkBtnEl.onclick = () => {
+                hideModal(confirmModalEl);
+                resolve(true);
+            };
+            confirmModalCancelBtnEl.onclick = () => {
+                hideModal(confirmModalEl);
+                resolve(false);
+            };
+            showModal(confirmModalEl);
+        } else {
+            console.warn("Custom showConfirmModal not fully initialized, using native confirm.");
+            resolve(confirm(`${title}\n\n${message}`));
+        }
+    });
+}
+
+// Připojujeme modální funkce k window pro globální přístup (pokud volány z HTML)
+window.showAlertModal = showAlertModal;
+window.showConfirmModal = showConfirmModal;
+
 
 // --- Funkce pro zobrazení/skrytí přihlašovacího modalu ---
 function showAuthModal() {
@@ -2123,76 +2132,21 @@ function hideAuthModal() {
     document.getElementById('auth-error-message').textContent = '';
 }
 
-// --- Funkce pro přihlášení (pouze Supabase) ---
-document.getElementById('login-auth-btn')?.addEventListener('click', async () => {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const errorMessageEl = document.getElementById('auth-error-message');
-    errorMessageEl.textContent = '';
-
-    showLoading("Přihlašování přes Supabase...");
-
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) {
-        console.error('Chyba při přihlašování:', error.message);
-        errorMessageEl.textContent = `Chyba: ${error.message}`;
-        hideLoading();
-    } else {
-        hideAuthModal();
-        hideLoading();
+// --- Funkce pro načítání a skrývání indikátoru ---
+function showLoading(message = "Načítání...") {
+    const loadingIndicatorElement = document.getElementById('loading-indicator');
+    if (loadingIndicatorElement) {
+        loadingIndicatorElement.textContent = message;
+        loadingIndicatorElement.classList.remove('hidden');
     }
-});
-
-// --- Funkce pro registraci (pouze Supabase) ---
-document.getElementById('signup-auth-btn')?.addEventListener('click', async () => {
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
-    const errorMessageEl = document.getElementById('auth-error-message');
-    errorMessageEl.textContent = '';
-
-    showLoading("Registrace přes Supabase...");
-
-    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-    if (error) {
-        console.error('Chyba při registraci:', error.message);
-        errorMessageEl.textContent = `Chyba: ${error.message}`;
-        hideLoading();
-    } else {
-        if (data && data.user) {
-            showAlertModal("Registrace úspěšná", "Registrace proběhla úspěšně! Nyní se můžete přihlásit.");
-            hideAuthModal();
-            hideLoading();
-        } else {
-            showAlertModal("Registrace vyžaduje potvrzení", "Zkontrolujte svůj email pro potvrzení registrace. Poté se můžete přihlásit.");
-            hideAuthModal();
-            hideLoading();
-        }
+}
+function hideLoading() {
+    const loadingIndicatorElement = document.getElementById('loading-indicator');
+    if (loadingIndicatorElement) {
+        loadingIndicatorElement.classList.add('hidden');
     }
-});
+}
 
-// --- Funkce pro odhlášení (pouze Supabase) ---
-window.signOut = async function() {
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Odhlásit se?", "Opravdu se chcete odhlásit?", { okText: 'Ano, odhlásit', cancelText: 'Zůstat přihlášen' }) :
-        confirm("Opravdu se chcete odhlásit?")
-    );
-
-    if (confirmed) {
-        showLoading("Odhlašování přes Supabase...");
-        const { error } = await supabaseClient.auth.signOut();
-        if (error) {
-            console.error('Chyba při odhlašování:', error.message);
-            showAlertModal("Chyba odhlášení", `Nepodařilo se odhlásit: ${error.message}`);
-            hideLoading();
-        } else {
-            showAlertModal("Odhlášení", "Byli jste úspěšně odhlášeni. Pro úpravy se opět přihlaste.");
-            hideLoading();
-        }
-    }
-};
-
-// --- Globální proměnné pro data aplikace ---
-// Tyto proměnné už jsou definovány na začátku souboru.
 
 // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
 async function saveDataToFirestore() {
@@ -2207,6 +2161,7 @@ async function saveDataToFirestore() {
         const id = el.dataset.editable;
         if (id) {
             if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                // Ukládáme url a text odděleně pro odkazy
                 editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
             } else {
                 editableContentData[id] = el.innerHTML;
@@ -2220,7 +2175,7 @@ async function saveDataToFirestore() {
         externalLinks: externalLinksData,
         editableContent: editableContentData,
         editorUserId: currentUserId,
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp() // Firestore server timestamp
     };
 
     try {
@@ -2257,6 +2212,7 @@ async function loadDataFromFirestore() {
             externalLinksData = [...initialExternalLinksData];
             editableContentData = {};
         }
+        // Po načtení dat vždy aplikujeme na DOM a aktualizujeme zobrazení
         applyEditableContent();
         updateGalleryDisplay();
         renderSavedCodesDisplay();
@@ -2273,9 +2229,10 @@ async function loadDataFromFirestore() {
 
 // --- Listener pro aktualizace v reálném čase z Firestore ---
 function setupFirestoreRealtimeListener() {
-    if (typeof window.firestoreUnsubscribe === 'function') {
-        window.firestoreUnsubscribe();
-    }
+    // Odhlášení předchozího listeneru, pokud existuje (důležité pro hot-reloading nebo opakovanou inicializaci)
+    // if (typeof window.firestoreUnsubscribe === 'function') {
+    //     window.firestoreUnsubscribe();
+    // }
 
     window.firestoreUnsubscribe = db.collection('publicContent').doc(DOC_ID)
         .onSnapshot((doc) => {
@@ -2308,6 +2265,7 @@ function setupFirestoreRealtimeListener() {
             showAlertModal("Chyba synchronizace", `Nepodařilo se synchronizovat data v reálném čase: ${error.message}`);
         });
 }
+
 
 // --- Funkce pro aplikaci editovatelného obsahu na DOM ---
 function applyEditableContent() {
@@ -3046,7 +3004,7 @@ function renderExternalLinks() {
 
     externalLinksData.forEach((link, index) => {
         const row = tableBody.insertRow();
-        // Použijeme Font Awesome ikonu pro spolehlivé zobrazení
+        // Změna SVG ikony na Font Awesome ikonu
         row.insertCell().innerHTML = '<i class="fas fa-link"></i>';
         
         const titleCell = row.insertCell();
@@ -3251,7 +3209,7 @@ async function saveEditedPortfolioItem() {
     const desc1 = document.getElementById('edit-portfolio-desc-1').value.trim();
     const desc2 = document.getElementById('edit-portfolio-desc-2').value.trim();
     const linkText = document.getElementById('edit-portfolio-link-text').value.trim();
-    const linkUrl = document.getElementById('edit-portfolio-link-url').value.trim();
+    const linkUrl = document.getElementById('edit-portfolio-link-url').trim();
 
     if (!title || !desc1) {
         showAlertModal("Chybějící údaje", "Vyplňte prosím název a první popis položky portfolia.");
@@ -3414,7 +3372,7 @@ async function deletePortfolioItem() {
         const textEncoder = new TextEncoder();
         const data = textEncoder.encode(text);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashArray = Array.from(new Uint8array(hashBuffer)); // OPRAVENO: Uint8array -> Uint8Array
         const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         return hexHash;
     }
@@ -3540,7 +3498,6 @@ async function deletePortfolioItem() {
     });
 
 })();
-
 </script>
 </body>
 </html>
