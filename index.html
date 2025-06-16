@@ -1907,7 +1907,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         <input type="url" id="edit-link-url" placeholder="https://example.com">
         <div class="modal-buttons">
             <button id="cancel-edit-link-btn" class="button btn-secondary">Zrušit</button>
-            <button id="save-edit-link-btn" class="button">Uložit</button>
+            <button id="save-edited-link-btn" class="button">Uložit</button>
         </div>
     </div>
 </div>
@@ -1937,6 +1937,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+ 
 
 <script>
  // --- Supabase Konstanty pro AUTENTIZACI ---
@@ -3573,10 +3574,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         loginButton.onclick = handleLocalAccessPasswordHashedCustomModal;
 
     })();
-
-//tady je pomocní scrip pro tlačítko odhlásit se!
-
- 
+// logout_button_helper.js
 // Specializovaný pomocný script pro správu viditelnosti tlačítka "Odhlásit se"
 
 (function() {
@@ -3623,6 +3621,119 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 })(); // Okamžitě spuštěná anonymní funkce
 
+
+// --- OPRAVENÉ FUNKCE BEZ setupModalEventListeners ---
+
+// Opravená addLink() - bez volání setupModalEventListeners
+addLink = function() {
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro přidání odkazu se musíte přihlásit.");
+        return;
+    }
+    editingLinkFirebaseId = null; // null indikuje, že se přidává nový odkaz
+    document.getElementById('edit-link-title').value = '';
+    document.getElementById('edit-link-url').value = '';
+    showModal(document.getElementById('edit-link-modal'));
+    
+    // ODSTRANĚNO: setupModalEventListeners(); - event listenery jsou už připojené v DOMContentLoaded
+};
+
+// Opravená editLink() - bez volání setupModalEventListeners
+editLink = async function(linkId) {
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro úpravu odkazu se musíte přihlásit.");
+        return;
+    }
+    
+    editingLinkFirebaseId = linkId;
+    const link = externalLinksData.find(l => l.id === linkId);
+
+    if (!link) {
+        showAlertModal("Chyba", "Odkaz k úpravě nebyl nalezen.");
+        return;
+    }
+    
+    // Kontrola vlastnictví
+    if (link.userId !== currentUserId) {
+        showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tento odkaz. Můžete upravit pouze své vlastní odkazy.");
+        return;
+    }
+
+    document.getElementById('edit-link-title').value = link.title;
+    document.getElementById('edit-link-url').value = link.url;
+    showModal(document.getElementById('edit-link-modal'));
+    
+    // ODSTRANĚNO: setupModalEventListeners(); - event listenery jsou už připojené v DOMContentLoaded
+};
+
+// --- ROBUSTNÍ EVENT LISTENERY S POJISTKOU ---
+// Funkce pro bezpečné připojení event listenerů
+function attachEventListenerSafely(elementId, eventType, handler, description) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        // Odebereme všechny existující listenery
+        element.onclick = null;
+        element.removeEventListener(eventType, handler);
+        
+        // Připojíme nový listener
+        element.addEventListener(eventType, handler);
+        console.log(`✅ Event listener pro ${description} byl úspěšně připojen`);
+        return true;
+    } else {
+        console.warn(`⚠️ Element s ID "${elementId}" pro ${description} nebyl nalezen`);
+        return false;
+    }
+}
+
+// Funkce pro inicializaci všech event listenerů
+function initializeAllEventListeners() {
+    console.log('🔧 Inicializuji event listenery pro externí odkazy...');
+    
+    // Tlačítko "Přidat odkaz"
+    attachEventListenerSafely('add-link-btn', 'click', addLink, 'tlačítko Přidat odkaz');
+    
+    // Tlačítko "Uložit" v modálu
+    attachEventListenerSafely('save-edited-link-btn', 'click', saveEditedLink, 'tlačítko Uložit');
+    
+    // Tlačítko "Zrušit" v modálu
+    attachEventListenerSafely('cancel-edit-link-btn', 'click', function() {
+        hideModal(document.getElementById('edit-link-modal'));
+    }, 'tlačítko Zrušit');
+    
+    console.log('✨ Všechny event listenery byly inicializovány');
+}
+
+// Zbytek funkcí zůstává stejný...
+// Připojení event listenerů při načtení stránky + další pojistky
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📋 DOM je načten, inicializuji event listenery...');
+    initializeAllEventListeners();
+});
+
+// Další pojistka - pokud by se stránka načetla dříve než DOMContentLoaded
+if (document.readyState === 'loading') {
+    console.log('📋 Čekám na dokončení načítání DOM...');
+    document.addEventListener('DOMContentLoaded', initializeAllEventListeners);
+} else {
+    console.log('📋 DOM už je načten, inicializuji okamžitě...');
+    initializeAllEventListeners();
+}
+
+// Poslední pojistka - inicializace po načtení celé stránky
+window.addEventListener('load', function() {
+    console.log('🔄 Stránka kompletně načtena, kontroluji event listenery...');
+    // Zkontrolujeme, jestli jsou tlačítka funkční
+    setTimeout(() => {
+        const addBtn = document.getElementById('add-link-btn');
+        const saveBtn = document.getElementById('save-edited-link-btn');
+        const cancelBtn = document.getElementById('cancel-edit-link-btn');
+        
+        if (!addBtn?.onclick && !addBtn?.addEventListener) {
+            console.warn('🚨 Znovu inicializuji event listenery jako pojistku...');
+            initializeAllEventListeners();
+        }
+    }, 100);
+});
 </script>
 </body>
 </html>
