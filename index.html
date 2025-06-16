@@ -1223,11 +1223,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     border: 1px solid rgba(255, 255, 255, 0.18);
     position: relative;
     overflow: hidden;
+    
 }
 
 .data-management-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     justify-items: center;
     align-items: center;
@@ -1235,6 +1235,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     /* DŮLEŽITÉ: Ujisti se, že tento kontejner má 100% šířku uvnitř svého rodiče,
        aby se grid správně roztahoval. */
     width: 100%; /* PŘIDÁNO: Zajistí, že grid zabere celou šířku rodiče */
+   
 }
 
 .function-setupDataManagement::before {
@@ -1249,6 +1250,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         transparent 50%,
         rgba(255, 255, 255, 0.1) 100%);
     pointer-events: none;
+     width: 100%;
+    
 }
 
 .function-setupDataManagement .button {
@@ -1265,7 +1268,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     text-overflow: ellipsis;
     width: 100%;
     text-align: center;
-    font-weight: 500;
+    font-weight: 800;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -1312,7 +1315,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* KOMPLETNÍ MEDIA QUERIES PRO DATA MANAGEMENT */
 
-/* Tablet landscape a větší */
+/* Tablet landscape a větší a muj notebook  */
 @media (min-width: 768px) {
     .function-setupDataManagement {
         padding: 1.5rem 2rem;
@@ -1321,7 +1324,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .data-management-container {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr); /* výchozí hodnota byla grid-template-columns: repeat(4, 1fr); ale na noteboku mam 5 tlačítek to 5 bilo pod 1. tlačítkem změna na grid-template-columns: repeat(5, 1fr); to zajistlo že ám 5 tlačítek na řádku?  */
         gap: 1.5rem;
         padding: 0 1rem;
     }
@@ -1485,11 +1488,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     width: 100%;
     padding: 12px;
     margin: 15px 0;
-    background: rgba(0, 0, 0, 0.3);
+     font-weight: bold;
     border: 2px solid #333;
     border-radius: 8px;
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-family: 'Courier New', monospace;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     caret-color: #00ffff;
@@ -1643,16 +1646,17 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     opacity: 0.5;
     cursor: not-allowed;
 }
+        
     </style>
 </head>
 <body style="visibility: hidden;">
     <div id="loading-indicator" class="hidden">Načítání...</div>
-
+                       <!-- Hlavní název a podnázev  -->
     <header>
         <h1 data-editable="header-title">Vítejte na mé osobní stránce!</h1>
         <p data-editable="header-subtitle">Jiřík a jeho digitální království</p>
     </header>
-
+                    <!-- Hlavní navigační lišta pro navigaci a tlačítko zavřít a upravit/login -->
     <nav>
         <div id="data-management"></div>
         <div class="nav-container">
@@ -1667,7 +1671,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <button id="login-button" class="button" onclick="showAuthModal()">Upravit</button>
         </div>
     </nav>
-    
+                 <!-- Hlavní kontejner pro zadání hesla prěd vstupem do editace-->
         <div id="local-password-modal" class="modal">
     <div class="modal-content">
         <h3>Zadejte přístupové heslo</h3>
