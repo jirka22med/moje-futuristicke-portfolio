@@ -1651,7 +1651,52 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     opacity: 0.5;
     cursor: not-allowed;
 }
-        
+      .portfolio-video-container {
+    position: relative;
+    width: 450px;
+    height: 350px;
+    overflow: hidden;
+    margin-left: auto; /* Vycentruje kontejner */
+    margin-right: auto; /* Vycentruje kontejner */
+    background: #000; /* Pozadí, pokud se video nenačte okamžitě */
+    margin-bottom: 1rem; /* Mezera pod videem */
+}
+
+.portfolio-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Tablet - střední obrazovky */
+@media (max-width: 768px) {
+    .portfolio-video-container {
+        width: 350px;
+        height: 270px;
+    }
+}
+
+/* Mobilní telefony - malé obrazovky */
+@media (max-width: 480px) {
+    .portfolio-video-container {
+        width: 280px;
+        height: 210px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+/* Velmi malé mobily */
+@media (max-width: 320px) {
+    .portfolio-video-container {
+        width: 250px;
+        height: 190px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+}
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -2348,50 +2393,74 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             }
         }
 
-        portfolioItemIds.forEach(itemId => {
-            const title = editableContentData[`${itemId}-title`];
-            const desc1 = editableContentData[`${itemId}-desc-1`];
-            const desc2 = editableContentData[`${itemId}-desc-2`] || '';
-            const linkText = editableContentData[`${itemId}-link-text`];
-            const linkUrl = editableContentData[`${itemId}-link-url`];
+       portfolioItemIds.forEach(itemId => {
+    const title = editableContentData[`${itemId}-title`];
+    const desc1 = editableContentData[`${itemId}-desc-1`];
+    const desc2 = editableContentData[`${itemId}-desc-2`] || '';
+    const linkText = editableContentData[`${itemId}-link-text`];
+    const linkUrl = editableContentData[`${itemId}-link-url`];
+    // --- NOVÝ KÓD ZDE: ZÍSKÁNÍ YOUTUBE URL A VYTVOŘENÍ EMBED KÓDU ---
+    const youtubeUrl = editableContentData[`${itemId}-youtube-url`] || ''; // Předpokládáme, že takto uložíš URL z formuláře
+    let videoEmbedHtml = ''; // Inicializace prázdného HTML pro video
 
-            if (!title || !desc1) {
-                console.warn(`Chybí data pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
-                return;
-            }
+    if (youtubeUrl) {
+    const videoId = getYouTubeVideoId(youtubeUrl);
+    if (videoId) {
+        const embedSrc = `https://www.youtube.com/embed/${videoId}`; 
+        videoEmbedHtml = `
+            <div class="portfolio-video-container">
+                <iframe 
+                    src="${embedSrc}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen
+                ></iframe>
+            </div>
+        `;
+    }
+}
+    // --- KONEC NOVÉHO KÓDU ---
 
-            const newItemHtml = `
-                <div class="portfolio-item" data-item-id="${itemId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
-                    <h3 data-editable="${itemId}-title">${title}</h3>
-                    <p data-editable="${itemId}-desc-1">${desc1}</p>
-                    ${desc2 ? `<p data-editable="${itemId}-desc-2">${desc2}</p>` : ''}
-                    <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${itemId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt &rarr;'}" target="_blank" rel="noopener noreferrer">
-                        ${linkText || 'Zobrazit projekt &rarr;'}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
-                    </a>
-                    <div class="edit-controls ${isEditMode ? '' : 'hidden'}">
-                        <button onclick="editPortfolioItem('${itemId}')">Editovat</button>
-                    </div>
-                </div>
-            `;
-            portfolioContainer.insertAdjacentHTML('beforeend', newItemHtml);
-        });
+    if (!title || !desc1) {
+        console.warn(`Chybí data pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
+        return;
+    }
 
-        document.querySelectorAll('[data-editable]').forEach(el => {
-            if (isEditMode) {
-                el.setAttribute('contenteditable', 'true');
-            } else {
-                el.removeAttribute('contenteditable');
-            }
-        });
-        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
-            if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
-        });
-        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
-            if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
-        });
-        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
-            if (isEditMode) controls.classList.remove('hidden'); else controls.classList.add('hidden');
-        });
+    const newItemHtml = `
+        <div class="portfolio-item" data-item-id="${itemId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative; margin-bottom: 20px;">
+            <h3 data-editable="${itemId}-title">${title}</h3>
+            <p data-editable="${itemId}-desc-1">${desc1}</p>
+            ${desc2 ? `<p data-editable="${itemId}-desc-2">${desc2}</p>` : ''}
+            
+            ${videoEmbedHtml}
+            
+            <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${itemId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt →'}" target="_blank" rel="noopener noreferrer">
+                ${linkText || 'Zobrazit projekt →'}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
+            </a>
+            <div class="edit-controls ${isEditMode ? '' : 'hidden'}">
+                <button onclick="editPortfolioItem('${itemId}')">Editovat</button>
+            </div>
+        </div>
+    `;
+    portfolioContainer.insertAdjacentHTML('beforeend', newItemHtml);
+});
+
+document.querySelectorAll('[data-editable]').forEach(el => {
+    if (isEditMode) {
+        el.setAttribute('contenteditable', 'true');
+    } else {
+        el.removeAttribute('contenteditable');
+    }
+});
+document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+    if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
+});
+document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+    if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
+});
+document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+    if (isEditMode) controls.classList.remove('hidden'); else controls.classList.add('hidden');
+});
     }
 
     async function initializeApp() {
@@ -3281,54 +3350,77 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     let editingPortfolioItemId = null;
 
     async function editPortfolioItem(itemId) {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro úpravu položky se musíte přihlásit.");
-            return;
-        }
-        editingPortfolioItemId = itemId;
-        const item = {
-            title: editableContentData[`${itemId}-title`] || '',
-            desc1: editableContentData[`${itemId}-desc-1`] || '',
-            desc2: editableContentData[`${itemId}-desc-2`] || '',
-            linkText: editableContentData[`${itemId}-link-text`] || '',
-            linkUrl: editableContentData[`${itemId}-link-url`] || '',
-            userId: editableContentData[`${itemId}-userId`]
-        };
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro úpravu položky se musíte přihlásit.");
+        return;
+    }
+    editingPortfolioItemId = itemId;
+    const item = {
+        title: editableContentData[`${itemId}-title`] || '',
+        desc1: editableContentData[`${itemId}-desc-1`] || '',
+        desc2: editableContentData[`${itemId}-desc-2`] || '',
+        linkText: editableContentData[`${itemId}-link-text`] || '',
+        linkUrl: editableContentData[`${itemId}-link-url`] || '',
+        // Přidáme i youtube_url do objektu item pro snazší práci
+        youtubeUrl: editableContentData[`${itemId}-youtube-url`] || '', // Nový řádek
+        userId: editableContentData[`${itemId}-userId`]
+    };
 
-        if (!item.title || item.userId !== currentUserId) {
-            showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tuto položku portfolia. Můžete upravit pouze své vlastní položky.");
-            return;
-        }
-
-        document.getElementById('edit-portfolio-title').value = item.title;
-        document.getElementById('edit-portfolio-desc-1').value = item.desc1;
-        document.getElementById('edit-portfolio-desc-2').value = item.desc2;
-        document.getElementById('edit-portfolio-link-text').value = item.linkText;
-        document.getElementById('edit-portfolio-link-url').value = item.linkUrl;
-
-        document.getElementById('delete-portfolio-btn').classList.remove('hidden');
-        showModal(document.getElementById('edit-portfolio-modal'));
+    if (!item.title || item.userId !== currentUserId) {
+        showAlertModal("Přístup zamítnut", "Nemáte oprávnění upravit tuto položku portfolia. Můžete upravit pouze své vlastní položky.");
+        return;
     }
 
-    document.getElementById('save-edit-portfolio-btn')?.addEventListener('click', saveEditedPortfolioItem);
-    document.getElementById('cancel-edit-portfolio-btn')?.addEventListener('click', () => hideModal(document.getElementById('edit-portfolio-modal')));
-    document.getElementById('delete-portfolio-btn')?.addEventListener('click', deletePortfolioItem);
-    document.getElementById('add-portfolio-item-btn')?.addEventListener('click', addPortfolioItem);
+    document.getElementById('edit-portfolio-title').value = item.title;
+    document.getElementById('edit-portfolio-desc-1').value = item.desc1;
+    document.getElementById('edit-portfolio-desc-2').value = item.desc2;
+    document.getElementById('edit-portfolio-link-text').value = item.linkText;
+    document.getElementById('edit-portfolio-link-url').value = item.linkUrl;
+    
+    // --- NOVÝ KÓD ZDE: NAPLNĚNÍ YOUTUBE INPUTU A AKTIVACE NÁHLEDU ---
+    const youtubeInput = document.getElementById('edit-portfolio-youtube');
+    youtubeInput.value = item.youtubeUrl; // Načti URL z objektu item
+    
+    // Spusť input event, aby se zobrazil náhled (jako by uživatel napsal URL)
+    const event = new Event('input');
+    youtubeInput.dispatchEvent(event);
+    // --- KONEC NOVÉHO KÓDU ---
 
-    function addPortfolioItem() {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro přidání položky se musíte přihlásit.");
-            return;
-        }
-        editingPortfolioItemId = null;
-        document.getElementById('edit-portfolio-title').value = '';
-        document.getElementById('edit-portfolio-desc-1').value = '';
-        document.getElementById('edit-portfolio-desc-2').value = '';
-        document.getElementById('edit-portfolio-link-text').value = '';
-        document.getElementById('edit-portfolio-link-url').value = '';
-        document.getElementById('delete-portfolio-btn').classList.add('hidden');
-        showModal(document.getElementById('edit-portfolio-modal'));
+    document.getElementById('delete-portfolio-btn').classList.remove('hidden');
+    showModal(document.getElementById('edit-portfolio-modal'));
+}
+
+document.getElementById('save-edit-portfolio-btn')?.addEventListener('click', saveEditedPortfolioItem);
+document.getElementById('cancel-edit-portfolio-btn')?.addEventListener('click', () => {
+    hideModal(document.getElementById('edit-portfolio-modal'));
+    // Zde je také potřeba vyčistit náhled YouTube, pokud se modal zavírá
+    document.getElementById('youtube-preview-container').style.display = 'none';
+    document.getElementById('youtube-preview').src = '';
+    document.getElementById('edit-portfolio-youtube').value = '';
+}); // Doplňuji zavírací závorku pro addEventListener
+
+document.getElementById('delete-portfolio-btn')?.addEventListener('click', deletePortfolioItem);
+document.getElementById('add-portfolio-item-btn')?.addEventListener('click', addPortfolioItem);
+
+function addPortfolioItem() {
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro přidání položky se musíte přihlásit.");
+        return;
     }
+    editingPortfolioItemId = null;
+    document.getElementById('edit-portfolio-title').value = '';
+    document.getElementById('edit-portfolio-desc-1').value = '';
+    document.getElementById('edit-portfolio-desc-2').value = '';
+    document.getElementById('edit-portfolio-link-text').value = '';
+    document.getElementById('edit-portfolio-link-url').value = '';
+    // --- NOVÝ KÓD ZDE: VYČIŠTĚNÍ YOUTUBE INPUTU PŘI PŘIDÁVÁNÍ NOVÉ POLOŽKY ---
+    document.getElementById('edit-portfolio-youtube').value = '';
+    document.getElementById('youtube-preview-container').style.display = 'none';
+    document.getElementById('youtube-preview').src = '';
+    // --- KONEC NOVÉHO KÓDU ---
+    document.getElementById('delete-portfolio-btn').classList.add('hidden');
+    showModal(document.getElementById('edit-portfolio-modal'));
+}
 
     async function saveEditedPortfolioItem() {
         if (!currentUserId) {
@@ -3358,9 +3450,13 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             editableContentData[`${newId}-desc-1`] = desc1;
             editableContentData[`${newId}-desc-2`] = desc2;
             editableContentData[`${newId}-link-text`] = linkText;
-            editableContentData[`${newId}-link-url`] = linkUrl;
-            editableContentData[`${newId}-userId`] = currentUserId;
-            editableContentData[`${newId}-createdAt`] = Date.now(); // ZMĚNA ZDE: Používáme Date.now()
+             editableContentData[`${newId}-link-url`] = linkUrl;
+            // --- NOVÝ KÓD ZDE: ULOŽENÍ YOUTUBE URL ---
+            const youtubeUrl = document.getElementById('edit-portfolio-youtube').value.trim();
+            editableContentData[`${newId}-youtube-url`] = youtubeUrl; // Uložíme YouTube URL
+            // --- KONEC NOVÉHO KÓDU ---
+            editableContentData[`${newId}-userId`] = currentUserId;
+            editableContentData[`${newId}-createdAt`] = Date.now();
 
             await saveDataToFirestore(); 
 
@@ -3760,7 +3856,7 @@ window.addEventListener('load', function() {
 
     //TADY JE POMOCNÍ SCRIPT PO YOUTUBE VIDEO HTTPS 
 
-    // JavaScript pro YouTube video náhled
+   // JavaScript pro YouTube video náhled
 function getYouTubeVideoId(url) {
     const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     const match = url.match(regExp);
