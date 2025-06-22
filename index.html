@@ -1,12 +1,10 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
+    <link rel="icon" href="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/ikonka-muj-web-2.jpg?ver=0" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Trek</title>
-    
-    <link rel="icon" href="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/image_82x82.jpg?ver=1" type="image/png">
-</head>
+    <title>Moje Osobní Stránka - Jiřík</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
@@ -23,7 +21,7 @@ body {
     color: #333;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-     
+    
     text-align: center;
     font-weight: 700;
 }
@@ -593,18 +591,19 @@ body.edit-mode #links-table tbody tr {
 
 #image-modal .modal-content {
     background: transparent;
-    max-width: 95%;
-    max-height: 95%;
+    max-width: 140%;
+    max-height: 140%;
     padding: 0;
     box-shadow: none; 
 }
 
 #modal-img {
-    max-width: 100%;
-    max-height: 80vh;
+    max-width: 90%;
+    max-height: 70vh;
     border-radius: 10px;
     display: block;
     margin: auto;
+    margin-top: 40px;
 }
 
 .modal-nav {
@@ -653,7 +652,7 @@ footer {
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.85rem; 
-    color: black;
+    color: white;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     display: inline-block;
@@ -1879,12 +1878,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     <div class="modal-content">
         <img id="modal-img" src="" alt="Zvětšený obrázek">
         
-        <!-- Číselný indikátor -->
-        <div class="image-indicator">
-            <span id="current-image-number">1</span>
-            <span class="indicator-separator">/</span>
-            <span id="total-images-count">15</span>
-        </div>
+        
         
         <div class="modal-nav">
             <button id="prev-image-btn" class="button btn-secondary">
@@ -2237,10 +2231,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
   
    
-
-    const initialImageUrls = [
-       
-    ];
+      //toto je přímo pro statické obrázky na strance ty neslouží k upravam a ani mazaní? 
+    const initialImageUrls = [ ];
        
 
     let initialExternalLinksData = [
@@ -3053,7 +3045,7 @@ function navigateImageModal(direction) {
         
         setTimeout(() => {
             openImageModal(newIndex);
-        }, 0);// tady je 50 default 
+        }, 50);
     } else {
         openImageModal(newIndex);
     }
