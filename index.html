@@ -1806,14 +1806,78 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             </section>
 
             <section id="contacts">
-                <h2 data-editable="contacts-h2">Kontakty</h2>
-                <p data-editable="contacts-intro">Zde můžete přidat své kontaktní údaje, jako je e-mail, odkazy na sociální sítě (např. Discord, GitHub) nebo jiné způsoby, jak vás mohou lidé oslovit.</p>
-                <div class="contact-details" style="margin-top: 1rem;">
-                    <p><strong>E-mail:</strong> <a href="mailto:tvuj.email@example.com" data-link-id="contact-email" data-editable-link-text="tvuj.email@example.com" class="editable-link"><i class="fas fa-edit edit-icon"></i></a></p>
-                    <p><strong>Discord:</strong> <span data-editable="contact-discord">TvojeJmeno#1234</span></p>
-                </div>
-                <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
-            </section>
+    <h2 data-editable="contacts-h2">Moje projekty</h2>
+    <p data-editable="contacts-intro">Zde najdete přehled mých klíčových projektů a technických výzev, které jsem vytvořil. Každý projekt je výsledkem mého zájmu o počítačové technologie a často i inspirace z filmů a hudby. [cite: 2025-06-15, 2025-05-23] Tyto položky můžete spravovat přímo v editovacím režimu.</p>
+
+    <div class="contact-details" style="margin-top: 1rem;">
+        <p>
+            <strong>Můj Osobní Web Genesis:</strong>
+            <a href="moje-futuristicke-portfolio.html" data-link-id="project-genesis-link" data-editable-link-text="Přejít na web" class="editable-link" target="_blank">
+                Přejít na web
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-genesis-desc"> – Dynamické portfolio s YouTube videi, Cloud Firestore a Supabase. [cite: 2025-06-21]</span>
+        </p>
+        <p>
+            <strong>Moderní Fotoeditor:</strong>
+            <a href="moderni-foto-editor-test.html" data-link-id="project-photoeditor-link" data-editable-link-text="Vyzkoušet editor" class="editable-link" target="_blank">
+                Vyzkoušet editor
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-photoeditor-desc"> – Pokročilý editor obrázků s funkcemi jasu, kontrastu, ostrosti a dalších. [cite: 2025-05-23]</span>
+        </p>
+        <p>
+            <strong>Pokročilý Váhový Tracker:</strong>
+            <a href="pokrocily-vahovy-tracker.html" data-link-id="project-tracker-link" data-editable-link-text="Spustit Tracker" class="editable-link" target="_blank">
+                Spustit Tracker
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-tracker-desc"> – Robustní nástroj pro sledování váhy bez cloudu. [cite: 2025-06-22]</span>
+        </p>
+        <p>
+            <strong>Star Trek Hudební Přehrávač 3:</strong>
+            <a href="ST-Hudebni-Prehravac-3.html" data-link-id="project-stplayer-link" data-editable-link-text="Spustit přehrávač" class="editable-link" target="_blank">
+                Spustit přehrávač
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-stplayer-desc"> – Unikátní přehrávač s UI a playlistem 384 skladeb, s Firebase Firestore. [cite: 2025-06-15]</span>
+        </p>
+        <p>
+            <strong>QR Kód Generátor:</strong>
+            <a href="qr-kod-generator.html" data-link-id="project-qr-link" data-editable-link-text="Generovat kód" class="editable-link" target="_blank">
+                Generovat kód
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-qr-desc"> – Jednoduchý nástroj pro generování QR kódů bez cloudu. [cite: 2025-06-22]</span>
+        </p>
+        <p>
+            <strong>Můj Osobní Web (starší verze):</strong>
+            <a href="Můj-osobní-web.html" data-link-id="project-old-web-link" data-editable-link-text="Prohlédnout starší web" class="editable-link" target="_blank">
+                Prohlédnout starší web
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-old-web-desc"> – Jedna z mých prvních webových prezentací. [cite: 2025-06-22]</span>
+        </p>
+        <p>
+            <strong>Moderní Grafy:</strong>
+            <a href="Moderní-grafy.html" data-link-id="project-charts-link" data-editable-link-text="Zobrazit grafy" class="editable-link" target="_blank">
+                Zobrazit grafy
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-charts-desc"> – Projekt zaměřený na dynamické a vizuálně atraktivní grafy. [cite: 2025-05-23]</span>
+        </p>
+        <p>
+            <strong>Lékařský Protokol Jiříka:</strong>
+            <a href="Lekarsky-Protokol-Jirika.html" data-link-id="project-protocol-link" data-editable-link-text="Přejít k protokolu" class="editable-link" target="_blank">
+                Přejít k protokolu
+                <i class="fas fa-edit edit-icon"></i>
+            </a>
+            <span data-editable="project-protocol-desc"> – Projekt pro správu lékařských protokolů s Cloud Firestore. [cite: 2025-06-22]</span>
+        </p>
+    </div>
+
+    <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
+</section>
 
             <section id="editor">
                 <h2>HTML Editor</h2>
