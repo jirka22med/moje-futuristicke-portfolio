@@ -1699,6 +1699,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         margin-right: 5px;
     }
 }
+     /*tady je noví css pro modar okno*/
+   
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1772,7 +1774,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 </div>
             </section>
 
-            <section id="portfolio">
+            <section id="portfolio"> //toto je jenom ilustrace názvy definic jsou taky ilustracní neslouží k použití jenm se podívej jak jsou žešeni texty a tlačítka pro odkazy ???
                 <h2 data-editable="portfolio-h2">Portfolio</h2>
                 <p data-editable="portfolio-intro">V této sekci najdeš ukázky mých projektů a práce, které odrážejí mé zájmy v oblasti technologií. I když nejsem programátor, díky spolupráci s AI, jako je ChatGPT a Claude.AI, se mi podařilo vytvořit tyto projekty, na které jsem pyšný.</p>
                 <div class="portfolio-items" style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -1805,80 +1807,33 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 <button id="add-portfolio-item-btn" class="button hidden">Přidat položku do portfolia</button>
             </section>
 
-           <section id="contacts">
-    <h2 data-editable="contacts-h2">Moje projekty</h2>
-    <p data-editable="contacts-intro">Zde najdete přehled mých klíčových projektů a technických výzev, které jsem vytvořil. Každý projekt je výsledkem mého zájmu o počítačové technologie a často i inspirace z filmů a hudby. [cite: 2025-06-15, 2025-05-23] Tyto položky můžete spravovat přímo v editovacím režimu.</p>
+         <section id="contacts">
+        <h2>Moje projekty</h2>
+        <p>Testovací verze s novými názvy bez konfliktů.</p>
 
-    <div class="contact-details" style="margin-top: 1rem;">
-        <p>
-            <strong data-editable="project-genesis-title">Můj Osobní Web Genesis:</strong>
-            <a href="moje-futuristicke-portfolio.html" data-link-id="project-genesis-link" data-editable-link-text="Přejít na web" class="editable-link" target="_blank">
-                <span data-editable="project-genesis-link-text">Přejít na web</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-genesis-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-photoeditor-title">Moderní Fotoeditor:</strong>
-            <a href="moderni-foto-editor-test.html" data-link-id="project-photoeditor-link" data-editable-link-text="Vyzkoušet editor" class="editable-link" target="_blank">
-                <span data-editable="project-photoeditor-link-text">Vyzkoušet editor</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-photoeditor-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-tracker-title">Pokročilý Váhový Tracker:</strong>
-            <a href="pokrocily-vahovy-tracker.html" data-link-id="project-tracker-link" data-editable-link-text="Spustit Tracker" class="editable-link" target="_blank">
-                <span data-editable="project-tracker-link-text">Spustit Tracker</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-tracker-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-stplayer-title">Star Trek Hudební Přehrávač 3:</strong>
-            <a href="ST-Hudebni-Prehravac-3.html" data-link-id="project-stplayer-link" data-editable-link-text="Spustit přehrávač" class="editable-link" target="_blank">
-                <span data-editable="project-stplayer-link-text">Spustit přehrávač</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-stplayer-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-qr-title">QR Kód Generátor:</strong>
-            <a href="qr-kod-generator.html" data-link-id="project-qr-link" data-editable-link-text="Generovat kód" class="editable-link" target="_blank">
-                <span data-editable="project-qr-link-text">Generovat kód</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-qr-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-old-web-title">Můj Osobní Web (starší verze):</strong>
-            <a href="Můj-osobní-web.html" data-link-id="project-old-web-link" data-editable-link-text="Prohlédnout starší web" class="editable-link" target="_blank">
-                <span data-editable="project-old-web-link-text">Prohlédnout starší web</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-old-web-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-charts-title">Moderní Grafy:</strong>
-            <a href="Moderní-grafy.html" data-link-id="project-charts-link" data-editable-link-text="Zobrazit grafy" class="editable-link" target="_blank">
-                <span data-editable="project-charts-link-text">Zobrazit grafy</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-charts-desc"> </span>
-        </p>
-        <p>
-            <strong data-editable="project-protocol-title">Lékařský Protokol Jiříka:</strong>
-            <a href="Lekarsky-Protokol-Jirika.html" data-link-id="project-protocol-link" data-editable-link-text="Přejít k protokolu" class="editable-link" target="_blank">
-                <span data-editable="project-protocol-link-text">Přejít k protokolu</span>
-                <i class="fas fa-edit edit-icon"></i>
-            </a>
-            <span data-editable="project-protocol-desc"> </span>
-        </p>
-    </div>
-
-    <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
-</section>
-
+        <div class="portfolio-items">
+            <div class="portfolio-item" data-item-id="project-genesis">
+                <h3 data-editable="project-genesis-title">Můj Osobní Web Genesis:</h3>
+                <p data-editable="project-genesis-desc">Moderní webová prezentace s futuristickým designem.</p>
+                <a href="moje-futuristicke-portfolio.html" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
+                    <span data-url-editable-text>Přejít na web</span></a>
+                </div>
+            <div class="portfolio-item" data-item-id="project-photoeditor">
+                <h3 data-editable="project-photoeditor-title">Moderní Fotoeditor:</h3>
+                <p data-editable="project-photoeditor-desc">Pokročilý nástroj pro úpravu fotografií v prohlížeči.</p>
+                <a href="moderni-foto-editor-test.html" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
+                    <span data-url-editable-text>Vyzkoušet editor</span></a>
+                </div>
+            <div class="portfolio-item" data-item-id="project-tracker">
+                <h3 data-editable="project-tracker-title">Pokročilý Váhový Tracker:</h3>
+                <p data-editable="project-tracker-desc">Aplikace pro sledování a analýzu váhových změn.</p>
+                <a href="pokrocily-vahovy-tracker.html" class="button editable-link" data-link-id="project-tracker-link" target="_blank">
+                    <span data-url-editable-text>Spustit Tracker</span></a>
+                </div>
+            </div>
+        <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
+    </section>
+            
             <section id="editor">
                 <h2>HTML Editor</h2>
                 <div class="editor-container">
@@ -2069,7 +2024,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         </div>
     </div>
 </div>
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -4314,6 +4269,9 @@ navigateImageModal = function(direction) {
     
     return result;
 };
+    
+    //tady je nová logika pro modar okno?
+
 </script>
 </body>
 </html>
