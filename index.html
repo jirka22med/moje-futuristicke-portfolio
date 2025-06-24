@@ -4233,61 +4233,9 @@ window.addEventListener('load', function() {
 
     //TADY JE POMOCNÍ SCRIPT PO YOUTUBE VIDEO HTTPS 
 
-   // JavaScript pro YouTube video náhled
-function getYouTubeVideoId(url) {
-    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[7].length === 11) ? match[7] : null;
-}
-
-// Event listener pro YouTube input pole
-document.getElementById('edit-portfolio-youtube').addEventListener('input', function() {
-    const url = this.value;
-    const previewContainer = document.getElementById('youtube-preview-container');
-    const previewIframe = document.getElementById('youtube-preview');
-    
-    if (url.trim() === '') {
-        previewContainer.style.display = 'none';
-        return;
-    }
-    
-    const videoId = getYouTubeVideoId(url);
-    
-    if (videoId) {
-        // Vytvoření embed URL
-        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-        previewIframe.src = embedUrl;
-        previewContainer.style.display = 'block';
-    } else {
-        previewContainer.style.display = 'none';
-    }
-});
-
-// Vyčištění náhledu při zavření modalu
-document.getElementById('cancel-edit-portfolio-btn').addEventListener('click', function() {
-    document.getElementById('youtube-preview-container').style.display = 'none';
-    document.getElementById('youtube-preview').src = '';
-    document.getElementById('edit-portfolio-youtube').value = '';
-});
-    
-    // Přidej tohle do konzole a pak zkus navigaci
-let originalNavigate = navigateImageModal;
-navigateImageModal = function(direction) {
-    console.log(`🎭 APRÍLOVÁ NAVIGACE START: direction=${direction}`);
-    console.log(`📍 Před: currentModalImageIndex=${currentModalImageIndex}`);
-    
-    let result = originalNavigate.call(this, direction);
-    
-    console.log(`📍 Po: currentModalImageIndex=${currentModalImageIndex}`);
-    console.log(`🎭 APRÍLOVÁ NAVIGACE END`);
-    
-    return result;
-};
-    
-    //tady je nová logika pro modar okno?
-//Kompletní logika pro modal okno + posluchače tlačítek (POUZE POSLUCHAČE)
+   //Kompletní logika pro modal okno + posluchače tlačítek (BEZ KONFLIKTNÍCH POSLUCHAČŮ)
 document.addEventListener('DOMContentLoaded', (event) => {
-    console.log('🚀 Modal listeners - inicializace...');
+    console.log('🚀 Modal listeners - inicializace (clean version)...');
 
     // NOVÉ NÁZVY ELEMENTŮ
     const urlEditModal = document.getElementById('url-edit-modal');
@@ -4465,102 +4413,42 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     // ========================================
-    // POUZE POSLUCHAČE PRO HLAVNÍ TLAČÍTKA
+    // POMOCNÉ FUNKCE PRO URL KONTEJNERY
     // ========================================
-    console.log('🔧 Nastavuji posluchače pro hlavní tlačítka...');
+    // Tyto funkce můžete volat z vašeho hlavního scriptu
+    window.modalHelpers = {
+        showUrlEditContainers: function() {
+            console.log('👁️ Zobrazuji URL edit kontejnery (z helper funkce)');
+            const urlEditContainers = document.querySelectorAll('.link-edit-controls');
+            urlEditContainers.forEach(container => {
+                container.classList.remove('hidden');
+                container.style.display = 'block';
+            });
+            console.log(`✅ Zobrazeno ${urlEditContainers.length} URL edit kontejnerů`);
+        },
 
-    const editModeToggleBtn = document.getElementById('edit-mode-toggle-btn');
-    const loginButton = document.getElementById('login-button');
+        hideUrlEditContainers: function() {
+            console.log('🙈 Skrývám URL edit kontejnery (z helper funkce)');
+            const urlEditContainers = document.querySelectorAll('.link-edit-controls');
+            urlEditContainers.forEach(container => {
+                container.classList.add('hidden');
+                container.style.display = 'none';
+            });
+            console.log(`✅ Skryto ${urlEditContainers.length} URL edit kontejnerů`);
+        },
 
-    // Debug: Kontrola existence tlačítek
-    console.log('📋 Kontrola hlavních tlačítek:');
-    console.log('Zavřít tlačítko:', editModeToggleBtn ? '✅' : '❌');
-    console.log('Upravit tlačítko:', loginButton ? '✅' : '❌');
-
-    // Funkce pro práci s URL kontejnery
-    function showUrlEditContainers() {
-        console.log('👁️ Zobrazuji URL edit kontejnery');
-        const urlEditContainers = document.querySelectorAll('.link-edit-controls');
-        urlEditContainers.forEach(container => {
-            container.classList.remove('hidden');
-            container.style.display = 'block';
-        });
-        console.log(`✅ Zobrazeno ${urlEditContainers.length} URL edit kontejnerů`);
-    }
-
-    function hideUrlEditContainers() {
-        console.log('🙈 Skrývám URL edit kontejnery');
-        const urlEditContainers = document.querySelectorAll('.link-edit-controls');
-        urlEditContainers.forEach(container => {
-            container.classList.add('hidden');
-            container.style.display = 'none';
-        });
-        console.log(`✅ Skryto ${urlEditContainers.length} URL edit kontejnerů`);
-    }
-
-    if (editModeToggleBtn && loginButton) {
-        
-        // POSLUCHAČ PRO TLAČÍTKO "UPRAVIT" (vstup do edit režimu)
-        loginButton.addEventListener('click', () => {
-            console.log('🖱️ Listener: Tlačítko UPRAVIT - volám externí funkci');
-            
-            // Zavolá vaši existující funkci z hlavního scriptu
-            if (typeof window.showAuthModal === 'function') {
-                window.showAuthModal();
-            } else {
-                console.error('❌ Funkce showAuthModal() nebyla nalezena!');
-            }
-            
-            // Dodatečná logika pro URL kontejnery
-            showUrlEditContainers();
-            
-            console.log('✅ Posluchač UPRAVIT dokončen');
-        });
-        
-        // POSLUCHAČ PRO TLAČÍTKO "ZAVŘÍT" (výstup z edit režimu)
-        editModeToggleBtn.addEventListener('click', () => {
-            console.log('🖱️ Listener: Tlačítko ZAVŘÍT - volám externí funkci');
-            
-            // Zavolá vaši existující funkci z hlavního scriptu
-            if (typeof window.toggleEditMode === 'function') {
-                window.toggleEditMode();
-            } else {
-                console.error('❌ Funkce toggleEditMode() nebyla nalezena!');
-            }
-            
-            // Dodatečná logika pro URL kontejnery
-            hideUrlEditContainers();
-            
-            // Zavře modal pokud je otevřený
-            if (urlEditModal.style.display === 'flex') {
+        closeUrlModal: function() {
+            if (urlEditModal && urlEditModal.style.display === 'flex') {
                 closeUrlEditModal();
-                console.log('🔒 Zavřen otevřený URL modal');
+                console.log('🔒 Zavřen URL modal (z helper funkce)');
+                return true;
             }
-            
-            console.log('✅ Posluchač ZAVŘÍT dokončen');
-        });
-        
-        // POČÁTEČNÍ NASTAVENÍ
-        // Zkontrolujeme aktuální stav na základě viditelnosti tlačítek
-        const isInEditMode = !editModeToggleBtn.classList.contains('hidden');
-        
-        if (isInEditMode) {
-            console.log('🎯 Stránka načtena v edit režimu - zobrazuji URL kontejnery');
-            showUrlEditContainers();
-        } else {
-            console.log('🎯 Stránka načtena v normálním režimu - skrývám URL kontejnery');
-            hideUrlEditContainers();
+            return false;
         }
-        
-        console.log('🎯 Posluchače pro hlavní tlačítka úspěšně nastaveny');
-        
-    } else {
-        console.error('❌ Chyba: Hlavní tlačítka nebyla nalezena!');
-        if (!editModeToggleBtn) console.error('  - Nenalezeno: #edit-mode-toggle-btn');
-        if (!loginButton) console.error('  - Nenalezeno: #login-button');
-    }
+    };
 
-    console.log('🎉 Modal systém s posluchači inicializován!');
+    console.log('🎉 Modal systém inicializován (clean version)!');
+    console.log('💡 Tip: Použijte window.modalHelpers pro ovládání z hlavního scriptu');
 });
 </script>
 </body>
