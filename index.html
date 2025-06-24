@@ -753,21 +753,6 @@ footer {
     background-color: rgba(0, 0, 0, 0.9);
 }
 
-/* Skrytí/Zobrazení editačních prvků */
-body:not(.edit-mode) [contenteditable="true"],
-body:not(.edit-mode) .edit-controls,
-body:not(.edit-mode) .delete-img-btn,
-body:not(.edit-mode) #data-management,
-body:not(.edit-mode) #addImageUrlBtn,
-body:not(.edit-mode) #newImageUrl,
-body:not(.edit-mode) #save-code-btn,
-body:not(.edit-mode) .actions .button,
-body:not(.edit-mode) .editable-image-wrapper .edit-icon,
-body:not(.edit-mode) .editable-link .edit-icon,
-body:not(.edit-mode) .edit-mode-only { /* NOVINKA: Skrýváme i edit-mode-only prvky */
-    display: none !important;
-}
-
 /* Nová třída pro zobrazení edit módu */
 body.edit-mode #edit-mode-toggle-btn {
     display: block; /* Zobrazí tlačítko "Zavřít" */
@@ -780,8 +765,11 @@ body.edit-mode #newImageUrl,
 body.edit-mode #save-code-btn,
 body.edit-mode .actions .button,
 body.edit-mode .editable-image-wrapper .edit-icon,
-body.edit-mode .editable-link .edit-icon {
-    display: flex; /* Zobrazí ostatní editační prvky */
+body.edit-mode .editable-link .edit-icon,
+body.edit-mode #url-edit-modal,
+body.edit-mode .link-edit-controls /* NOVINKA: TOTO PŘIDEJ! */
+{
+    display: flex; /* Nebo block, podle toho, co sedí lépe. Zde jsem dal flex kvůli konzistenci s jinými ovládacími prvky. */
 }
 body.edit-mode .editable-image-wrapper .edit-icon,
 body.edit-mode .editable-link .edit-icon {
@@ -790,7 +778,6 @@ body.edit-mode .editable-link .edit-icon {
 body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v edit módu */
     display: table-cell !important; /* Pro buňky tabulky */
 }
-
 /* KOMPLETNÍ MEDIA QUERIES PRO PLNOU ŠÍŘKU */
 
 /* Tablet landscape a větší */
@@ -1699,8 +1686,122 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         margin-right: 5px;
     }
 }
-     /*tady je noví css pro modar okno*/
-   
+     /* NOVÝ MODAL S JEDINEČNÝMI NÁZVY */
+.url-edit-modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    opacity: 0; /* Pro plynulou animaci */
+    visibility: hidden; /* Pro plynulou animaci */
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Pro plynulou animaci */
+    /* display: none; NEBUDE TADY, BUDE V .url-edit-modal.visible */
+}
+
+/* Třída pro zobrazení modalu */
+.url-edit-modal.visible {
+    display: flex; /* Zobrazí jako flexbox */
+    align-items: center; /* Pro centrování */
+    justify-content: center; /* Pro centrování */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+.url-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Zbytek tvého CSS pro url-modal-content a jeho vnitřní prvky zůstává stejný */
+.url-modal-content h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 10px;
+}
+
+.url-modal-content label {
+    display: block;
+    margin: 15px 0 5px 0;
+    font-weight: bold;
+    color: #555;
+}
+
+.url-modal-content input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.url-modal-content input:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 5px rgba(0,124,186,0.3);
+}
+
+.url-modal-buttons {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.url-modal-buttons button {
+    margin-left: 10px;
+}
+
+/* Ostatní styly, které jsi poslal, zůstanou beze změny */
+.editable-link {
+    position: relative;
+}
+
+.edit-icon {
+    margin-left: 8px;
+    opacity: 0.7;
+}
+
+.link-edit-controls {
+    margin-top: 10px;
+}
+
+.link-edit-controls.hidden {
+    display: none;
+}
+
+.url-edit-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.url-edit-button:hover {
+    background-color: #218838;
+}
+
+.portfolio-item:hover .link-edit-controls {
+    display: block ;
+}
+
+.debug-info {
+    background-color: #e9ecef;
+    padding: 10px;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+}
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1807,33 +1908,48 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 <button id="add-portfolio-item-btn" class="button hidden">Přidat položku do portfolia</button>
             </section>
 
-         <section id="contacts">
+        <section id="contacts">
         <h2>Moje projekty</h2>
         <p>Testovací verze s novými názvy bez konfliktů.</p>
 
         <div class="portfolio-items">
             <div class="portfolio-item" data-item-id="project-genesis">
-                <h3 data-editable="project-genesis-title">Moderní Fotoeditor:</h3>
-                <p data-editable="project-genesis-desc"> </p>
-                <a href="https://jirka22med.github.io/Moerni-foto-editor/" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
-                    <span data-url-editable-text>Vyzkoušet editor</span></a>
-                </div>
-            <div class="portfolio-item" data-item-id="project-photoeditor">
-                <h3 data-editable="project-photoeditor-title">Pokročilý Váhový Tracker:</h3>
-                <p data-editable="project-photoeditor-desc"> </p>
-                <a href="https://jirka22med.github.io/jirikuv-vahovy-tracker/" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
-                    <span data-url-editable-text>Pokročilý Váhový Tracker</span></a>
-                </div>
-            <div class="portfolio-item" data-item-id="project-tracker">
-                <h3 data-editable="project-tracker-title"> </h3>
-                <p data-editable="project-tracker-desc"> </p>
-                <a href="pokrocily-vahovy-tracker.html" class="button editable-link" data-link-id="project-tracker-link" target="_blank">
-                    <span data-url-editable-text> </span></a>
-                </div>
-            <div class="link-edit-controls hidden">
+                <h3 data-editable="project-genesis-title">Můj Osobní Web Genesis:</h3>
+                <p data-editable="project-genesis-desc">Moderní webová prezentace s futuristickým designem.</p>
+                <a href="moje-futuristicke-portfolio.html" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
+                    <span data-url-editable-text>Přejít na web</span>
+                    <i class="fas fa-edit edit-icon"></i>
+                </a>
+                <div class="link-edit-controls hidden">
                     <button class="url-edit-button">Upravit URL</button>
+                </div>
             </div>
-        <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
+
+            <div class="portfolio-item" data-item-id="project-photoeditor">
+                <h3 data-editable="project-photoeditor-title">Moderní Fotoeditor:</h3>
+                <p data-editable="project-photoeditor-desc">Pokročilý nástroj pro úpravu fotografií v prohlížeči.</p>
+                <a href="moderni-foto-editor-test.html" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
+                    <span data-url-editable-text>Vyzkoušet editor</span>
+                    <i class="fas fa-edit edit-icon"></i>
+                </a>
+                <div class="link-edit-controls hidden">
+                    <button class="url-edit-button">Upravit URL</button>
+                </div>
+            </div>
+
+            <div class="portfolio-item" data-item-id="project-tracker">
+                <h3 data-editable="project-tracker-title">Pokročilý Váhový Tracker:</h3>
+                <p data-editable="project-tracker-desc">Aplikace pro sledování a analýzu váhových změn.</p>
+                <a href="pokrocily-vahovy-tracker.html" class="button editable-link" data-link-id="project-tracker-link" target="_blank">
+                    <span data-url-editable-text>Spustit Tracker</span>
+                    <i class="fas fa-edit edit-icon"></i>
+                </a>
+                <div class="link-edit-controls hidden">
+                    <button class="url-edit-button">Upravit URL</button>
+                </div>
+            </div>
+        </div>
+         <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
     </section>
             
             <section id="editor">
@@ -2175,8 +2291,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         showModal(document.getElementById('auth-modal'));
         document.getElementById('auth-email').focus();
         document.getElementById('auth-error-message').textContent = '';
+     // ZDE VLOŽ ŘÁDEK Z funkce-claude.ai.txt pro zobrazení URL kontejnerů
+    if (window.modalHelpers) {
+        window.modalHelpers.showUrlEditContainers(); 
     }
-
+}
     function hideAuthModal() {
         hideModal(document.getElementById('auth-modal'));
         document.getElementById('auth-email').value = '';
@@ -2505,22 +2624,33 @@ document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => 
     }
 
     // --- Funkce pro přepínání editačního módu ---
-    function toggleEditMode() {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
-            showAuthModal();
-            return;
-        }
+    // --- Funkce pro přepínání editačního módu ---
+function toggleEditMode() {
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
+        showAuthModal(); // Tato funkce volá window.modalHelpers.showUrlEditContainers();
+        return;
+    }
 
-        if (isEditMode) {
-            disableEditMode();
-            saveDataToFirestore();
-            showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do cloudu.");
-        } else {
-            enableEditMode();
-            showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
+    if (isEditMode) { // Když se vypíná edit mód
+        disableEditMode();
+        saveDataToFirestore();
+        showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do cloudu.");
+        
+        if (window.modalHelpers) {
+            window.modalHelpers.hideUrlEditContainers(); // <--- Tady se volá pro skrytí
+            window.modalHelpers.closeUrlModal();
+        }
+    } else { // Když se zapíná edit mód
+        enableEditMode();
+        showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
+        
+        // ZDE MUSÍME ZAJISTIT, ABY SE VOLALA FUNKCE PRO ZOBRAZENÍ
+        if (window.modalHelpers) {
+            window.modalHelpers.showUrlEditContainers(); // <--- Přidej tuto řádku zde!
         }
     }
+}
 
     function enableEditMode() {
         isEditMode = true;
@@ -4233,7 +4363,60 @@ window.addEventListener('load', function() {
 
     //TADY JE POMOCNÍ SCRIPT PO YOUTUBE VIDEO HTTPS 
 
-   //Kompletní logika pro modal okno + posluchače tlačítek (BEZ KONFLIKTNÍCH POSLUCHAČŮ)
+   // JavaScript pro YouTube video náhled
+function getYouTubeVideoId(url) {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : null;
+}
+
+// Event listener pro YouTube input pole
+document.getElementById('edit-portfolio-youtube').addEventListener('input', function() {
+    const url = this.value;
+    const previewContainer = document.getElementById('youtube-preview-container');
+    const previewIframe = document.getElementById('youtube-preview');
+    
+    if (url.trim() === '') {
+        previewContainer.style.display = 'none';
+        return;
+    }
+    
+    const videoId = getYouTubeVideoId(url);
+    
+    if (videoId) {
+        // Vytvoření embed URL
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        previewIframe.src = embedUrl;
+        previewContainer.style.display = 'block';
+    } else {
+        previewContainer.style.display = 'none';
+    }
+});
+
+// Vyčištění náhledu při zavření modalu
+document.getElementById('cancel-edit-portfolio-btn').addEventListener('click', function() {
+    document.getElementById('youtube-preview-container').style.display = 'none';
+    document.getElementById('youtube-preview').src = '';
+    document.getElementById('edit-portfolio-youtube').value = '';
+});
+    
+    // Přidej tohle do konzole a pak zkus navigaci
+let originalNavigate = navigateImageModal;
+navigateImageModal = function(direction) {
+    console.log(`🎭 APRÍLOVÁ NAVIGACE START: direction=${direction}`);
+    console.log(`📍 Před: currentModalImageIndex=${currentModalImageIndex}`);
+    
+    let result = originalNavigate.call(this, direction);
+    
+    console.log(`📍 Po: currentModalImageIndex=${currentModalImageIndex}`);
+    console.log(`🎭 APRÍLOVÁ NAVIGACE END`);
+    
+    return result;
+};
+    
+    //tady je nová logika pro modar okno?
+
+    //Kompletní logika pro modal okno + posluchače tlačítek (BEZ KONFLIKTNÍCH POSLUCHAČŮ)
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('🚀 Modal listeners - inicializace (clean version)...');
 
@@ -4260,45 +4443,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let currentLinkBeingEdited = null;
 
     // Funkce pro otevření modalu
-    function openUrlEditModal(linkElement) {
-        console.log('🔓 Otevírám URL modal pro element:', linkElement);
-        
-        currentLinkBeingEdited = linkElement;
-        
-        // Získání aktuálních hodnot
-        const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
-        const linkUrl = linkElement.getAttribute('href');
-        
-        const currentTitle = linkTextSpan ? linkTextSpan.textContent.trim() : '';
-        const currentUrl = linkUrl || '';
-        
-        console.log('📝 Aktuální hodnoty:');
-        console.log('  Název:', currentTitle);
-        console.log('  URL:', currentUrl);
-        
-        // Vyplnění formuláře
-        urlEditTitleInput.value = currentTitle;
-        urlEditUrlInput.value = currentUrl;
-        
-        // Zobrazení modalu
-        urlEditModal.style.display = 'flex';
-        
-        // Focus na první input
-        setTimeout(() => {
-            urlEditTitleInput.focus();
-            urlEditTitleInput.select();
-        }, 100);
-        
-        console.log('✅ Modal otevřen');
-    }
+function openUrlEditModal(linkElement) {
+    console.log('🔓 Otevírám URL modal pro element:', linkElement);
 
-    // Funkce pro zavření modalu
-    function closeUrlEditModal() {
-        console.log('🔒 Zavírám URL modal');
-        urlEditModal.style.display = 'none';
-        currentLinkBeingEdited = null;
-    }
+    currentLinkBeingEdited = linkElement;
 
+    const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
+    const linkUrl = linkElement.getAttribute('href');
+
+    const currentTitle = linkTextSpan ? linkTextSpan.textContent.trim() : '';
+    const currentUrl = linkUrl || '';
+
+    urlEditTitleInput.value = currentTitle;
+    urlEditUrlInput.value = currentUrl;
+
+    // Změna ZDE: Použij window.showModal() a třídu .visible
+    window.showModal(urlEditModal); // urlEditModal je již reference na element
+
+    setTimeout(() => {
+        urlEditTitleInput.focus();
+        urlEditTitleInput.select();
+    }, 100);
+
+    console.log('✅ Modal otevřen');
+}
+
+// Funkce pro zavření modalu
+function closeUrlEditModal() {
+    console.log('🔒 Zavírám URL modal');
+    // Změna ZDE: Použij window.hideModal()
+    window.hideModal(urlEditModal); // urlEditModal je již reference na element
+    currentLinkBeingEdited = null;
+}
     // Event listenery pro tlačítka v modalu
     urlEditCancelBtn.addEventListener('click', () => {
         console.log('❌ Zrušeno uživatelem');
@@ -4450,6 +4626,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     console.log('🎉 Modal systém inicializován (clean version)!');
     console.log('💡 Tip: Použijte window.modalHelpers pro ovládání z hlavního scriptu');
 });
+    
 </script>
 </body>
 </html>
