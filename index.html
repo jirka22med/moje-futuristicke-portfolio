@@ -2024,7 +2024,19 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         </div>
     </div>
 </div>
- 
+ <div id="url-edit-modal" class="url-edit-modal">
+        <div class="url-modal-content">
+            <h3>Upravit URL odkazu</h3>
+            <label for="url-edit-title-input">Název odkazu:</label>
+            <input type="text" id="url-edit-title-input" placeholder="Název odkazu">
+            <label for="url-edit-url-input">URL adresa:</label>
+            <input type="url" id="url-edit-url-input" placeholder="https://example.com">
+            <div class="url-modal-buttons">
+                <button id="url-edit-cancel-btn" class="button btn-secondary">Zrušit</button>
+                <button id="url-edit-save-btn" class="button">Uložit změny</button>
+            </div>
+        </div>
+    </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -4271,7 +4283,283 @@ navigateImageModal = function(direction) {
 };
     
     //tady je nová logika pro modar okno?
+//Kompletní logika pro modal okno + posluchače tlačítek (POUZE POSLUCHAČE)
+document.addEventListener('DOMContentLoaded', (event) => {
+    console.log('🚀 Modal listeners - inicializace...');
 
+    // NOVÉ NÁZVY ELEMENTŮ
+    const urlEditModal = document.getElementById('url-edit-modal');
+    const urlEditTitleInput = document.getElementById('url-edit-title-input');
+    const urlEditUrlInput = document.getElementById('url-edit-url-input');
+    const urlEditCancelBtn = document.getElementById('url-edit-cancel-btn');
+    const urlEditSaveBtn = document.getElementById('url-edit-save-btn');
+
+    // Debug: Kontrola existence elementů
+    console.log('📋 Kontrola elementů:');
+    console.log('URL Modal:', urlEditModal ? '✅' : '❌');
+    console.log('Title input:', urlEditTitleInput ? '✅' : '❌');
+    console.log('URL input:', urlEditUrlInput ? '✅' : '❌');
+    console.log('Cancel btn:', urlEditCancelBtn ? '✅' : '❌');
+    console.log('Save btn:', urlEditSaveBtn ? '✅' : '❌');
+
+    if (!urlEditModal || !urlEditTitleInput || !urlEditUrlInput || !urlEditCancelBtn || !urlEditSaveBtn) {
+        console.error("❌ Chyba: Některé elementy modalu nebyly nalezeny!");
+        return;
+    }
+
+    let currentLinkBeingEdited = null;
+
+    // Funkce pro otevření modalu
+    function openUrlEditModal(linkElement) {
+        console.log('🔓 Otevírám URL modal pro element:', linkElement);
+        
+        currentLinkBeingEdited = linkElement;
+        
+        // Získání aktuálních hodnot
+        const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
+        const linkUrl = linkElement.getAttribute('href');
+        
+        const currentTitle = linkTextSpan ? linkTextSpan.textContent.trim() : '';
+        const currentUrl = linkUrl || '';
+        
+        console.log('📝 Aktuální hodnoty:');
+        console.log('  Název:', currentTitle);
+        console.log('  URL:', currentUrl);
+        
+        // Vyplnění formuláře
+        urlEditTitleInput.value = currentTitle;
+        urlEditUrlInput.value = currentUrl;
+        
+        // Zobrazení modalu
+        urlEditModal.style.display = 'flex';
+        
+        // Focus na první input
+        setTimeout(() => {
+            urlEditTitleInput.focus();
+            urlEditTitleInput.select();
+        }, 100);
+        
+        console.log('✅ Modal otevřen');
+    }
+
+    // Funkce pro zavření modalu
+    function closeUrlEditModal() {
+        console.log('🔒 Zavírám URL modal');
+        urlEditModal.style.display = 'none';
+        currentLinkBeingEdited = null;
+    }
+
+    // Event listenery pro tlačítka v modalu
+    urlEditCancelBtn.addEventListener('click', () => {
+        console.log('❌ Zrušeno uživatelem');
+        closeUrlEditModal();
+    });
+
+    urlEditSaveBtn.addEventListener('click', () => {
+        console.log('💾 Ukládám změny...');
+        
+        if (currentLinkBeingEdited) {
+            const newLinkTitle = urlEditTitleInput.value.trim();
+            const newLinkUrl = urlEditUrlInput.value.trim();
+            
+            // Validace
+            if (!newLinkTitle) {
+                alert('Název odkazu nesmí být prázdný!');
+                urlEditTitleInput.focus();
+                return;
+            }
+            
+            if (!newLinkUrl) {
+                alert('URL adresa nesmí být prázdná!');
+                urlEditUrlInput.focus();
+                return;
+            }
+            
+            console.log('📝 Nové hodnoty:');
+            console.log('  Název:', newLinkTitle);
+            console.log('  URL:', newLinkUrl);
+            
+            // Aktualizace HTML elementů
+            const linkTextSpan = currentLinkBeingEdited.querySelector('[data-url-editable-text]');
+            if (linkTextSpan) {
+                linkTextSpan.textContent = newLinkTitle;
+            }
+            currentLinkBeingEdited.setAttribute('href', newLinkUrl);
+            
+            // Debug informace pro Firebase integraci
+            const parentPortfolioItem = currentLinkBeingEdited.closest('.portfolio-item');
+            const projectId = parentPortfolioItem ? parentPortfolioItem.dataset.itemId : 'unknown-id';
+            
+            console.log('🔥 Data pro Firebase:');
+            console.log('  Project ID:', projectId);
+            console.log('  Link Title:', newLinkTitle);
+            console.log('  Link URL:', newLinkUrl);
+            
+            // Zde by byla integrace s Firebase
+            // saveUrlDataToFirestore(projectId, { linkText: newLinkTitle, linkUrl: newLinkUrl });
+            
+            alert(`Změny uloženy!\nNázev: ${newLinkTitle}\nURL: ${newLinkUrl}`);
+            console.log('✅ Změny uloženy lokálně');
+        }
+        
+        closeUrlEditModal();
+    });
+
+    // Zavření modalu kliknutím mimo něj
+    window.addEventListener('click', (event) => {
+        if (event.target === urlEditModal) {
+            console.log('🖱️ Zavírám modal (klik mimo)');
+            closeUrlEditModal();
+        }
+    });
+
+    // EVENT LISTENER pro tlačítka "Upravit URL"
+    console.log('🔍 Hledám URL edit tlačítka...');
+    
+    const urlEditButtons = document.querySelectorAll('.url-edit-button');
+    console.log('📊 Nalezeno URL edit tlačítek:', urlEditButtons.length);
+    
+    urlEditButtons.forEach((urlEditButton, index) => {
+        console.log(`🔧 Přidávám listener pro tlačítko ${index + 1}`);
+        
+        urlEditButton.addEventListener('click', (event) => {
+            console.log('🖱️ Kliknuto na URL edit tlačítko:', event.currentTarget);
+            
+            event.stopPropagation();
+            event.preventDefault();
+            
+            // Najdeme rodičovský portfolio-item
+            const portfolioItem = event.currentTarget.closest('.portfolio-item');
+            if (!portfolioItem) {
+                console.error('❌ Nenalezen .portfolio-item');
+                return;
+            }
+            
+            // Najdeme odkaz v tomto portfolio-item
+            const linkToEdit = portfolioItem.querySelector('a.editable-link');
+            
+            if (linkToEdit) {
+                console.log('✅ Nalezen odkaz pro URL editaci:', linkToEdit);
+                openUrlEditModal(linkToEdit);
+            } else {
+                console.error('❌ Nenalezen odkaz pro URL editaci');
+                alert('Chyba: Nepodařilo se najít odkaz pro editaci URL.');
+            }
+        });
+    });
+
+    // Klávesové zkratky pro modal
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && urlEditModal.style.display === 'flex') {
+            console.log('⌨️ Zavírám modal (Escape)');
+            closeUrlEditModal();
+        }
+        
+        // Ctrl+Enter pro rychlé uložení
+        if (event.ctrlKey && event.key === 'Enter' && urlEditModal.style.display === 'flex') {
+            console.log('⌨️ Rychlé uložení (Ctrl+Enter)');
+            urlEditSaveBtn.click();
+        }
+    });
+
+    // ========================================
+    // POUZE POSLUCHAČE PRO HLAVNÍ TLAČÍTKA
+    // ========================================
+    console.log('🔧 Nastavuji posluchače pro hlavní tlačítka...');
+
+    const editModeToggleBtn = document.getElementById('edit-mode-toggle-btn');
+    const loginButton = document.getElementById('login-button');
+
+    // Debug: Kontrola existence tlačítek
+    console.log('📋 Kontrola hlavních tlačítek:');
+    console.log('Zavřít tlačítko:', editModeToggleBtn ? '✅' : '❌');
+    console.log('Upravit tlačítko:', loginButton ? '✅' : '❌');
+
+    // Funkce pro práci s URL kontejnery
+    function showUrlEditContainers() {
+        console.log('👁️ Zobrazuji URL edit kontejnery');
+        const urlEditContainers = document.querySelectorAll('.link-edit-controls');
+        urlEditContainers.forEach(container => {
+            container.classList.remove('hidden');
+            container.style.display = 'block';
+        });
+        console.log(`✅ Zobrazeno ${urlEditContainers.length} URL edit kontejnerů`);
+    }
+
+    function hideUrlEditContainers() {
+        console.log('🙈 Skrývám URL edit kontejnery');
+        const urlEditContainers = document.querySelectorAll('.link-edit-controls');
+        urlEditContainers.forEach(container => {
+            container.classList.add('hidden');
+            container.style.display = 'none';
+        });
+        console.log(`✅ Skryto ${urlEditContainers.length} URL edit kontejnerů`);
+    }
+
+    if (editModeToggleBtn && loginButton) {
+        
+        // POSLUCHAČ PRO TLAČÍTKO "UPRAVIT" (vstup do edit režimu)
+        loginButton.addEventListener('click', () => {
+            console.log('🖱️ Listener: Tlačítko UPRAVIT - volám externí funkci');
+            
+            // Zavolá vaši existující funkci z hlavního scriptu
+            if (typeof window.showAuthModal === 'function') {
+                window.showAuthModal();
+            } else {
+                console.error('❌ Funkce showAuthModal() nebyla nalezena!');
+            }
+            
+            // Dodatečná logika pro URL kontejnery
+            showUrlEditContainers();
+            
+            console.log('✅ Posluchač UPRAVIT dokončen');
+        });
+        
+        // POSLUCHAČ PRO TLAČÍTKO "ZAVŘÍT" (výstup z edit režimu)
+        editModeToggleBtn.addEventListener('click', () => {
+            console.log('🖱️ Listener: Tlačítko ZAVŘÍT - volám externí funkci');
+            
+            // Zavolá vaši existující funkci z hlavního scriptu
+            if (typeof window.toggleEditMode === 'function') {
+                window.toggleEditMode();
+            } else {
+                console.error('❌ Funkce toggleEditMode() nebyla nalezena!');
+            }
+            
+            // Dodatečná logika pro URL kontejnery
+            hideUrlEditContainers();
+            
+            // Zavře modal pokud je otevřený
+            if (urlEditModal.style.display === 'flex') {
+                closeUrlEditModal();
+                console.log('🔒 Zavřen otevřený URL modal');
+            }
+            
+            console.log('✅ Posluchač ZAVŘÍT dokončen');
+        });
+        
+        // POČÁTEČNÍ NASTAVENÍ
+        // Zkontrolujeme aktuální stav na základě viditelnosti tlačítek
+        const isInEditMode = !editModeToggleBtn.classList.contains('hidden');
+        
+        if (isInEditMode) {
+            console.log('🎯 Stránka načtena v edit režimu - zobrazuji URL kontejnery');
+            showUrlEditContainers();
+        } else {
+            console.log('🎯 Stránka načtena v normálním režimu - skrývám URL kontejnery');
+            hideUrlEditContainers();
+        }
+        
+        console.log('🎯 Posluchače pro hlavní tlačítka úspěšně nastaveny');
+        
+    } else {
+        console.error('❌ Chyba: Hlavní tlačítka nebyla nalezena!');
+        if (!editModeToggleBtn) console.error('  - Nenalezeno: #edit-mode-toggle-btn');
+        if (!loginButton) console.error('  - Nenalezeno: #login-button');
+    }
+
+    console.log('🎉 Modal systém s posluchači inicializován!');
+});
 </script>
 </body>
 </html>
