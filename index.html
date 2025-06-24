@@ -2396,7 +2396,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
     ];
 
-    // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
+   // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
     async function saveDataToFirestore() {
         if (!currentUserId) {
             showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
@@ -2409,9 +2409,42 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             const id = el.dataset.editable;
             if (id) {
                 if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                    editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+                    if (!el.querySelector('[data-url-editable-text]')) {
+                        editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+                    }
                 } else {
                     editableContentData[id] = el.innerHTML;
+                }
+            }
+        });
+
+        document.querySelectorAll('.portfolio-item').forEach(portfolioItem => {
+            const itemId = portfolioItem.dataset.itemId;
+            if (itemId) {
+                const linkElement = portfolioItem.querySelector('a.editable-link');
+                const linkTextSpan = linkElement ? linkElement.querySelector('[data-url-editable-text]') : null;
+
+                if (linkElement && linkTextSpan) {
+                    const newLinkTitle = linkTextSpan.textContent.trim();
+                    const newLinkUrl = linkElement.getAttribute('href');
+
+                    editableContentData[`${itemId}-link-text`] = newLinkTitle;
+                    editableContentData[`${itemId}-link-url`] = newLinkUrl;
+                }
+
+                const youtubePreviewIframe = portfolioItem.querySelector('.portfolio-video-container iframe');
+                if (youtubePreviewIframe && youtubePreviewIframe.src) {
+                    const currentYoutubeUrl = youtubePreviewIframe.src;
+                    const videoId = getYouTubeVideoId(currentYoutubeUrl);
+                    if (videoId) {
+                        editableContentData[`${itemId}-youtube-url`] = `https://youtu.be/${videoId}`;
+                    } else {
+                        editableContentData[`${itemId}-youtube-url`] = '';
+                    }
+                } else {
+                    if (editableContentData[`${itemId}-youtube-url`]) {
+                         editableContentData[`${itemId}-youtube-url`] = '';
+                    }
                 }
             }
         });
@@ -2421,11 +2454,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             savedCodes: savedCodesData,
             externalLinks: externalLinksData,
             editableContent: editableContentData,
-            // lastUpdated: firebase.firestore.FieldValue.serverTimestamp(), // Ponecháno pro dokument nejvyšší úrovně
             editorUserId: currentUserId
         };
 
-        // Přidáme serverTimestamp pro samotný dokument nejvyšší úrovně, ne pro pole uvnitř
         dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
 
         try {
@@ -4416,7 +4447,7 @@ navigateImageModal = function(direction) {
     
     //tady je nová logika pro modar okno?
 
-    //Kompletní logika pro modal okno + posluchače tlačítek (BEZ KONFLIKTNÍCH POSLUCHAČŮ)
+   //Kompletní logika pro modal okno + posluchače tlačítek (BEZ KONFLIKTNÍCH POSLUCHAČŮ)
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('🚀 Modal listeners - inicializace (clean version)...');
 
@@ -4443,38 +4474,39 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let currentLinkBeingEdited = null;
 
     // Funkce pro otevření modalu
-function openUrlEditModal(linkElement) {
-    console.log('🔓 Otevírám URL modal pro element:', linkElement);
+    function openUrlEditModal(linkElement) {
+        console.log('🔓 Otevírám URL modal pro element:', linkElement);
 
-    currentLinkBeingEdited = linkElement;
+        currentLinkBeingEdited = linkElement;
 
-    const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
-    const linkUrl = linkElement.getAttribute('href');
+        const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
+        const linkUrl = linkElement.getAttribute('href');
 
-    const currentTitle = linkTextSpan ? linkTextSpan.textContent.trim() : '';
-    const currentUrl = linkUrl || '';
+        const currentTitle = linkTextSpan ? linkTextSpan.textContent.trim() : '';
+        const currentUrl = linkUrl || '';
 
-    urlEditTitleInput.value = currentTitle;
-    urlEditUrlInput.value = currentUrl;
+        urlEditTitleInput.value = currentTitle;
+        urlEditUrlInput.value = currentUrl;
 
-    // Změna ZDE: Použij window.showModal() a třídu .visible
-    window.showModal(urlEditModal); // urlEditModal je již reference na element
+        // Změna ZDE: Použij window.showModal() a třídu .visible
+        window.showModal(urlEditModal); // urlEditModal je již reference na element
 
-    setTimeout(() => {
-        urlEditTitleInput.focus();
-        urlEditTitleInput.select();
-    }, 100);
+        setTimeout(() => {
+            urlEditTitleInput.focus();
+            urlEditTitleInput.select();
+        }, 100);
 
-    console.log('✅ Modal otevřen');
-}
+        console.log('✅ Modal otevřen');
+    }
 
-// Funkce pro zavření modalu
-function closeUrlEditModal() {
-    console.log('🔒 Zavírám URL modal');
-    // Změna ZDE: Použij window.hideModal()
-    window.hideModal(urlEditModal); // urlEditModal je již reference na element
-    currentLinkBeingEdited = null;
-}
+    // Funkce pro zavření modalu
+    function closeUrlEditModal() {
+        console.log('🔒 Zavírám URL modal');
+        // Změna ZDE: Použij window.hideModal()
+        window.hideModal(urlEditModal); // urlEditModal je již reference na element
+        currentLinkBeingEdited = null;
+    }
+
     // Event listenery pro tlačítka v modalu
     urlEditCancelBtn.addEventListener('click', () => {
         console.log('❌ Zrušeno uživatelem');
@@ -4523,6 +4555,22 @@ function closeUrlEditModal() {
             
             // Zde by byla integrace s Firebase
             // saveUrlDataToFirestore(projectId, { linkText: newLinkTitle, linkUrl: newLinkUrl });
+            
+            // =========================================================================================
+            // ZDE JE TEN NOVÝ KÓD, KTERÝ AKTUALIZUJE editableContentData
+            // =========================================================================================
+            if (projectId !== 'unknown-id') { // Ujistíme se, že máme platné ID projektu
+                // Tyto klíče odpovídají tomu, jak ukládáš data pro portfolio položky
+                // (např. 'project-genesis-link-text', 'project-genesis-link-url')
+                editableContentData[`${projectId}-link-text`] = newLinkTitle;
+                editableContentData[`${projectId}-link-url`] = newLinkUrl;
+                console.log(`✅ editableContentData aktualizována pro Project ID: ${projectId} s novými URL daty.`);
+            } else {
+                console.warn('⚠️ Chyba: Project ID pro aktuálně upravovaný odkaz je neznámé. Data nebudou propisována do editableContentData pro ukládání do cloudu.');
+            }
+            // =========================================================================================
+            // KONEC NOVÉHO KÓDU
+            // =========================================================================================
             
             alert(`Změny uloženy!\nNázev: ${newLinkTitle}\nURL: ${newLinkUrl}`);
             console.log('✅ Změny uloženy lokálně');
@@ -4626,7 +4674,6 @@ function closeUrlEditModal() {
     console.log('🎉 Modal systém inicializován (clean version)!');
     console.log('💡 Tip: Použijte window.modalHelpers pro ovládání z hlavního scriptu');
 });
-    
 </script>
 </body>
 </html>
