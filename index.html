@@ -652,7 +652,7 @@ footer {
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.85rem; 
-    color: red;
+    color: white;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     display: inline-block;
@@ -1875,7 +1875,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 </div>
             </section>
 
-            <section id="portfolio"> 
+            <section id="portfolio"> //toto je jenom ilustrace názvy definic jsou taky ilustracní neslouží k použití jenm se podívej jak jsou žešeni texty a tlačítka pro odkazy ???
                 <h2 data-editable="portfolio-h2">Portfolio</h2>
                 <p data-editable="portfolio-intro">V této sekci najdeš ukázky mých projektů a práce, které odrážejí mé zájmy v oblasti technologií. I když nejsem programátor, díky spolupráci s AI, jako je ChatGPT a Claude.AI, se mi podařilo vytvořit tyto projekty, na které jsem pyšný.</p>
                 <div class="portfolio-items" style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -1916,8 +1916,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <div class="portfolio-item" data-item-id="project-genesis">
                 <h3 data-editable="project-genesis-title">Můj Osobní Web Genesis:</h3>
                 <p data-editable="project-genesis-desc">Moderní webová prezentace s futuristickým designem.</p>
-                <a href="https://jirka22med.github.io/Moerni-foto-editor/" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
-                    <span data-url-editable-text>Foto editor</span>
+                <a href="moje-futuristicke-portfolio.html" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
+                    <span data-url-editable-text>Přejít na web</span>
                     <i class="fas fa-edit edit-icon"></i>
                 </a>
                 <div class="link-edit-controls hidden">
@@ -1926,10 +1926,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             </div>
 
             <div class="portfolio-item" data-item-id="project-photoeditor">
-                <h3 data-editable="project-photoeditor-title">Star trek hudební přehrávač</h3>
+                <h3 data-editable="project-photoeditor-title">Moderní Fotoeditor:</h3>
                 <p data-editable="project-photoeditor-desc">Pokročilý nástroj pro úpravu fotografií v prohlížeči.</p>
-                <a href="https://jirka22med.github.io/firebase-synced-player/" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
-                    <span data-url-editable-text>Star trek hudební přehrávač</span>
+                <a href="moderni-foto-editor-test.html" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
+                    <span data-url-editable-text>Vyzkoušet editor</span>
                     <i class="fas fa-edit edit-icon"></i>
                 </a>
                 <div class="link-edit-controls hidden">
@@ -2397,60 +2397,61 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     ];
 
    // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
-    async function saveDataToFirestore() {
+    // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
+async function saveDataToFirestore() {
     if (!currentUserId) {
         showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
         return false;
     }
 
     showLoading("Ukládám data do cloudu...");
+    console.log("saveDataToFirestore: Spouštím sběr dat pro ukládání.");
 
     document.querySelectorAll('[data-editable]').forEach(el => {
         const id = el.dataset.editable;
         if (id) {
             if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                // Tato část se týká obecných editable-link, které nemají data-url-editable-text uvnitř
-                if (!el.querySelector('[data-url-editable-text]')) { // Důležitá podmínka!
+                if (!el.querySelector('[data-url-editable-text]')) {
                     editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+                    console.log(`saveDataToFirestore: Zpracován obecný editable-link [${id}]:`, editableContentData[id]);
                 }
             } else {
                 editableContentData[id] = el.innerHTML;
+                console.log(`saveDataToFirestore: Zpracován data-editable [${id}]:`, editableContentData[id]);
             }
         }
     });
 
-    // Nová a klíčová část: Sběr dat pro URL a názvy z <section id="contacts">
-    // Tato část HTML má specifickou strukturu, kde <a> má data-link-id
-    // a vnořený <span> má data-url-editable-text.
-    // Musíme projít všechny .portfolio-item a explicitně sebrat tato data.
     document.querySelectorAll('.portfolio-item').forEach(portfolioItem => {
-        const itemId = portfolioItem.dataset.itemId; // Např. "project-genesis"
+        const itemId = portfolioItem.dataset.itemId;
         if (itemId) {
-            const linkElement = portfolioItem.querySelector('a.editable-link[data-link-id]'); // Cílíme na <a> s data-link-id
-            const linkTextSpan = linkElement ? linkElement.querySelector('[data-url-editable-text]') : null; // Cílíme na <span> uvnitř <a>
+            const linkElement = portfolioItem.querySelector('a.editable-link');
+            const linkTextSpan = linkElement ? linkElement.querySelector('[data-url-editable-text]') : null;
 
             if (linkElement && linkTextSpan) {
                 const newLinkTitle = linkTextSpan.textContent.trim();
                 const newLinkUrl = linkElement.getAttribute('href');
 
-                // Ukládáme do editableContentData pod klíči odvozenými od itemId
                 editableContentData[`${itemId}-link-text`] = newLinkTitle;
                 editableContentData[`${itemId}-link-url`] = newLinkUrl;
+                console.log(`saveDataToFirestore: Zpracován portfolio link pro [${itemId}]: Text='${newLinkTitle}', URL='${newLinkUrl}'`);
             }
 
-            // A zde zajistíme, že se uloží i aktuální YouTube URL, pokud je přítomna
             const youtubePreviewIframe = portfolioItem.querySelector('.portfolio-video-container iframe');
             if (youtubePreviewIframe && youtubePreviewIframe.src) {
                 const currentYoutubeUrl = youtubePreviewIframe.src;
-                const videoId = getYouTubeVideoId(currentYoutubeUrl); // Předpokládá se existence getYouTubeVideoId()
+                const videoId = getYouTubeVideoId(currentYoutubeUrl);
                 if (videoId) {
                     editableContentData[`${itemId}-youtube-url`] = `https://youtu.be/${videoId}`;
+                    console.log(`saveDataToFirestore: Zpracován YouTube URL pro [${itemId}]:`, editableContentData[`${itemId}-youtube-url`]);
                 } else {
                     editableContentData[`${itemId}-youtube-url`] = '';
+                    console.log(`saveDataToFirestore: YouTube URL pro [${itemId}] je neplatná, nastavena na prázdnou.`);
                 }
             } else {
                 if (editableContentData[`${itemId}-youtube-url`]) {
                      editableContentData[`${itemId}-youtube-url`] = '';
+                     console.log(`saveDataToFirestore: YouTube iframe pro [${itemId}] nenalezen, URL nastavena na prázdnou.`);
                 }
             }
         }
@@ -2465,186 +2466,237 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     };
 
     dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+    console.log("saveDataToFirestore: Data připravená k uložení:", dataToSave);
 
     try {
         await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
         hideLoading();
         showAlertModal("Uloženo do cloudu", "Všechna data byla úspěšně uložena do Cloud Firestore.");
+        console.log("saveDataToFirestore: Data úspěšně uložena do Firestore.");
         return true;
     } catch (error) {
-        console.error('Chyba při ukládání do Firestore:', error);
+        console.error('saveDataToFirestore: Chyba při ukládání do Firestore:', error);
         hideLoading();
         showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
         return false;
     }
 }
 
+// --- Funkce pro načítání dat z Firestore (všichni vidí) ---
+async function loadDataFromFirestore() {
+    showLoading("Načítám data z cloudu...");
+    console.log("loadDataFromFirestore: Spouštím načítání dat.");
+    try {
+        const docRef = db.collection('publicContent').doc(DOC_ID);
+        const doc = await docRef.get();
 
-    // --- Funkce pro načítání dat z Firestore (všichni vidí) ---
-    async function loadDataFromFirestore() {
-        showLoading("Načítám data z cloudu...");
-        try {
-            const docRef = db.collection('publicContent').doc(DOC_ID);
-            const doc = await docRef.get();
+        if (doc.exists) {
+            const data = doc.data();
+            galleryImagesData = data.galleryImages || [...initialImageUrls];
+            savedCodesData = data.savedCodes || [];
+            externalLinksData = data.externalLinks || [...initialExternalLinksData];
+            editableContentData = data.editableContent || {};
+            console.log("loadDataFromFirestore: Data načtena z Firestore:", editableContentData);
+            // Zde přidáme specifický log pro portfolio URL, abychom viděli, co se načetlo
+            console.log("loadDataFromFirestore: Načtená data pro portfolio URL (příklad):", {
+                'project-genesis-link-text': editableContentData['project-genesis-link-text'],
+                'project-genesis-link-url': editableContentData['project-genesis-link-url'],
+                'project-photoeditor-link-text': editableContentData['project-photoeditor-link-text'],
+                'project-photoeditor-link-url': editableContentData['project-photoeditor-link-url'],
+                'project-tracker-link-text': editableContentData['project-tracker-link-text'],
+                'project-tracker-link-url': editableContentData['project-tracker-link-url']
+            });
 
+        } else {
+            console.log("loadDataFromFirestore: Žádná data v Firestore, použiji výchozí lokální data.");
+            galleryImagesData = [...initialImageUrls];
+            savedCodesData = [];
+            externalLinksData = [...initialExternalLinksData];
+            editableContentData = {};
+        }
+        console.log("loadDataFromFirestore: Volám applyEditableContent().");
+        applyEditableContent();
+        updateGalleryDisplay();
+        renderSavedCodesDisplay();
+        renderExternalLinks();
+        hideLoading();
+        console.log("loadDataFromFirestore: Načítání dat dokončeno.");
+        return true;
+    } catch (error) {
+        console.error('loadDataFromFirestore: Chyba při načítání z Firestore:', error);
+        hideLoading();
+        showAlertModal("Chyba načítání", `Nepodařilo se načíst data z cloudu: ${error.message}. Používám výchozí data.`);
+        return false;
+    }
+}
+
+// --- Listener pro aktualizace v reálném čase z Firestore ---
+function setupFirestoreRealtimeListener() {
+    console.log("setupFirestoreRealtimeListener: Nastavuji real-time listener.");
+    db.collection('publicContent').doc(DOC_ID)
+        .onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
+                console.log("setupFirestoreRealtimeListener: Realtime aktualizace z Firestore:", data);
                 galleryImagesData = data.galleryImages || [...initialImageUrls];
                 savedCodesData = data.savedCodes || [];
                 externalLinksData = data.externalLinks || [...initialExternalLinksData];
                 editableContentData = data.editableContent || {};
-                console.log("Data načtena z Firestore.");
+                console.log("setupFirestoreRealtimeListener: Načtená editableContentData z real-time:", editableContentData);
+
+                console.log("setupFirestoreRealtimeListener: Volám applyEditableContent() po real-time aktualizaci.");
+                applyEditableContent();
+                updateGalleryDisplay();
+                renderSavedCodesDisplay();
+                renderExternalLinks();
+                console.log("setupFirestoreRealtimeListener: Firestore Aktualizace: Obsah stránky byl automaticky aktualizován z cloudu.");
             } else {
-                console.log("Žádná data v Firestore, použiji výchozí lokální data.");
+                console.log("setupFirestoreRealtimeListener: Hlavní dokument v Firestore neexistuje, nebo byl smazán. Resetuji lokální data.");
                 galleryImagesData = [...initialImageUrls];
                 savedCodesData = [];
                 externalLinksData = [...initialExternalLinksData];
                 editableContentData = {};
+                applyEditableContent();
+                updateGalleryDisplay();
+                renderSavedCodesDisplay();
+                renderExternalLinks();
             }
-            applyEditableContent();
-            updateGalleryDisplay();
-            renderSavedCodesDisplay();
-            renderExternalLinks();
-            hideLoading();
-            return true;
-        } catch (error) {
-            console.error('Chyba při načítání z Firestore:', error);
-            hideLoading();
-            showAlertModal("Chyba načítání", `Nepodařilo se načíst data z cloudu: ${error.message}. Používám výchozí data.`);
-            return false;
+        }, (error) => {
+            console.error("setupFirestoreRealtimeListener: Chyba při poslouchání realtime aktualizací:", error);
+            showAlertModal("Chyba synchronizace", `Nepodařilo se synchronizovat data v reálném čase: ${error.message}`);
+        });
+}
+
+// --- Funkce pro aplikaci editovatelného obsahu (zde je klíč k vykreslení) ---
+function applyEditableContent() {
+    console.log("applyEditableContent: Spouštím aplikaci obsahu na DOM.");
+    console.log("applyEditableContent: Aktuální editableContentData:", editableContentData);
+
+    // Nejprve aplikujeme na obecné [data-editable] prvky
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        const id = el.dataset.editable;
+        if (id && editableContentData.hasOwnProperty(id)) { // Kontrolujeme, zda data pro ID existují
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                // Pokud je to obecný editable-link, který není z portfolio-item (tj. nemá data-url-editable-text uvnitř)
+                if (!el.querySelector('[data-url-editable-text]')) {
+                    el.href = editableContentData[id].url || '#';
+                    el.innerHTML = `${editableContentData[id].text || ''}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
+                    console.log(`applyEditableContent: Aplikován obecný editable-link [${id}]:`, el.href, el.textContent);
+                }
+            } else {
+                el.innerHTML = editableContentData[id];
+                console.log(`applyEditableContent: Aplikován data-editable [${id}]:`, el.innerHTML);
+            }
         }
+    });
+
+    const portfolioContainer = document.querySelector('.portfolio-items');
+    if (portfolioContainer) {
+        portfolioContainer.innerHTML = ''; // Vyčistíme stávající portfolio položky před vložením nových
+        console.log("applyEditableContent: Vyčištěn kontejner .portfolio-items.");
+    } else {
+        console.warn("applyEditableContent: Kontejner .portfolio-items nenalezen.");
+        return; // Pokud kontejner neexistuje, nemá smysl pokračovat
     }
 
-    // --- Listener pro aktualizace v reálném čase z Firestore ---
-    function setupFirestoreRealtimeListener() {
-        db.collection('publicContent').doc(DOC_ID)
-            .onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    console.log("Realtime aktualizace z Firestore:", data);
-                    galleryImagesData = data.galleryImages || [...initialImageUrls];
-                    savedCodesData = data.savedCodes || [];
-                    externalLinksData = data.externalLinks || [...initialExternalLinksData];
-                    editableContentData = data.editableContent || {};
-
-                    applyEditableContent();
-                    updateGalleryDisplay();
-                    renderSavedCodesDisplay();
-                    renderExternalLinks();
-                    console.log("Firestore Aktualizace: Obsah stránky byl automaticky aktualizován z cloudu.");
-                } else {
-                    console.log("Hlavní dokument v Firestore neexistuje, nebo byl smazán.");
-                    galleryImagesData = [...initialImageUrls];
-                    savedCodesData = [];
-                    externalLinksData = [...initialExternalLinksData];
-                    editableContentData = {};
-                    applyEditableContent();
-                    updateGalleryDisplay();
-                    renderSavedCodesDisplay();
-                    renderExternalLinks();
-                }
-            }, (error) => {
-                console.error("Chyba při poslouchání realtime aktualizací:", error);
-                showAlertModal("Chyba synchronizace", `Nepodařilo se synchronizovat data v reálném čase: ${error.message}`);
-            });
+    const portfolioItemIds = new Set();
+    for (const key in editableContentData) {
+        // Hledáme klíče, které odpovídají titulům portfolio položek, abychom získali itemId
+        if (key.startsWith('project-') && key.endsWith('-title')) { // Předpokládáme, že itemId začínají 'project-'
+            const itemId = key.replace('-title', '');
+            portfolioItemIds.add(itemId);
+        }
     }
+    console.log("applyEditableContent: Identifikované portfolio Item ID k vykreslení:", Array.from(portfolioItemIds));
 
-    // --- Funkce pro aplikaci editovatelného obsahu ---
-    function applyEditableContent() {
-        for (const id in editableContentData) {
-            const element = document.querySelector(`[data-editable="${id}"]`);
-            if (element) {
-                if (element.tagName === 'A' && element.classList.contains('editable-link')) {
-                    element.href = editableContentData[id].url || '#';
-                    element.innerHTML = `${editableContentData[id].text || ''}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>`;
-                } else {
-                    element.innerHTML = editableContentData[id];
-                }
+
+     portfolioItemIds.forEach(itemId => {
+        const title = editableContentData[`${itemId}-title`];
+        // Zkusíme nejprve desc-1, pokud není, zkusíme jen desc
+        const desc1 = editableContentData[`${itemId}-desc-1`] || editableContentData[`${itemId}-desc`]; // <<< ZMĚNA ZDE!
+        const desc2 = editableContentData[`${itemId}-desc-2`] || '';
+
+        // Načítáme linkText a linkUrl přímo z editableContentData
+        const linkText = editableContentData[`${itemId}-link-text`];
+        const linkUrl = editableContentData[`${itemId}-link-url`];
+        const youtubeUrl = editableContentData[`${itemId}-youtube-url`] || '';
+        let videoEmbedHtml = '';
+
+        console.log(`applyEditableContent: Zpracovávám portfolio položku [${itemId}]. Načtená data:`, { title, desc1, linkText, linkUrl, youtubeUrl });
+
+
+        if (youtubeUrl) {
+            const videoId = getYouTubeVideoId(youtubeUrl);
+            if (videoId) {
+                const embedSrc = `https://www.youtube.com/embed/${videoId}`; 
+                videoEmbedHtml = `
+                    <div class="portfolio-video-container">
+                        <iframe 
+                            src="${embedSrc}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen
+                        ></iframe>
+                    </div>
+                `;
+                console.log(`applyEditableContent: Generován YouTube embed pro [${itemId}]:`, embedSrc);
+            } else {
+                console.warn(`applyEditableContent: Neplatné YouTube ID pro [${itemId}] z URL:`, youtubeUrl);
             }
         }
 
-        const portfolioContainer = document.querySelector('.portfolio-items');
-        if (portfolioContainer) {
-            portfolioContainer.innerHTML = '';
+        if (!title || !desc1) {
+            console.warn(`applyEditableContent: Chybí základní data (titul nebo popis) pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
+            return;
         }
 
-        const portfolioItemIds = new Set();
-        for (const key in editableContentData) {
-            if (key.startsWith('portfolio-item-') && key.endsWith('-title')) {
-                const itemId = key.replace('-title', '');
-                portfolioItemIds.add(itemId);
-            }
-        }
-
-       portfolioItemIds.forEach(itemId => {
-    const title = editableContentData[`${itemId}-title`];
-    const desc1 = editableContentData[`${itemId}-desc-1`];
-    const desc2 = editableContentData[`${itemId}-desc-2`] || '';
-    const linkText = editableContentData[`${itemId}-link-text`];
-    const linkUrl = editableContentData[`${itemId}-link-url`];
-    // --- NOVÝ KÓD ZDE: ZÍSKÁNÍ YOUTUBE URL A VYTVOŘENÍ EMBED KÓDU ---
-    const youtubeUrl = editableContentData[`${itemId}-youtube-url`] || ''; // Předpokládáme, že takto uložíš URL z formuláře
-    let videoEmbedHtml = ''; // Inicializace prázdného HTML pro video
-
-    if (youtubeUrl) {
-    const videoId = getYouTubeVideoId(youtubeUrl);
-    if (videoId) {
-        const embedSrc = `https://www.youtube.com/embed/${videoId}`; 
-        videoEmbedHtml = `
-            <div class="portfolio-video-container">
-                <iframe 
-                    src="${embedSrc}" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen
-                ></iframe>
+        // ZDE JE KLÍČOVÁ ČÁST: Sestavení HTML pro portfolio položku
+        const newItemHtml = `
+            <div class="portfolio-item" data-item-id="${itemId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative; margin-bottom: 20px;">
+                <h3 data-editable="${itemId}-title">${title}</h3>
+                <p data-editable="${itemId}-desc-1">${desc1}</p>
+                ${desc2 ? `<p data-editable="${itemId}-desc-2">${desc2}</p>` : ''}
+                
+                ${videoEmbedHtml}
+                
+                <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${itemId}-link" target="_blank" rel="noopener noreferrer">
+                    <span data-url-editable-text>${linkText || 'Zobrazit projekt →'}</span><i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
+                </a>
+                <div class="link-edit-controls ${isEditMode ? '' : 'hidden'}">
+                    <button class="url-edit-button">Upravit URL</button>
+                </div>
             </div>
         `;
-    }
+        portfolioContainer.insertAdjacentHTML('beforeend', newItemHtml);
+        console.log(`applyEditableContent: Vložen HTML pro portfolio položku [${itemId}].`);
+    });
+
+    // Tento blok se stará o nastavení contenteditable a viditelnost ikon pro všechny [data-editable] prvky
+    // po jejich vykreslení (ať už byly vloženy přímo, nebo dynamicky přes portfolioItemIds.forEach).
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        if (isEditMode) {
+            el.setAttribute('contenteditable', 'true');
+        } else {
+            el.removeAttribute('contenteditable');
+        }
+    });
+    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+        if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
+    });
+    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+        if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
+    });
+    // Zde zajistíme, že se zobrazí tlačítko "Upravit URL" v edit módu
+    document.querySelectorAll('.link-edit-controls').forEach(controls => {
+        if (isEditMode) controls.classList.remove('hidden'); else controls.classList.add('hidden');
+    });
+    // A také tlačítko "Editovat" pro celou portfolio položku
+    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+        if (isEditMode) controls.classList.remove('hidden'); else controls.classList.add('hidden');
+    });
+
+    console.log("applyEditableContent: Aplikace obsahu na DOM dokončena.");
 }
-    // --- KONEC NOVÉHO KÓDU ---
-
-    if (!title || !desc1) {
-        console.warn(`Chybí data pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
-        return;
-    }
-
-    const newItemHtml = `
-        <div class="portfolio-item" data-item-id="${itemId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative; margin-bottom: 20px;">
-            <h3 data-editable="${itemId}-title">${title}</h3>
-            <p data-editable="${itemId}-desc-1">${desc1}</p>
-            ${desc2 ? `<p data-editable="${itemId}-desc-2">${desc2}</p>` : ''}
-            
-            ${videoEmbedHtml}
-            
-            <a href="${linkUrl || '#'}" class="button editable-link" data-link-id="${itemId}-link" data-editable-link-text="${linkText || 'Zobrazit projekt →'}" target="_blank" rel="noopener noreferrer">
-                ${linkText || 'Zobrazit projekt →'}<i class="fas fa-edit edit-icon ${isEditMode ? '' : 'hidden'}"></i>
-            </a>
-            <div class="edit-controls ${isEditMode ? '' : 'hidden'}">
-                <button onclick="editPortfolioItem('${itemId}')">Editovat</button>
-            </div>
-        </div>
-    `;
-    portfolioContainer.insertAdjacentHTML('beforeend', newItemHtml);
-});
-
-document.querySelectorAll('[data-editable]').forEach(el => {
-    if (isEditMode) {
-        el.setAttribute('contenteditable', 'true');
-    } else {
-        el.removeAttribute('contenteditable');
-    }
-});
-document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
-    if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
-});
-document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
-    if (isEditMode) icon.classList.remove('hidden'); else icon.classList.add('hidden');
-});
-document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
-    if (isEditMode) controls.classList.remove('hidden'); else controls.classList.add('hidden');
-});
-    }
 
     async function initializeApp() {
         setupNavigation();
@@ -2663,7 +2715,7 @@ document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => 
     }
 
     // --- Funkce pro přepínání editačního módu ---
-    // --- Funkce pro přepínání editačního módu ---
+   
 function toggleEditMode() {
     if (!currentUserId) {
         showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
