@@ -1914,10 +1914,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
         <div class="portfolio-items">
             <div class="portfolio-item" data-item-id="project-genesis">
-                <h3 data-editable="project-genesis-title">Můj Osobní Web Genesis:</h3>
-                <p data-editable="project-genesis-desc">Moderní webová prezentace s futuristickým designem.</p>
-                <a href="moje-futuristicke-portfolio.html" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
-                    <span data-url-editable-text>Přejít na web</span>
+                <h3 data-editable="project-genesis-title"> </h3>
+                <p data-editable="project-genesis-desc"> </p>
+                <a href=" " class="button editable-link" data-link-id="project-genesis-link" target="_blank">
+                    <span data-url-editable-text> </span>
                     <i class="fas fa-edit edit-icon"></i>
                 </a>
                 <div class="link-edit-controls hidden">
@@ -1926,10 +1926,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             </div>
 
             <div class="portfolio-item" data-item-id="project-photoeditor">
-                <h3 data-editable="project-photoeditor-title">Moderní Fotoeditor:</h3>
-                <p data-editable="project-photoeditor-desc">Pokročilý nástroj pro úpravu fotografií v prohlížeči.</p>
-                <a href="moderni-foto-editor-test.html" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
-                    <span data-url-editable-text>Vyzkoušet editor</span>
+                <h3 data-editable="project-photoeditor-title"> </h3>
+                <p data-editable="project-photoeditor-desc"> </p>
+                <a href=" " class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
+                    <span data-url-editable-text> </span>
                     <i class="fas fa-edit edit-icon"></i>
                 </a>
                 <div class="link-edit-controls hidden">
@@ -1938,10 +1938,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             </div>
 
             <div class="portfolio-item" data-item-id="project-tracker">
-                <h3 data-editable="project-tracker-title">Pokročilý Váhový Tracker:</h3>
-                <p data-editable="project-tracker-desc">Aplikace pro sledování a analýzu váhových změn.</p>
-                <a href="pokrocily-vahovy-tracker.html" class="button editable-link" data-link-id="project-tracker-link" target="_blank">
-                    <span data-url-editable-text>Spustit Tracker</span>
+                <h3 data-editable="project-tracker-title"> </h3>
+                <p data-editable="project-tracker-desc"> </p>
+                <a href=" " class="button editable-link" data-link-id="project-tracker-link" target="_blank">
+                    <span data-url-editable-text> </span>
                     <i class="fas fa-edit edit-icon"></i>
                 </a>
                 <div class="link-edit-controls hidden">
@@ -4613,18 +4613,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.log('  Link Title:', newLinkTitle);
             console.log('  Link URL:', newLinkUrl);
             
-            // Zde by byla integrace s Firebase
-            // saveUrlDataToFirestore(projectId, { linkText: newLinkTitle, linkUrl: newLinkUrl });
-            
             // =========================================================================================
             // ZDE JE TEN NOVÝ KÓD, KTERÝ AKTUALIZUJE editableContentData
             // =========================================================================================
-            if (projectId !== 'unknown-id') { // Ujistíme se, že máme platné ID projektu
-                // Tyto klíče odpovídají tomu, jak ukládáš data pro portfolio položky
-                // (např. 'project-genesis-link-text', 'project-genesis-link-url')
+            if (projectId !== 'unknown-id') {
                 editableContentData[`${projectId}-link-text`] = newLinkTitle;
                 editableContentData[`${projectId}-link-url`] = newLinkUrl;
-                console.log(`✅ editableContentData aktualizována pro Project ID: ${projectId} s novými URL daty.`);
+                console.log(`✅ editableContentData aktualizována pro Project ID: ${projectId} s novými URL datami.`);
             } else {
                 console.warn('⚠️ Chyba: Project ID pro aktuálně upravovaný odkaz je neznámé. Data nebudou propisována do editableContentData pro ukládání do cloudu.');
             }
