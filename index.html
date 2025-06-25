@@ -2398,79 +2398,87 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
    // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
     async function saveDataToFirestore() {
-        if (!currentUserId) {
-            showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
-            return false;
-        }
-
-        showLoading("Ukládám data do cloudu...");
-
-        document.querySelectorAll('[data-editable]').forEach(el => {
-            const id = el.dataset.editable;
-            if (id) {
-                if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                    if (!el.querySelector('[data-url-editable-text]')) {
-                        editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
-                    }
-                } else {
-                    editableContentData[id] = el.innerHTML;
-                }
-            }
-        });
-
-        document.querySelectorAll('.portfolio-item').forEach(portfolioItem => {
-            const itemId = portfolioItem.dataset.itemId;
-            if (itemId) {
-                const linkElement = portfolioItem.querySelector('a.editable-link');
-                const linkTextSpan = linkElement ? linkElement.querySelector('[data-url-editable-text]') : null;
-
-                if (linkElement && linkTextSpan) {
-                    const newLinkTitle = linkTextSpan.textContent.trim();
-                    const newLinkUrl = linkElement.getAttribute('href');
-
-                    editableContentData[`${itemId}-link-text`] = newLinkTitle;
-                    editableContentData[`${itemId}-link-url`] = newLinkUrl;
-                }
-
-                const youtubePreviewIframe = portfolioItem.querySelector('.portfolio-video-container iframe');
-                if (youtubePreviewIframe && youtubePreviewIframe.src) {
-                    const currentYoutubeUrl = youtubePreviewIframe.src;
-                    const videoId = getYouTubeVideoId(currentYoutubeUrl);
-                    if (videoId) {
-                        editableContentData[`${itemId}-youtube-url`] = `https://youtu.be/${videoId}`;
-                    } else {
-                        editableContentData[`${itemId}-youtube-url`] = '';
-                    }
-                } else {
-                    if (editableContentData[`${itemId}-youtube-url`]) {
-                         editableContentData[`${itemId}-youtube-url`] = '';
-                    }
-                }
-            }
-        });
-        
-        const dataToSave = {
-            galleryImages: galleryImagesData,
-            savedCodes: savedCodesData,
-            externalLinks: externalLinksData,
-            editableContent: editableContentData,
-            editorUserId: currentUserId
-        };
-
-        dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
-
-        try {
-            await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
-            hideLoading();
-            showAlertModal("Uloženo do cloudu", "Všechna data byla úspěšně uložena do Cloud Firestore.");
-            return true;
-        } catch (error) {
-            console.error('Chyba při ukládání do Firestore:', error);
-            hideLoading();
-            showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
-            return false;
-        }
+    if (!currentUserId) {
+        showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
+        return false;
     }
+
+    showLoading("Ukládám data do cloudu...");
+
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        const id = el.dataset.editable;
+        if (id) {
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                // Tato část se týká obecných editable-link, které nemají data-url-editable-text uvnitř
+                if (!el.querySelector('[data-url-editable-text]')) { // Důležitá podmínka!
+                    editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+                }
+            } else {
+                editableContentData[id] = el.innerHTML;
+            }
+        }
+    });
+
+    // Nová a klíčová část: Sběr dat pro URL a názvy z <section id="contacts">
+    // Tato část HTML má specifickou strukturu, kde <a> má data-link-id
+    // a vnořený <span> má data-url-editable-text.
+    // Musíme projít všechny .portfolio-item a explicitně sebrat tato data.
+    document.querySelectorAll('.portfolio-item').forEach(portfolioItem => {
+        const itemId = portfolioItem.dataset.itemId; // Např. "project-genesis"
+        if (itemId) {
+            const linkElement = portfolioItem.querySelector('a.editable-link[data-link-id]'); // Cílíme na <a> s data-link-id
+            const linkTextSpan = linkElement ? linkElement.querySelector('[data-url-editable-text]') : null; // Cílíme na <span> uvnitř <a>
+
+            if (linkElement && linkTextSpan) {
+                const newLinkTitle = linkTextSpan.textContent.trim();
+                const newLinkUrl = linkElement.getAttribute('href');
+
+                // Ukládáme do editableContentData pod klíči odvozenými od itemId
+                editableContentData[`${itemId}-link-text`] = newLinkTitle;
+                editableContentData[`${itemId}-link-url`] = newLinkUrl;
+            }
+
+            // A zde zajistíme, že se uloží i aktuální YouTube URL, pokud je přítomna
+            const youtubePreviewIframe = portfolioItem.querySelector('.portfolio-video-container iframe');
+            if (youtubePreviewIframe && youtubePreviewIframe.src) {
+                const currentYoutubeUrl = youtubePreviewIframe.src;
+                const videoId = getYouTubeVideoId(currentYoutubeUrl); // Předpokládá se existence getYouTubeVideoId()
+                if (videoId) {
+                    editableContentData[`${itemId}-youtube-url`] = `https://youtu.be/${videoId}`;
+                } else {
+                    editableContentData[`${itemId}-youtube-url`] = '';
+                }
+            } else {
+                if (editableContentData[`${itemId}-youtube-url`]) {
+                     editableContentData[`${itemId}-youtube-url`] = '';
+                }
+            }
+        }
+    });
+    
+    const dataToSave = {
+        galleryImages: galleryImagesData,
+        savedCodes: savedCodesData,
+        externalLinks: externalLinksData,
+        editableContent: editableContentData,
+        editorUserId: currentUserId
+    };
+
+    dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+
+    try {
+        await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
+        hideLoading();
+        showAlertModal("Uloženo do cloudu", "Všechna data byla úspěšně uložena do Cloud Firestore.");
+        return true;
+    } catch (error) {
+        console.error('Chyba při ukládání do Firestore:', error);
+        hideLoading();
+        showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
+        return false;
+    }
+}
+
 
     // --- Funkce pro načítání dat z Firestore (všichni vidí) ---
     async function loadDataFromFirestore() {
