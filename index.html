@@ -764,13 +764,13 @@ body:not(.edit-mode) #save-code-btn,
 body:not(.edit-mode) .actions .button,
 body:not(.edit-mode) .editable-image-wrapper .edit-icon,
 body:not(.edit-mode) .editable-link .edit-icon,
-body:not(.edit-mode) .edit-mode-only { /* NOVINKA: Skrýváme i edit-mode-only prvky */
+body:not(.edit-mode) .edit-mode-only {
     display: none !important;
 }
 
 /* Nová třída pro zobrazení edit módu */
 body.edit-mode #edit-mode-toggle-btn {
-    display: block; /* Zobrazí tlačítko "Zavřít" */
+    display: block;
 }
 body.edit-mode .edit-controls,
 body.edit-mode .delete-img-btn,
@@ -781,14 +781,14 @@ body.edit-mode #save-code-btn,
 body.edit-mode .actions .button,
 body.edit-mode .editable-image-wrapper .edit-icon,
 body.edit-mode .editable-link .edit-icon {
-    display: flex; /* Zobrazí ostatní editační prvky */
+    display: flex;
 }
 body.edit-mode .editable-image-wrapper .edit-icon,
 body.edit-mode .editable-link .edit-icon {
-    display: flex; /* Specificky pro ikony */
+    display: flex;
 }
-body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v edit módu */
-    display: table-cell !important; /* Pro buňky tabulky */
+body.edit-mode .edit-mode-only {
+    display: table-cell !important;
 }
 
 /* KOMPLETNÍ MEDIA QUERIES PRO PLNOU ŠÍŘKU */
