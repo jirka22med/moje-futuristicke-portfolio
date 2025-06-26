@@ -1717,36 +1717,46 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             color: #333;
         }
 
-        /* --- CSS PRO NOVÝ MODAL "Upravit URL odkazu" --- */
+/* --- CSS PRO NOVÝ MODAL "Upravit URL odkazu" --- */
 
 /* Základní styl pro celý modal overlay */
 #url-edit-modal {
-    position: fixed;
+    position: fixed; /* Fixní pozice, aby překryl celou obrazovku */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Tmavý překryv, jako u tvých ostatních modalů */
-    backdrop-filter: blur(5px); /* Efekt rozostření pozadí */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000; /* Zajišťuje, že modal je nad ostatním obsahem */
-    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.7); /* Tmavý, průhledný překryv pozadí */
+    backdrop-filter: blur(5px); /* Efekt rozostření pozadí pro moderní vzhled */
+    
+    /* KLÍČOVÉ PRO SKRYTÍ MODALU NA ZAČÁTKU: */
+    display: none; /* Modal je ve výchozím stavu SKRYTÝ, nezabírá žádné místo */
+    
+    justify-content: center; /* Vycentrování obsahu horizontálně */
+    align-items: center; /* Vycentrování obsahu vertikálně */
+    z-index: 2000; /* Zajišťuje, že modal je nad většinou ostatního obsahu stránky */
+    
+    /* Tyto vlastnosti jsou pro plynulý fade-in/out, i když primární je display: none/flex */
+    opacity: 0; 
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease; /* Plynulá animace zobrazení */
+    transition: opacity 0.3s ease, visibility 0.3s ease; 
 }
 
-/* Aktivní stav modalu (pro zobrazení) */
-#url-edit-modal.active { /* Používáme třídu 'active' pro zobrazení, jako v tvém JS */
-    opacity: 1;
+/* Aktivní stav modalu (když ho JavaScript zobrazí) */
+/* V tvém JavaScriptu přímo manipuluješ style.display, takže tato třída není primárně používaná pro zobrazení/skrytí, */
+/* ale můžeme ji nechat pro konzistenci nebo pro případné budoucí animace opacity/visibility. */
+/* Nicméně pro zobrazení teď slouží JavaScriptové urlEditModal.style.display = 'flex'; */
+/* Protože se ale spoléháme na display: none/flex, fade animace opacity/visibility nebudou fungovat tak, jak by fungovaly s class.active */
+/* Doporučuji upravit JS, aby místo style.display používal classList.add/remove('active') pro hladké animace. */
+#url-edit-modal.active { 
+    display: flex; /* Zde se modal stane viditelným a použije flex pro centrování */
+    opacity: 1; /* Pro případné plynulé zobrazení, pokud JS použije classList.add/remove */
     visibility: visible;
     transition: opacity 0.3s ease;
 }
 
-/* Styl pro vnitřní obsahovou krabici modalu */
+/* Styl pro vnitřní obsahovou krabici modalu (zůstává stejný) */
 .url-modal-content {
-    /* Převzato z tvého existujícího .modal-content stylu */
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); /* Tvůj futuristický gradient */
     border: 2px solid #00ffff; /* Kyberpunková záře */
     border-radius: 15px;
@@ -1758,17 +1768,17 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     color: #ffffff; /* Bílý text */
     position: relative;
-    transform: scale(0.7); /* Počáteční zmenšení pro animaci */
-    transition: transform 0.3s ease; /* Plynulá animace */
+    transform: scale(0.7); /* Počáteční zmenšení pro animaci (při použití s třídou active) */
+    transition: transform 0.3s ease; /* Plynulá animace (při použití s třídou active) */
     text-align: center;
 }
 
-/* Animace obsahu při aktivaci modalu */
+/* Animace obsahu při aktivaci modalu (zůstává stejná) */
 #url-edit-modal.active .url-modal-content {
-    transform: scale(1); /* Zvětšení na plnou velikost */
+    transform: scale(1);
 }
 
-/* Styl pro nadpis uvnitř modalu */
+/* Styl pro nadpis uvnitř modalu (zůstává stejný) */
 .url-modal-content h3 {
     color: #00ffff; /* Modrá barva pro nadpis */
     margin-bottom: 20px;
@@ -1776,10 +1786,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Záře */
 }
 
-/* Styly pro input pole uvnitř modalu */
+/* Styly pro input pole uvnitř modalu (zůstávají stejné) */
 .url-modal-content input[type="text"],
 .url-modal-content input[type="url"] {
-    /* Převzato z tvého existujícího .modal-content input stylu */
     width: 100%;
     padding: 12px;
     margin: 15px 0;
@@ -1791,55 +1800,55 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     font-family: 'Courier New', monospace;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     caret-color: #00ffff; /* Barva kurzoru */
-    background-color: #333; /* Tmavší pozadí pro input */
+    background-color: #333;
 }
 
-/* Fokus efekt pro input pole */
+/* Fokus efekt pro input pole (zůstává stejný) */
 .url-modal-content input[type="text"]:focus,
 .url-modal-content input[type="url"]:focus {
     outline: none;
     border-color: #00ffff;
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-    animation: input-glow 2s infinite; /* Použití tvé existující animace */
+    animation: input-glow 2s infinite;
 }
 
-/* Styly pro popisky (labels) */
+/* Styly pro popisky (labels) (zůstávají stejné) */
 .url-modal-content label {
-    display: block; /* Každý popisek na novém řádku */
-    text-align: left; /* Zarovnání textu popisku vlevo */
-    color: #00ffff; /* Modrá barva z tvého motivu */
+    display: block;
+    text-align: left;
+    color: #00ffff;
     font-size: 1rem;
     margin-top: 10px;
     margin-bottom: 5px;
 }
 
-/* Kontejner pro tlačítka uvnitř modalu */
+/* Kontejner pro tlačítka uvnitř modalu (zůstává stejný) */
 .url-modal-buttons {
-    /* Převzato z tvého existujícího .modal-actions stylu */
     display: flex;
     gap: 15px;
     justify-content: center;
     margin-top: 25px;
-    flex-wrap: wrap; /* Pro responzivitu */
+    flex-wrap: wrap;
 }
 
-/* --- Responzivní styly pro URL Edit Modal (přizpůsobeno existujícím media queries) --- */
+/* Responzivní styly (zůstávají stejné) */
 @media (max-width: 600px) {
     .url-modal-content {
         margin: 20px;
         padding: 20px;
-        max-width: none; /* Na malých obrazovkách se roztáhne */
-        width: calc(100% - 40px); /* Odečte marginy */
+        max-width: none;
+        width: calc(100% - 40px);
     }
     .url-modal-buttons {
-        flex-direction: column; /* Tlačítka pod sebou */
+        flex-direction: column;
         align-items: center;
     }
     .url-modal-buttons .button {
-        width: 100%; /* Tlačítka zabírají celou šířku */
+        width: 100%;
         max-width: 200px;
     }
 }
+
 
     </style>
 </head>
