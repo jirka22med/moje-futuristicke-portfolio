@@ -1698,7 +1698,156 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         margin-left: 5px;
         margin-right: 5px;
     }
+.portfolio-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
 
+        .portfolio-item {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .portfolio-item h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007cba;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .button:hover {
+            background-color: #005a8a;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .editable-link {
+            position: relative;
+        }
+
+        .edit-icon {
+            margin-left: 8px;
+            opacity: 0.7;
+        }
+
+        /* NOVÉ NÁZVY PRO EDIT CONTROLS */
+        .link-edit-controls {
+            margin-top: 10px;
+        }
+
+        .link-edit-controls.hidden {
+            display: none;
+        }
+
+        .url-edit-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .url-edit-button:hover {
+            background-color: #218838;
+        }
+
+        /* NOVÝ MODAL S JEDINEČNÝMI NÁZVY */
+        .url-edit-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .url-modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .url-modal-content h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007cba;
+            padding-bottom: 10px;
+        }
+
+        .url-modal-content label {
+            display: block;
+            margin: 15px 0 5px 0;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .url-modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .url-modal-content input:focus {
+            outline: none;
+            border-color: #007cba;
+            box-shadow: 0 0 5px rgba(0,124,186,0.3);
+        }
+
+        .url-modal-buttons {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .url-modal-buttons button {
+            margin-left: 10px;
+        }
+
+        /* Zobrazení edit kontrolů při hoveru */
+        .portfolio-item:hover .link-edit-controls {
+            display: block !important;
+        }
+
+        /* Debug styly */
+        .debug-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+                               }
     </style>
 </head>
 <body style="visibility: hidden;">
