@@ -1956,12 +1956,12 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 <button id="add-portfolio-item-btn" class="button hidden">Přidat položku do portfolia</button>
             </section>
 
-            <section id="contacts">
-               
+            <section id="contacts"> <!-- toto je hlavní sekce -->
+              <div id="cloude-projek-test"> <!-- toto je hlavní id pro moldar onko -->
         <h2>Moje projekty</h2>
         <p>Testovací verze s novými názvy bez konfliktů.</p>
 
-        <div class="portfolio-items">
+        <div class="portfolio-items"><!-- tyto všechny názvy jsou jenom css  -->
             <div class="portfolio-item" data-item-id="project-genesis">
                 <h3 data-editable="project-genesis-title"></h3>
                 <p data-editable="project-genesis-desc"></p>
@@ -2195,20 +2195,19 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 <!-- NOVÝ MODAL S JEDINEČNÝMI NÁZVY -->
     
-<!-- NOVÝ MODAL S JEDINEČNÝMI NÁZVY -->
-    <div id="url-edit-modal" class="url-edit-modal">
-        <div class="url-modal-content">
-            <h3>Upravit URL odkazu</h3>
-            <label for="url-edit-title-input">Název odkazu:</label>
-            <input type="text" id="url-edit-title-input" placeholder="Název odkazu">
-            <label for="url-edit-url-input">URL adresa:</label>
-            <input type="url" id="url-edit-url-input" placeholder="https://example.com">
-            <div class="url-modal-buttons">
-                <button id="url-edit-cancel-btn" class="button btn-secondary">Zrušit</button>
-                <button id="url-edit-save-btn" class="button">Uložit změny</button>
-            </div>
+<div id="url-edit-modal" class="url-edit-modal modal">
+    <div class="url-modal-content">
+        <h3>Upravit URL odkazu</h3>
+        <label for="url-edit-title-input">Název odkazu:</label>
+        <input type="text" id="url-edit-title-input" placeholder="Název odkazu">
+        <label for="url-edit-url-input">URL adresa:</label>
+        <input type="url" id="url-edit-url-input" placeholder="https://example.com">
+        <div class="url-modal-buttons">
+            <button id="url-edit-cancel-btn" class="button btn-secondary">Zrušit</button>
+            <button id="url-edit-save-btn" class="button">Uložit změny</button>
         </div>
     </div>
+</div>
     
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -2447,7 +2446,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
         { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
     ];
-
+          //tady začíná hlavní logika
     // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
     async function saveDataToFirestore() {
         if (!currentUserId) {
@@ -2467,6 +2466,26 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 }
             }
         });
+
+        // NOVÝ KÓD: Ukládání URL dat ze stávajících portfolio položek
+        document.querySelectorAll('#cloude-projek-test .portfolio-item').forEach(portfolioItem => {
+            const itemId = portfolioItem.dataset.itemId;
+            if (itemId) {
+                // Najdeme odkaz v této portfolio položce
+                const linkElement = portfolioItem.querySelector('a.editable-link');
+                if (linkElement) {
+                    const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
+                    const linkText = linkTextSpan ? linkTextSpan.textContent.trim() : '';
+                    const linkUrl = linkElement.getAttribute('href') || '';
+                    
+                    // Uložíme do editableContentData
+                    editableContentData[`${itemId}-link-text`] = linkText;
+                    editableContentData[`${itemId}-link-url`] = linkUrl;
+                    
+                    console.log(`💾 Ukládám URL data pro ${itemId}:`, { linkText, linkUrl });
+                }
+            }
+        });
         
         const dataToSave = {
             galleryImages: galleryImagesData,
@@ -2483,7 +2502,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         try {
             await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
             hideLoading();
-            showAlertModal("Uloženo do cloudu", "Všechna data byla úspěšně uložena do Cloud Firestore.");
+            showAlertModal("Uloženo do cloudu", "Všechna data včetně URL adres byla úspěšně uložena do Cloud Firestore.");
             return true;
         } catch (error) {
             console.error('Chyba při ukládání do Firestore:', error);
@@ -2576,6 +2595,36 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             }
         }
 
+        // NOVÝ KÓD: Aplikace URL dat na stávající portfolio položky
+        document.querySelectorAll('#cloude-projek-test .portfolio-item').forEach(portfolioItem => {
+            const itemId = portfolioItem.dataset.itemId;
+            if (itemId) {
+                // Načteme uložená URL data
+                const savedLinkText = editableContentData[`${itemId}-link-text`];
+                const savedLinkUrl = editableContentData[`${itemId}-link-url`];
+                
+                // Najdeme odkaz v této portfolio položce
+                const linkElement = portfolioItem.querySelector('a.editable-link');
+                if (linkElement && (savedLinkText || savedLinkUrl)) {
+                    // Aktualizujeme URL
+                    if (savedLinkUrl) {
+                        linkElement.setAttribute('href', savedLinkUrl);
+                    }
+                    
+                    // Aktualizujeme text odkazu
+                    const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
+                    if (linkTextSpan && savedLinkText) {
+                        linkTextSpan.textContent = savedLinkText;
+                    }
+                    
+                    console.log(`🔄 Aplikuji URL data pro ${itemId}:`, { 
+                        text: savedLinkText, 
+                        url: savedLinkUrl 
+                    });
+                }
+            }
+        });
+
         const portfolioContainer = document.querySelector('.portfolio-items');
         if (portfolioContainer) {
             portfolioContainer.innerHTML = '';
@@ -2659,6 +2708,33 @@ document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => 
 });
     }
 
+    // NOVÁ FUNKCE: Rychlé uložení URL dat
+    async function saveUrlDataToFirestore(projectId, urlData) {
+        if (!currentUserId) {
+            console.warn("Nelze uložit URL data - uživatel není přihlášen");
+            return false;
+        }
+
+        try {
+            // Aktualizujeme lokální data
+            editableContentData[`${projectId}-link-text`] = urlData.linkText;
+            editableContentData[`${projectId}-link-url`] = urlData.linkUrl;
+            
+            // Uložíme do Firestore
+            const dataToSave = {
+                editableContent: editableContentData,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
+            console.log(`✅ URL data pro ${projectId} uložena do Firestore`);
+            return true;
+        } catch (error) {
+            console.error('Chyba při ukládání URL dat:', error);
+            return false;
+        }
+    }
+
     async function initializeApp() {
         setupNavigation();
         setupHtmlEditor();
@@ -2692,7 +2768,7 @@ document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => 
             showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
         }
     }
-
+//tady končí celá logika pro ukládaní a vykreslování
     function enableEditMode() {
         isEditMode = true;
         document.body.classList.add('edit-mode');
@@ -4502,8 +4578,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         urlEditTitleInput.value = currentTitle;
         urlEditUrlInput.value = currentUrl;
 
-        // Zobrazení modalu
-        urlEditModal.style.display = 'flex';
+        // KLÍČOVÁ ZMĚNA ZDE: Přidání třídy 'active' k modalu pro zobrazení
+        urlEditModal.classList.add('active'); 
 
         // Focus na první input
         setTimeout(() => {
@@ -4517,67 +4593,106 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Funkce pro zavření nového modalu
     function closeUrlEditModal() {
         console.log('🔒 Zavírám nový URL modal');
-        urlEditModal.style.display = 'none';
+        // KLÍČOVÁ ZMĚNA ZDE: Odebrání třídy 'active' z modalu pro skrytí
+        urlEditModal.classList.remove('active');
         currentLinkBeingEdited = null;
     }
 
-    // Event listenery pro tlačítka v novém modalu
+    // Event listenery pro tlačítka v novém modalu (zůstávají stejné)
     urlEditCancelBtn.addEventListener('click', () => {
         console.log('❌ Zrušeno uživatelem (nový modal)');
         closeUrlEditModal();
     });
 
-    urlEditSaveBtn.addEventListener('click', () => {
-        console.log('💾 Ukládám změny (nový modal)...');
+    // NAHRAĎTE ČÁST S urlEditSaveBtn.addEventListener V VAŠEM MODAL SOUBORU
+urlEditSaveBtn.addEventListener('click', async () => {
+    console.log('💾 Ukládám změny (nový modal)...');
 
-        if (currentLinkBeingEdited) {
-            const newLinkTitle = urlEditTitleInput.value.trim();
-            const newLinkUrl = urlEditUrlInput.value.trim();
+    if (currentLinkBeingEdited) {
+        const newLinkTitle = urlEditTitleInput.value.trim();
+        const newLinkUrl = urlEditUrlInput.value.trim();
 
-            // Validace
-            if (!newLinkTitle) {
-                alert('Název odkazu nesmí být prázdný!');
-                urlEditTitleInput.focus();
-                return;
-            }
-
-            if (!newLinkUrl) {
-                alert('URL adresa nesmí být prázdná!');
-                urlEditUrlInput.focus();
-                return;
-            }
-
-            console.log('📝 Nové hodnoty:');
-            console.log(' Název:', newLinkTitle);
-            console.log(' URL:', newLinkUrl);
-
-            // Aktualizace HTML elementů
-            const linkTextSpan = currentLinkBeingEdited.querySelector('[data-url-editable-text]');
-            if (linkTextSpan) {
-                linkTextSpan.textContent = newLinkTitle;
-            }
-            currentLinkBeingEdited.setAttribute('href', newLinkUrl);
-
-            // Debug informace pro Firebase integraci
-            const parentPortfolioItem = currentLinkBeingEdited.closest('.portfolio-item');
-            const projectId = parentPortfolioItem ? parentPortfolioItem.dataset.itemId : 'unknown-id';
-
-            console.log('🔥 Data pro Firebase (nový systém):');
-            console.log(' Project ID:', projectId);
-            console.log(' Link Title:', newLinkTitle);
-            console.log(' Link URL:', newLinkUrl);
-
-            // Zde by byla integrace s Firebase
-            // saveUrlDataToFirestore(projectId, { linkText: newLinkTitle, linkUrl: newLinkUrl });
-
-            alert(`Změny uloženy!\nNázev: ${newLinkTitle}\nURL: ${newLinkUrl}`);
-            console.log('✅ Změny uloženy lokálně (nový systém)');
+        // Validace
+        if (!newLinkTitle) {
+            alert('Název odkazu nesmí být prázdný!');
+            urlEditTitleInput.focus();
+            return;
         }
 
-        closeUrlEditModal();
-    });
+        if (!newLinkUrl) {
+            alert('URL adresa nesmí být prázdná!');
+            urlEditUrlInput.focus();
+            return;
+        }
 
-    // Zavření modalu kliknutím mimo něj
+        console.log('📝 Nové hodnoty:');
+        console.log(' Název:', newLinkTitle);
+        console.log(' URL:', newLinkUrl);
+
+        // Aktualizace HTML elementů
+        const linkTextSpan = currentLinkBeingEdited.querySelector('[data-url-editable-text]');
+        if (linkTextSpan) {
+            linkTextSpan.textContent = newLinkTitle;
+        }
+        currentLinkBeingEdited.setAttribute('href', newLinkUrl);
+
+        // Získání project ID
+        const parentPortfolioItem = currentLinkBeingEdited.closest('.portfolio-item');
+        const projectId = parentPortfolioItem ? parentPortfolioItem.dataset.itemId : 'unknown-id';
+
+        console.log('🔥 Ukládám data do Firebase:');
+        console.log(' Project ID:', projectId);
+        console.log(' Link Title:', newLinkTitle);
+        console.log(' Link URL:', newLinkUrl);
+
+        // KLÍČOVÁ ZMĚNA: Skutečné uložení do Firestore
+        try {
+            // Zobrazíme loading (pokud máte funkci showLoading)
+            if (typeof showLoading === 'function') {
+                showLoading("Ukládám změny URL...");
+            }
+            
+            // Zavoláme funkci pro uložení URL dat
+            const success = await saveUrlDataToFirestore(projectId, { 
+                linkText: newLinkTitle, 
+                linkUrl: newLinkUrl 
+            });
+            
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+            
+            if (success) {
+                if (typeof showAlertModal === 'function') {
+                    showAlertModal("Úspěch", `URL odkaz byl úspěšně uložen!\nNázev: ${newLinkTitle}\nURL: ${newLinkUrl}`);
+                } else {
+                    alert(`URL odkaz byl úspěšně uložen!\nNázev: ${newLinkTitle}\nURL: ${newLinkUrl}`);
+                }
+                console.log('✅ URL změny uloženy do Firestore');
+            } else {
+                if (typeof showAlertModal === 'function') {
+                    showAlertModal("Chyba", "Nepodařilo se uložit změny URL do cloudu.");
+                } else {
+                    alert("Nepodařilo se uložit změny URL do cloudu.");
+                }
+            }
+        } catch (error) {
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+            console.error('❌ Chyba při ukládání URL:', error);
+            if (typeof showAlertModal === 'function') {
+                showAlertModal("Chyba", `Chyba při ukládání: ${error.message}`);
+            } else {
+                alert(`Chyba při ukládání: ${error.message}`);
+            }
+        }
+    }
+
+    closeUrlEditModal();
+});
+
+    // Zavření modalu kliknutím mimo něj (zůstává stejné)
     window.addEventListener('click', (event) => {
         if (event.target === urlEditModal) {
             console.log('🖱️ Zavírám nový URL modal (klik mimo)');
@@ -4585,11 +4700,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
-    // EVENT LISTENER pro nová tlačítka "Upravit URL"
-    console.log('🔍 Hledám URL edit tlačítka v #cloude-projek-test...');
+    // EVENT LISTENER pro nová tlačítka "Upravit URL" (zůstává stejné)
+    console.log('🔍 Hledám URL edit tlačítek v #cloude-projek-test...');
 
-    // ZMĚNA ZDE: Cílíme POUZE na tlačítka uvnitř elementu s ID 'cloude-projek-test'
-    // Tím zajistíme, že tato editační logika ovlivní pouze projekty v sekci "Moje projekty".
     const urlEditButtons = document.querySelectorAll('#cloude-projek-test .url-edit-button');
 
     console.log('📊 Nalezeno URL edit tlačítek:', urlEditButtons.length);
@@ -4600,8 +4713,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         urlEditButton.addEventListener('click', (event) => {
             console.log('🖱️ Kliknuto na URL edit tlačítko:', event.currentTarget);
 
-            event.stopPropagation(); // Zabrání šíření události, aby neovlivnila jiné prvky
-            event.preventDefault();  // Zabrání výchozímu chování (pokud je tlačítko v odkazu)
+            event.stopPropagation();
+            event.preventDefault();
 
             // Najdeme rodičovský portfolio-item
             const portfolioItem = event.currentTarget.closest('.portfolio-item');
@@ -4623,15 +4736,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
 
-    // Klávesové zkratky pro nový modal
+    // Klávesové zkratky pro nový modal (zůstávají stejné)
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && urlEditModal.style.display === 'flex') {
+        if (event.key === 'Escape' && urlEditModal.classList.contains('active')) { // Změna: Kontrolujeme třídu active
             console.log('⌨️ Zavírám nový URL modal (Escape)');
             closeUrlEditModal();
         }
 
         // Ctrl+Enter pro rychlé uložení
-        if (event.ctrlKey && event.key === 'Enter' && urlEditModal.style.display === 'flex') {
+        if (event.ctrlKey && event.key === 'Enter' && urlEditModal.classList.contains('active')) { // Změna: Kontrolujeme třídu active
             console.log('⌨️ Rychlé uložení (Ctrl+Enter)');
             urlEditSaveBtn.click();
         }
@@ -4639,7 +4752,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     console.log('🎉 Nový URL modal systém inicializován!');
 });
-
     
 
     
