@@ -764,13 +764,13 @@ body:not(.edit-mode) #save-code-btn,
 body:not(.edit-mode) .actions .button,
 body:not(.edit-mode) .editable-image-wrapper .edit-icon,
 body:not(.edit-mode) .editable-link .edit-icon,
-body:not(.edit-mode) .edit-mode-only {
+body:not(.edit-mode) .edit-mode-only { /* NOVINKA: Skrýváme i edit-mode-only prvky */
     display: none !important;
 }
 
 /* Nová třída pro zobrazení edit módu */
 body.edit-mode #edit-mode-toggle-btn {
-    display: block;
+    display: block; /* Zobrazí tlačítko "Zavřít" */
 }
 body.edit-mode .edit-controls,
 body.edit-mode .delete-img-btn,
@@ -781,14 +781,14 @@ body.edit-mode #save-code-btn,
 body.edit-mode .actions .button,
 body.edit-mode .editable-image-wrapper .edit-icon,
 body.edit-mode .editable-link .edit-icon {
-    display: flex;
+    display: flex; /* Zobrazí ostatní editační prvky */
 }
 body.edit-mode .editable-image-wrapper .edit-icon,
 body.edit-mode .editable-link .edit-icon {
-    display: flex;
+    display: flex; /* Specificky pro ikony */
 }
-body.edit-mode .edit-mode-only {
-    display: table-cell !important;
+body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v edit módu */
+    display: table-cell !important; /* Pro buňky tabulky */
 }
 
 /* KOMPLETNÍ MEDIA QUERIES PRO PLNOU ŠÍŘKU */
@@ -1969,7 +1969,7 @@ body.edit-mode .edit-mode-only {
                     <span data-url-editable-text>Přejít na web</span>
                     <i class="fas fa-edit edit-icon"></i>
                 </a>
-                <div class="link-edit-controls">
+                <div class="link-edit-controls hidden">
                     <button class="url-edit-button">Upravit URL</button>
                 </div>
             </div>
@@ -2752,97 +2752,107 @@ document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => 
     }
 
     // --- Funkce pro přepínání editačního módu ---
-    function toggleEditMode() {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
-            showAuthModal();
-            return;
-        }
-
-        if (isEditMode) {
-            disableEditMode();
-            saveDataToFirestore();
-            showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do cloudu.");
-        } else {
-            enableEditMode();
-            showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
-        }
+function toggleEditMode() {
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro úpravy stránky se musíte přihlásit.");
+        showAuthModal();
+        return;
     }
+
+    if (isEditMode) {
+        disableEditMode();
+        saveDataToFirestore();
+        showAlertModal("Editace ukončena", "Režim úprav byl vypnut. Vaše změny byly uloženy do cloudu.");
+    } else {
+        enableEditMode();
+        showAlertModal("Režim úprav", "Jste v režimu úprav. Klikněte na text pro úpravu, nebo použijte ikony pro obrázky/odkazy. Změny se ukládají automaticky, ale můžete také použít 'Uložit vše do cloudu'.");
+    }
+}
 //tady končí celá logika pro ukládaní a vykreslování
-    function enableEditMode() {
-        isEditMode = true;
-        document.body.classList.add('edit-mode');
-        document.getElementById('login-button').classList.add('hidden');
-        document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
-        document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
+function enableEditMode() {
+    isEditMode = true;
+    document.body.classList.add('edit-mode');
+    document.getElementById('login-button').classList.add('hidden');
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
 
-        document.querySelectorAll('[data-editable]').forEach(el => {
-            el.setAttribute('contenteditable', 'true');
-        });
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        el.setAttribute('contenteditable', 'true');
+    });
 
-        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
-            icon.classList.remove('hidden');
-        });
-        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
-            icon.classList.remove('hidden');
-        });
+    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+        icon.classList.remove('hidden');
+    });
+    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+        icon.classList.remove('hidden');
+    });
 
-        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
-            controls.classList.remove('hidden');
-        });
-        document.getElementById('add-portfolio-item-btn').classList.remove('hidden');
-        document.getElementById('add-link-btn').classList.remove('hidden');
-        document.getElementById('data-management').classList.remove('hidden');
+    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+        controls.classList.remove('hidden');
+    });
+    document.getElementById('add-portfolio-item-btn').classList.remove('hidden');
+    document.getElementById('add-link-btn').classList.remove('hidden');
+    document.getElementById('data-management').classList.remove('hidden');
 
-        document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
-            el.style.display = 'table-cell';
-        });
+    // KLÍČOVÁ ZMĚNA ZDE: Zobrazí tlačítka "Upravit URL"
+    document.querySelectorAll('.link-edit-controls').forEach(controls => {
+        controls.classList.remove('hidden');
+    });
 
-        localStorage.setItem(EDIT_MODE_KEY, 'true');
+    document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
+        el.style.display = 'table-cell';
+    });
+
+    localStorage.setItem(EDIT_MODE_KEY, 'true');
+}
+
+function disableEditMode() {
+    isEditMode = false;
+    document.body.classList.remove('edit-mode');
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+
+    if (!currentUserId) {
+        document.getElementById('login-button').classList.remove('hidden');
+        document.getElementById('edit-mode-toggle-btn').classList.add('hidden');
     }
 
-    function disableEditMode() {
-        isEditMode = false;
-        document.body.classList.remove('edit-mode');
-        document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
-
-        if (!currentUserId) {
-            document.getElementById('login-button').classList.remove('hidden');
-            document.getElementById('edit-mode-toggle-btn').classList.add('hidden');
-        }
-
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.removeAttribute('contenteditable');
-            const id = el.dataset.editable;
-            if (id) {
-                if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                    editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
-                } else {
-                    editableContentData[id] = el.innerHTML;
-                }
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.removeAttribute('contenteditable');
+        const id = el.dataset.editable;
+        if (id) {
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+            } else {
+                editableContentData[id] = el.innerHTML;
             }
-        });
+        }
+    });
 
-        document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
-            icon.classList.add('hidden');
-        });
-        document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
-            icon.classList.add('hidden');
-        });
+    document.querySelectorAll('.editable-image-wrapper .edit-icon').forEach(icon => {
+        icon.classList.add('hidden');
+    });
+    document.querySelectorAll('.editable-link .edit-icon').forEach(icon => {
+        icon.classList.add('hidden');
+    });
 
-        document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
-            controls.classList.add('hidden');
-        });
-        document.getElementById('add-portfolio-item-btn').classList.add('hidden');
-        document.getElementById('add-link-btn').classList.add('hidden');
-        document.getElementById('data-management').classList.add('hidden');
+    document.querySelectorAll('.portfolio-item .edit-controls').forEach(controls => {
+        controls.classList.add('hidden');
+    });
+    document.getElementById('add-portfolio-item-btn').classList.add('hidden');
+    document.getElementById('add-link-btn').classList.add('hidden');
+    document.getElementById('data-management').classList.add('hidden');
 
-        document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
-            el.style.display = 'none';
-        });
+    // KLÍČOVÁ ZMĚNA ZDE: Skryje tlačítka "Upravit URL"
+    document.querySelectorAll('.link-edit-controls').forEach(controls => {
+        controls.classList.add('hidden');
+    });
 
-        localStorage.removeItem(EDIT_MODE_KEY);
-    }
+    document.querySelectorAll('#links-table .edit-mode-only').forEach(el => {
+        el.style.display = 'none';
+    });
+
+    localStorage.removeItem(EDIT_MODE_KEY);
+}
 
     // --- Funkce pro načítání a skrývání indikátoru ---
     function showLoading(message = "Načítání...") {
@@ -4751,12 +4761,7 @@ urlEditSaveBtn.addEventListener('click', async () => {
     });
 
     console.log('🎉 Nový URL modal systém inicializován!');
-});
-    
-
-    
-                
-    
+});   
 </script>
 </body>
 </html>
