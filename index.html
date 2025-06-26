@@ -2186,7 +2186,20 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 <!-- NOVÝ MODAL S JEDINEČNÝMI NÁZVY -->
     
-
+<!-- NOVÝ MODAL S JEDINEČNÝMI NÁZVY -->
+    <div id="url-edit-modal" class="url-edit-modal">
+        <div class="url-modal-content">
+            <h3>Upravit URL odkazu</h3>
+            <label for="url-edit-title-input">Název odkazu:</label>
+            <input type="text" id="url-edit-title-input" placeholder="Název odkazu">
+            <label for="url-edit-url-input">URL adresa:</label>
+            <input type="url" id="url-edit-url-input" placeholder="https://example.com">
+            <div class="url-modal-buttons">
+                <button id="url-edit-cancel-btn" class="button btn-secondary">Zrušit</button>
+                <button id="url-edit-save-btn" class="button">Uložit změny</button>
+            </div>
+        </div>
+    </div>
     
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
