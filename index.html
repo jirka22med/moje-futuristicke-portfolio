@@ -1717,137 +1717,130 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             color: #333;
         }
 
-        .button {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #007cba;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            margin-right: 10px;
-        }
+        /* --- CSS PRO NOVÝ MODAL "Upravit URL odkazu" --- */
 
-        .button:hover {
-            background-color: #005a8a;
-        }
+/* Základní styl pro celý modal overlay */
+#url-edit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Tmavý překryv, jako u tvých ostatních modalů */
+    backdrop-filter: blur(5px); /* Efekt rozostření pozadí */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Zajišťuje, že modal je nad ostatním obsahem */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Plynulá animace zobrazení */
+}
 
-        .btn-secondary {
-            background-color: #6c757d;
-        }
+/* Aktivní stav modalu (pro zobrazení) */
+#url-edit-modal.active { /* Používáme třídu 'active' pro zobrazení, jako v tvém JS */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
 
-        .btn-secondary:hover {
-            background-color: #545b62;
-        }
+/* Styl pro vnitřní obsahovou krabici modalu */
+.url-modal-content {
+    /* Převzato z tvého existujícího .modal-content stylu */
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); /* Tvůj futuristický gradient */
+    border: 2px solid #00ffff; /* Kyberpunková záře */
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px; /* Standardní šířka pro modaly */
+    width: 90%; /* Responzivní šířka */
+    box-shadow:
+        0 10px 30px rgba(0, 255, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #ffffff; /* Bílý text */
+    position: relative;
+    transform: scale(0.7); /* Počáteční zmenšení pro animaci */
+    transition: transform 0.3s ease; /* Plynulá animace */
+    text-align: center;
+}
 
-        .editable-link {
-            position: relative;
-        }
+/* Animace obsahu při aktivaci modalu */
+#url-edit-modal.active .url-modal-content {
+    transform: scale(1); /* Zvětšení na plnou velikost */
+}
 
-        .edit-icon {
-            margin-left: 8px;
-            opacity: 0.7;
-        }
+/* Styl pro nadpis uvnitř modalu */
+.url-modal-content h3 {
+    color: #00ffff; /* Modrá barva pro nadpis */
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Záře */
+}
 
-        /* NOVÉ NÁZVY PRO EDIT CONTROLS */
-        .link-edit-controls {
-            margin-top: 10px;
-        }
+/* Styly pro input pole uvnitř modalu */
+.url-modal-content input[type="text"],
+.url-modal-content input[type="url"] {
+    /* Převzato z tvého existujícího .modal-content input stylu */
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    font-weight: bold;
+    border: 2px solid #333; /* Tmavý rámeček */
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-family: 'Courier New', monospace;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    caret-color: #00ffff; /* Barva kurzoru */
+    background-color: #333; /* Tmavší pozadí pro input */
+}
 
-        .link-edit-controls.hidden {
-            display: none;
-        }
+/* Fokus efekt pro input pole */
+.url-modal-content input[type="text"]:focus,
+.url-modal-content input[type="url"]:focus {
+    outline: none;
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    animation: input-glow 2s infinite; /* Použití tvé existující animace */
+}
 
-        .url-edit-button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
+/* Styly pro popisky (labels) */
+.url-modal-content label {
+    display: block; /* Každý popisek na novém řádku */
+    text-align: left; /* Zarovnání textu popisku vlevo */
+    color: #00ffff; /* Modrá barva z tvého motivu */
+    font-size: 1rem;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
 
-        .url-edit-button:hover {
-            background-color: #218838;
-        }
+/* Kontejner pro tlačítka uvnitř modalu */
+.url-modal-buttons {
+    /* Převzato z tvého existujícího .modal-actions stylu */
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    flex-wrap: wrap; /* Pro responzivitu */
+}
 
-        /* NOVÝ MODAL S JEDINEČNÝMI NÁZVY */
-        .url-edit-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-        }
+/* --- Responzivní styly pro URL Edit Modal (přizpůsobeno existujícím media queries) --- */
+@media (max-width: 600px) {
+    .url-modal-content {
+        margin: 20px;
+        padding: 20px;
+        max-width: none; /* Na malých obrazovkách se roztáhne */
+        width: calc(100% - 40px); /* Odečte marginy */
+    }
+    .url-modal-buttons {
+        flex-direction: column; /* Tlačítka pod sebou */
+        align-items: center;
+    }
+    .url-modal-buttons .button {
+        width: 100%; /* Tlačítka zabírají celou šířku */
+        max-width: 200px;
+    }
+}
 
-        .url-modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .url-modal-content h3 {
-            margin-top: 0;
-            color: #333;
-            border-bottom: 2px solid #007cba;
-            padding-bottom: 10px;
-        }
-
-        .url-modal-content label {
-            display: block;
-            margin: 15px 0 5px 0;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .url-modal-content input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .url-modal-content input:focus {
-            outline: none;
-            border-color: #007cba;
-            box-shadow: 0 0 5px rgba(0,124,186,0.3);
-        }
-
-        .url-modal-buttons {
-            margin-top: 25px;
-            text-align: right;
-        }
-
-        .url-modal-buttons button {
-            margin-left: 10px;
-        }
-
-        /* Zobrazení edit kontrolů při hoveru */
-        .portfolio-item:hover .link-edit-controls {
-            display: block !important;
-        }
-
-        /* Debug styly */
-        .debug-info {
-            background-color: #e9ecef;
-            padding: 10px;
-            margin: 20px 0;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-                               }
     </style>
 </head>
 <body style="visibility: hidden;">
