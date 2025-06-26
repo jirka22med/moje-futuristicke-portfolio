@@ -1956,12 +1956,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 <button id="add-portfolio-item-btn" class="button hidden">Přidat položku do portfolia</button>
             </section>
 
-            <section id="contacts"> <!-- toto je hlavní sekce -->
-              <div id="cloude-projek-test"> <!-- toto je hlavní id pro moldar onko -->
-        <h2>Moje projekty</h2>
+          <section id="contacts"> <div id="cloude-projek-test"> <h2>Moje projekty</h2>
         <p>Testovací verze s novými názvy bez konfliktů.</p>
 
-        <div class="portfolio-items"><!-- tyto všechny názvy jsou jenom css  -->
+        <div class="portfolio-items">
             <div class="portfolio-item" data-item-id="project-genesis">
                 <h3 data-editable="project-genesis-title"></h3>
                 <p data-editable="project-genesis-desc"></p>
@@ -1997,9 +1995,22 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                     <button class="url-edit-button">Upravit URL</button>
                 </div>
             </div>
-        </div>
-         <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
-    </section>
+
+            <div class="portfolio-item" data-item-id="mapy-html">
+                <h3 data-editable="mapy-html-title"></h3>
+                <p data-editable="mapy-html-desc"></p>
+                <a href="https://jirka22med.github.io/mapy-v-html-kodu/" class="button editable-link" data-link-id="mapy-html-link" target="_blank">
+                    <span data-url-editable-text>Mapy v Html kodu</span>
+                    <i class="fas fa-edit edit-icon"></i>
+                </a>
+                <div class="link-edit-controls hidden">
+                    <button class="url-edit-button">Upravit URL</button>
+                </div>
+            </div>
+            </div>
+        <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
+    </div>
+</section>
 
             <section id="editor">
                 <h2>HTML Editor</h2>
