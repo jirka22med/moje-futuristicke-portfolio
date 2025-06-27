@@ -4826,71 +4826,62 @@ urlEditSaveBtn.addEventListener('click', async () => {
     //tady je dynamicky vkladač pro obrázky?
     
     document.addEventListener('DOMContentLoaded', function() {
-    // Definuj objekty s informacemi o obrázcích
-    const projectImagesData = { // Změnil jsem název proměnné, aby se nepletla s ID
+    const projectImagesData = {
         'zly-obrazek-1': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Moderni-foto-editor.jpg?ver=1',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover' }, // Styly pro desktop
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain' } // Styly pro mobil
+            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' }, // Přidáno borderRadius
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' } // Přidáno borderRadius (možná jiná hodnota pro mobil)
         },
         'zly-obrazek-2': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Star-Trek-Hudebni-Prehravac.jpg?ver=2',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover' },
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain' }
+            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' },
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' }
         },
         'zly-obrazek-3': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/pokrocili-vahovy-tracker.jpg?ver=3',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover' },
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain' }
+            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' },
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' }
         },
         'zly-obrazek-4': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/mapy-html-kodu.jpg?ver=0',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover' },
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain' }
+            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' },
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' }
         }
-        // ... přidávej další projekty zde
+        // ... ostatní obrázky s přidaným borderRadius pro desktop i mobile
     };
 
-    // Definuje Media Query pro mobilní zařízení
-    // Můžeš upravit '768px' na jinou hodnotu podle tvých breakpointů
     const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
 
-    // Funkce pro nastavení stylů obrázku na základě aktuálního stavu media query
     function applyImageStyles(imgElement, imgData) {
         let stylesToApply;
         if (mobileMediaQuery.matches) {
-            // Jsme na mobilu (nebo menší obrazovce)
             stylesToApply = imgData.mobile;
         } else {
-            // Jsme na desktopu (nebo větší obrazovce)
             stylesToApply = imgData.desktop;
         }
 
-        // Aplikujeme styly
         imgElement.style.width = stylesToApply.width;
         imgElement.style.height = stylesToApply.height;
         imgElement.style.objectFit = stylesToApply.objectFit;
+        imgElement.style.borderRadius = stylesToApply.borderRadius; // Nový řádek pro border-radius
     }
 
-    // Funkce pro načtení obrázků a aplikování počátečních stylů
+    // Funkce pro načtení obrázků a aplikování počátečních stylů (pokud ji nemáš jinde)
     function loadAndStyleProjectImages() {
         for (const id in projectImagesData) {
             const imgElement = document.getElementById(id);
             if (imgElement) {
                 const imgData = projectImagesData[id];
-                imgElement.src = imgData.src; // Nastaví src jednou
-                applyImageStyles(imgElement, imgData); // Aplikuje styly na základě aktuální velikosti
+                imgElement.src = imgData.src;
+                applyImageStyles(imgElement, imgData);
             }
         }
     }
 
-    // Spustíme načítání a stylování obrázků při načtení stránky
-    loadAndStyleProjectImages();
+    loadAndStyleProjectImages(); // Volání funkce, která načítá a styly aplikuje
 
-    // Přidáme posluchač na změny media query, aby se styly změnily při změně velikosti okna
     mobileMediaQuery.addEventListener('change', function() {
         console.log("Změna velikosti okna, aktualizuji styly obrázků.");
-        // Znovu projdeme všechny obrázky a aplikujeme jim nové styly
         for (const id in projectImagesData) {
             const imgElement = document.getElementById(id);
             if (imgElement) {
