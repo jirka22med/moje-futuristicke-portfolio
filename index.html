@@ -1849,7 +1849,23 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
 }
 
+/* Styly pro rodičovský kontejner obrázku */
+.kontejner-obrazek {
+    width: 450px;       /* Pevná šířka kontejneru */
+    height: 250px;      /* Pevná výška kontejneru */
+    overflow: hidden;   /* Klíčové! Ořízne obrázek, pokud je větší než kontejner */
+    margin: 10px auto;  /* Vycentruje kontejner a přidá mezery */
+    border-radius: 4px; /* Jen kosmetika, abys měl pěkný rámeček */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Jemný stín */
+}
 
+/* Styly pro samotný obrázek UVNITŘ kontejneru */
+.kontejner-obrazek .project-image {
+    width: 100%;        /* Obrázek vyplní 100% šířky SVÉHO RODIČE (.kontejner-obrazek) */
+    height: 100%;       /* Obrázek vyplní 100% výšky SVÉHO RODIČE (.kontejner-obrazek) */
+    object-fit: cover;  /* MEGA KLÍČOVÉ! Zachová poměr stran a vyplní kontejner, ořízne přesahy */
+    display: block;     /* Pomáhá s odstraněním nežádoucích mezer */
+}
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1956,15 +1972,18 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 <button id="add-portfolio-item-btn" class="button hidden">Přidat položku do portfolia</button>
             </section>
 
-                  ‎         <section id="contacts">
+     <section id="contacts">
     <div id="cloude-projek-test">
         <h2>Moje projekty</h2>
         <p>Testovací verze s novými názvy bez konfliktů.</p>
 
         <div class="portfolio-items">
-            <div class="portfolio-item" data-item-id="project-genesis">
+            <div class="portfolio-item" data-item-id="project-genesis" style="background-color: #f9f9f9; padding: 2rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
                 <h3 data-editable="project-genesis-title"></h3>
-                <img src="img/genesis-web.jpg" class="project-image">
+                <div class="kontejner-obrazek">
+                <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Moderni-foto-editor.jpg?ver=1" class="project-image" style="height: 250px; width: 450px " >
+                    </div>
+            
                 <p data-editable="project-genesis-desc"></p>
                 <a href="moje-futuristicke-portfolio.html" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
                     <span data-url-editable-text>Přejít na web</span>
@@ -1975,9 +1994,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 </div>
             </div>
 
-            <div class="portfolio-item" data-item-id="project-photoeditor">
+            <div class="portfolio-item" data-item-id="project-photoeditor" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
                 <h3 data-editable="project-photoeditor-title">Moderní Foto Editor</h3>
-                <img src="img/foto-editor.jpg" class="project-image">
+                <div class="kontejner-obrazek">
+                <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Star-Trek-Hudebni-Prehravac.jpg?ver=2" class="project-image" style="height: 250px; width: 450px " > 
+                 </div>   
                 <p data-editable="project-photoeditor-desc">Pokročilý editor obrázků plný funkcí.</p>
                 <a href="moderni-foto-editor-test.html" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
                     <span data-url-editable-text>Vyzkoušet editor</span>
@@ -1988,9 +2009,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 </div>
             </div>
 
-            <div class="portfolio-item" data-item-id="project-tracker">
+            <div class="portfolio-item" data-item-id="project-tracker" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
                 <h3 data-editable="project-tracker-title">Pokročilý Váhový Tracker</h3>
-                <img src="img/vahovy-tracker.jpg"  class="project-image">
+                <div class="kontejner-obrazek">
+                <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/pokrocili-vahovy-tracker.jpg?ver=3"  class="project-image" style="height: 250px; width: 450px " > 
+                </div>
                 <p data-editable="project-tracker-desc">Nástroj pro sledování tvé váhy s pokročilými statistikami.</p>
                 <a href="pokrocily-vahovy-tracker.html" class="button editable-link" data-link-id="project-tracker-link" target="_blank">
                     <span data-url-editable-text>Spustit Tracker</span>
@@ -2001,9 +2024,11 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
                 </div>
             </div>
 
-            <div class="portfolio-item" data-item-id="mapy-html">
+            <div class="portfolio-item" data-item-id="mapy-html" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">>
                 <h3 data-editable="mapy-html-title">Můj projekt mapy v HTML kódu</h3>
-                <img src="img/mapy-html.jpg" class="project-image">
+                <div class="kontejner-obrazek">
+                    <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/mapy-html-kodu.jpg?ver=0" class="project-image" alt="Mapy v HTML kódu" style="height: 250px; width: 450px " >
+                </div>
                 <p data-editable="mapy-html-desc">Interaktivní mapy přímo ve tvém prohlížeči.</p>
                 <a href="https://jirka22med.github.io/mapy-v-html-kodu/" class="button editable-link" data-link-id="mapy-html-link" target="_blank">
                     <span data-url-editable-text>Mapy v Html kodu</span>
