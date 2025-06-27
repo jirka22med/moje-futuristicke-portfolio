@@ -1890,11 +1890,19 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <button id="login-button" class="button" onclick="showAuthModal()">Upravit</button>
         </div>
     </nav>
-                 <!-- Hlavní kontejner pro zadání hesla prěd vstupem do editace-->
-        <div id="local-password-modal" class="modal">
+                <div id="local-password-modal" class="modal">
     <div class="modal-content">
         <h3>Zadejte přístupové heslo</h3>
-        <input type="password" id="local-password-input" placeholder="Heslo">
+        
+        <label for="local-password-input">Heslo:</label>
+        <input 
+            type="password" 
+            id="local-password-input" 
+            name="local-password" 
+            autocomplete="current-password" 
+            placeholder="Heslo"
+        >
+        
         <p id="local-password-error" class="error-message"></p> 
         <div class="modal-actions">
             <button id="local-password-ok-btn" class="button btn-primary">OK</button>
@@ -2043,19 +2051,19 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 </section>
 
             <section id="editor">
-                <h2>HTML Editor</h2>
-                <div class="editor-container">
-                    <div>
-                        <label for="html-editor">HTML Kód:</label>
-                        <textarea id="html-editor" placeholder="Zde pište svůj HTML kód..."></textarea>
-                    </div>
-                    <div>
-                        <label for="html-preview">Náhled:</label>
-                        <iframe id="html-preview"></iframe>
-                    </div>
-                </div>
-                <button id="save-code-btn">Uložit kód</button>
-            </section>
+    <h2>HTML Editor</h2>
+    <div class="editor-container">
+        <div>
+            <label for="html-editor">HTML Kód:</label>
+            <textarea id="html-editor" name="html_code" autocomplete="off" placeholder="Zde pište svůj HTML kód..."></textarea>
+        </div>
+        <div>
+            <label for="html-preview">Náhled:</label>
+            <iframe id="html-preview" name="html_preview_frame"></iframe>
+        </div>
+    </div>
+    <button id="save-code-btn">Uložit kód</button>
+</section>
 
             <section id="saved">
                 <h2>Moje HTML kódy</h2>
@@ -2159,10 +2167,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         <h3>Přihlášení / Registrace</h3>
         
         <label for="auth-email">Email:</label>
-        <input type="email" id="auth-email" name="email" placeholder="vas.email@example.com">
+        <input type="email" id="auth-email" name="email" autocomplete="email" placeholder="vas.email@example.com">
         
         <label for="auth-password">Heslo:</label>
-        <input type="password" id="auth-password" name="password" placeholder="********">
+        <input type="password" id="auth-password" name="password" autocomplete="current-password" placeholder="********">
         
         <div class="modal-buttons">
             <button id="login-auth-btn" class="button">Přihlásit se</button>
