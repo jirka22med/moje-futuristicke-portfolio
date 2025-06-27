@@ -2208,32 +2208,32 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     </div>
 </div>
 
-<!-- HTML Modal -->
 <div id="edit-portfolio-modal" class="modal">
     <div class="modal-content">
         <h3>Upravit položku portfolia</h3>
+        
         <label for="edit-portfolio-title">Název:</label>
-        <input type="text" id="edit-portfolio-title" placeholder="Název projektu">
+        <input type="text" id="edit-portfolio-title" name="portfolio_title" autocomplete="off" placeholder="Název projektu">
         
         <label for="edit-portfolio-desc-1">Popis 1:</label>
-        <textarea id="edit-portfolio-desc-1" rows="5" placeholder="Popis projektu"></textarea>
+        <textarea id="edit-portfolio-desc-1" name="portfolio_desc_1" autocomplete="off" rows="5" placeholder="Popis projektu"></textarea>
         
         <label for="edit-portfolio-desc-2">Popis 2 (volitelné):</label>
-        <textarea id="edit-portfolio-desc-2" rows="5" placeholder="Další popis"></textarea>
+        <textarea id="edit-portfolio-desc-2" name="portfolio_desc_2" autocomplete="off" rows="5" placeholder="Další popis"></textarea>
         
         <label for="edit-portfolio-youtube">YouTube video (volitelné):</label>
-        <input type="url" id="edit-portfolio-youtube" placeholder="https://www.youtube.com/watch?v=... nebo https://youtu.be/...">
+        <input type="url" id="edit-portfolio-youtube" name="portfolio_youtube_url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=... nebo https://youtu.be/...">
         <small>Vložte odkaz na YouTube video</small>
         
         <div id="youtube-preview-container" style="display: none; margin-top: 10px;">
-            <iframe id="youtube-preview" width="100%" height="200" frameborder="0" allowfullscreen></iframe>
+            <iframe id="youtube-preview" name="youtube_preview_frame" width="100%" height="200" frameborder="0" allowfullscreen></iframe>
         </div>
         
         <label for="edit-portfolio-link-text">Text tlačítka odkazu:</label>
-        <input type="text" id="edit-portfolio-link-text" placeholder="Text tlačítka">
+        <input type="text" id="edit-portfolio-link-text" name="portfolio_link_text" autocomplete="off" placeholder="Text tlačítka">
         
         <label for="edit-portfolio-link-url">URL odkazu:</label>
-        <input type="url" id="edit-portfolio-link-url" placeholder="https://">
+        <input type="url" id="edit-portfolio-link-url" name="portfolio_link_url" autocomplete="off" placeholder="https://">
         
         <div class="modal-buttons">
             <button id="cancel-edit-portfolio-btn" class="button btn-secondary">Zrušit</button>
@@ -2249,10 +2249,25 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 <div id="url-edit-modal" class="url-edit-modal modal">
     <div class="url-modal-content">
         <h3>Upravit URL odkazu</h3>
+        
         <label for="url-edit-title-input">Název odkazu:</label>
-        <input type="text" id="url-edit-title-input" placeholder="Název odkazu">
+        <input 
+            type="text" 
+            id="url-edit-title-input" 
+            name="link_title" 
+            autocomplete="off" 
+            placeholder="Název odkazu"
+        >
+        
         <label for="url-edit-url-input">URL adresa:</label>
-        <input type="url" id="url-edit-url-input" placeholder="https://example.com">
+        <input 
+            type="url" 
+            id="url-edit-url-input" 
+            name="link_url" 
+            autocomplete="off" 
+            placeholder="https://example.com"
+        >
+        
         <div class="url-modal-buttons">
             <button id="url-edit-cancel-btn" class="button btn-secondary">Zrušit</button>
             <button id="url-edit-save-btn" class="button">Uložit změny</button>
