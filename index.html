@@ -2157,10 +2157,13 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 <div id="auth-modal" class="modal">
     <div class="modal-content">
         <h3>Přihlášení / Registrace</h3>
+        
         <label for="auth-email">Email:</label>
-        <input type="email" id="auth-email" placeholder="vas.email@example.com">
+        <input type="email" id="auth-email" name="email" placeholder="vas.email@example.com">
+        
         <label for="auth-password">Heslo:</label>
-        <input type="password" id="auth-password" placeholder="********">
+        <input type="password" id="auth-password" name="password" placeholder="********">
+        
         <div class="modal-buttons">
             <button id="login-auth-btn" class="button">Přihlásit se</button>
             <button id="signup-auth-btn" class="button btn-secondary">Registrovat se</button>
