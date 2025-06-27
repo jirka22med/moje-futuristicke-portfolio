@@ -4829,25 +4829,72 @@ urlEditSaveBtn.addEventListener('click', async () => {
     const projectImagesData = {
         'zly-obrazek-1': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Moderni-foto-editor.jpg?ver=1',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' }, // Přidáno borderRadius
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' } // Přidáno borderRadius (možná jiná hodnota pro mobil)
+            desktop: { 
+                width: '450px', 
+                height: '250px', 
+                objectFit: 'cover', 
+                borderRadius: '12px',
+                border: '5px solid black' // Příklad: 2px tlustý, plný, světle šedý rámeček
+            },
+            mobile: { 
+                width: '100%', 
+                height: 'auto', 
+                objectFit: 'contain', 
+                borderRadius: '6px',
+                border: '1px solid black' // Může být tenčí na mobilu
+            }
         },
         'zly-obrazek-2': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Star-Trek-Hudebni-Prehravac.jpg?ver=2',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' },
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' }
+            desktop: { 
+                width: '450px', 
+                height: '250px', 
+                objectFit: 'cover', 
+                borderRadius: '12px',
+                border: '5px solid #00ffff' // Příklad: světle modrý rámeček
+            },
+            mobile: { 
+                width: '100%', 
+                height: 'auto', 
+                objectFit: 'contain', 
+                borderRadius: '6px',
+                border: '1px solid #00ffff'
+            }
         },
         'zly-obrazek-3': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/pokrocili-vahovy-tracker.jpg?ver=3',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' },
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' }
+            desktop: { 
+                width: '450px', 
+                height: '250px', 
+                objectFit: 'cover', 
+                borderRadius: '12px',
+                border: '5px solid #a0a0a0' // Příklad: tmavší šedý rámeček
+            },
+            mobile: { 
+                width: '100%', 
+                height: 'auto', 
+                objectFit: 'contain', 
+                borderRadius: '6px',
+                border: '1px solid #a0a0a0'
+            }
         },
         'zly-obrazek-4': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/mapy-html-kodu.jpg?ver=0',
-            desktop: { width: '450px', height: '250px', objectFit: 'cover', borderRadius: '8px' },
-            mobile: { width: '100%', height: 'auto', objectFit: 'contain', borderRadius: '6px' }
+            desktop: { 
+                width: '450px', 
+                height: '250px', 
+                objectFit: 'cover', 
+                borderRadius: '12px',
+                border: '5px solid #5cb85c' // Příklad: zelený rámeček
+            },
+            mobile: { 
+                width: '100%', 
+                height: 'auto', 
+                objectFit: 'contain', 
+                borderRadius: '6px',
+                border: '1px solid #5cb85c'
+            }
         }
-        // ... ostatní obrázky s přidaným borderRadius pro desktop i mobile
     };
 
     const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
@@ -4863,10 +4910,12 @@ urlEditSaveBtn.addEventListener('click', async () => {
         imgElement.style.width = stylesToApply.width;
         imgElement.style.height = stylesToApply.height;
         imgElement.style.objectFit = stylesToApply.objectFit;
-        imgElement.style.borderRadius = stylesToApply.borderRadius; // Nový řádek pro border-radius
+        imgElement.style.borderRadius = stylesToApply.borderRadius;
+        // NOVÝ ŘÁDEK: Aplikace rámečku
+        imgElement.style.border = stylesToApply.border;
     }
 
-    // Funkce pro načtení obrázků a aplikování počátečních stylů (pokud ji nemáš jinde)
+    // Funkce pro načtení obrázků a aplikování počátečních stylů (zde zůstává stejná)
     function loadAndStyleProjectImages() {
         for (const id in projectImagesData) {
             const imgElement = document.getElementById(id);
