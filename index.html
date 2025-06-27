@@ -3398,11 +3398,31 @@ function closeImageModal() {
 function setupKeyboardNavigation() {
     document.addEventListener('keydown', function(event) {
         const imageModal = document.getElementById('image-modal');
+
+        // Krok 1: Kontrola, zda je modal viditelný
         if (!imageModal || imageModal.style.display === 'none') {
-            return;
+            return; // Pokud modal není viditelný, nic neděláme
+        }
+
+        // Krok 2: Klíčové vylepšení - Zkontrolovat, zda je uživatel v editačním poli
+        // activeElement vrací aktuálně fokusovaný element.
+        // tagName vrací název tagu ve velkých písmenech (např. 'INPUT', 'TEXTAREA').
+        const activeElement = document.activeElement;
+        const isEditingText = (
+            activeElement.tagName === 'INPUT' ||
+            activeElement.tagName === 'TEXTAREA' ||
+            activeElement.hasAttribute('contenteditable') // Pro případ, že edituješ DIV s contenteditable
+        );
+
+        // Pokud uživatel edituje text A stiskl šipku (nebo Esc), NECHÁME šipku fungovat pro textové pole
+        // A NEBUDEME přepínat obrázek. Esc by ale měl fungovat vždy pro zavření modalu.
+        if (isEditingText && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+            // Logiku pro přepínání obrázku v modalu ignorujeme, necháme šipku pro textové pole
+            console.log(`⌨️ Uživatele edituje text. Klávesa ${event.key} bude ignorována pro modal.`);
+            return; // Důležité: Ukončíme funkci, aby se dál nezpracovávala pro modal
         }
         
-        // Zabráníme defaultnímu chování šipek
+        // Zabráníme defaultnímu chování šipek (pokud nejsme v textovém poli)
         if (['ArrowLeft', 'ArrowRight', 'Escape'].includes(event.key)) {
             event.preventDefault();
             event.stopPropagation();
