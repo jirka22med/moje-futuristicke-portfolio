@@ -1978,13 +1978,12 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         <p>Testovací verze s novými názvy bez konfliktů.</p>
 
         <div class="portfolio-items">
-            <div class="portfolio-item" data-item-id="project-genesis" style="background-color: #f9f9f9; padding: 2rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
-                <h3 data-editable="project-genesis-title"></h3>
+            <div class="portfolio-item" data-item-id="project-genesis" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
+                <h3 data-editable="project-genesis-title">Můj osobní web Genesis</h3>
                 <div class="kontejner-obrazek">
-                <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Moderni-foto-editor.jpg?ver=1" class="project-image" style="height: 250px; width: 450px " >
-                    </div>
-            
-                <p data-editable="project-genesis-desc"></p>
+                    <img id="zly-obrazek-1" class="project-image">
+                </div>
+                <p data-editable="project-genesis-desc">Popis projektu Genesis.</p>
                 <a href="moje-futuristicke-portfolio.html" class="button editable-link" data-link-id="project-genesis-link" target="_blank">
                     <span data-url-editable-text>Přejít na web</span>
                     <i class="fas fa-edit edit-icon"></i>
@@ -1997,8 +1996,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <div class="portfolio-item" data-item-id="project-photoeditor" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
                 <h3 data-editable="project-photoeditor-title">Moderní Foto Editor</h3>
                 <div class="kontejner-obrazek">
-                <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Star-Trek-Hudebni-Prehravac.jpg?ver=2" class="project-image" style="height: 250px; width: 450px " > 
-                 </div>   
+                    <img id="zly-obrazek-2" class="project-image">
+                </div>
                 <p data-editable="project-photoeditor-desc">Pokročilý editor obrázků plný funkcí.</p>
                 <a href="moderni-foto-editor-test.html" class="button editable-link" data-link-id="project-photoeditor-link" target="_blank">
                     <span data-url-editable-text>Vyzkoušet editor</span>
@@ -2012,7 +2011,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <div class="portfolio-item" data-item-id="project-tracker" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
                 <h3 data-editable="project-tracker-title">Pokročilý Váhový Tracker</h3>
                 <div class="kontejner-obrazek">
-                <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/pokrocili-vahovy-tracker.jpg?ver=3"  class="project-image" style="height: 250px; width: 450px " > 
+                    <img id="zly-obrazek-3" class="project-image">
                 </div>
                 <p data-editable="project-tracker-desc">Nástroj pro sledování tvé váhy s pokročilými statistikami.</p>
                 <a href="pokrocily-vahovy-tracker.html" class="button editable-link" data-link-id="project-tracker-link" target="_blank">
@@ -2027,7 +2026,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             <div class="portfolio-item" data-item-id="mapy-html" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
                 <h3 data-editable="mapy-html-title">Můj projekt mapy v HTML kódu</h3>
                 <div class="kontejner-obrazek">
-                    <img src="https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/mapy-html-kodu.jpg?ver=0" class="project-image" alt="Mapy v HTML kódu" style="height: 250px; width: 450px ">
+                    <img id="zly-obrazek-4" class="project-image">
                 </div>
                 <p data-editable="mapy-html-desc">Interaktivní mapy přímo ve tvém prohlížeči.</p>
                 <a href="https://jirka22med.github.io/mapy-v-html-kodu/" class="button editable-link" data-link-id="mapy-html-link" target="_blank">
@@ -2042,7 +2041,6 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         <div id="user-id-display" class="hidden">Vaše User ID: <span id="firebase-user-id"></span></div>
     </div>
 </section>
-
 
             <section id="editor">
                 <h2>HTML Editor</h2>
@@ -4825,6 +4823,82 @@ urlEditSaveBtn.addEventListener('click', async () => {
 
     console.log('🎉 Nový URL modal systém inicializován!');
 });   
+    //tady je dynamicky vkladač pro obrázky?
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    // Definuj objekty s informacemi o obrázcích
+    const projectImagesData = { // Změnil jsem název proměnné, aby se nepletla s ID
+        'zly-obrazek-1': {
+            src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Moderni-foto-editor.jpg?ver=1',
+            desktop: { width: '450px', height: '250px', objectFit: 'cover' }, // Styly pro desktop
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain' } // Styly pro mobil
+        },
+        'zly-obrazek-2': {
+            src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/Star-Trek-Hudebni-Prehravac.jpg?ver=2',
+            desktop: { width: '450px', height: '250px', objectFit: 'cover' },
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain' }
+        },
+        'zly-obrazek-3': {
+            src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/pokrocili-vahovy-tracker.jpg?ver=3',
+            desktop: { width: '450px', height: '250px', objectFit: 'cover' },
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain' }
+        },
+        'zly-obrazek-4': {
+            src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/mapy-html-kodu.jpg?ver=0',
+            desktop: { width: '450px', height: '250px', objectFit: 'cover' },
+            mobile: { width: '100%', height: 'auto', objectFit: 'contain' }
+        }
+        // ... přidávej další projekty zde
+    };
+
+    // Definuje Media Query pro mobilní zařízení
+    // Můžeš upravit '768px' na jinou hodnotu podle tvých breakpointů
+    const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+
+    // Funkce pro nastavení stylů obrázku na základě aktuálního stavu media query
+    function applyImageStyles(imgElement, imgData) {
+        let stylesToApply;
+        if (mobileMediaQuery.matches) {
+            // Jsme na mobilu (nebo menší obrazovce)
+            stylesToApply = imgData.mobile;
+        } else {
+            // Jsme na desktopu (nebo větší obrazovce)
+            stylesToApply = imgData.desktop;
+        }
+
+        // Aplikujeme styly
+        imgElement.style.width = stylesToApply.width;
+        imgElement.style.height = stylesToApply.height;
+        imgElement.style.objectFit = stylesToApply.objectFit;
+    }
+
+    // Funkce pro načtení obrázků a aplikování počátečních stylů
+    function loadAndStyleProjectImages() {
+        for (const id in projectImagesData) {
+            const imgElement = document.getElementById(id);
+            if (imgElement) {
+                const imgData = projectImagesData[id];
+                imgElement.src = imgData.src; // Nastaví src jednou
+                applyImageStyles(imgElement, imgData); // Aplikuje styly na základě aktuální velikosti
+            }
+        }
+    }
+
+    // Spustíme načítání a stylování obrázků při načtení stránky
+    loadAndStyleProjectImages();
+
+    // Přidáme posluchač na změny media query, aby se styly změnily při změně velikosti okna
+    mobileMediaQuery.addEventListener('change', function() {
+        console.log("Změna velikosti okna, aktualizuji styly obrázků.");
+        // Znovu projdeme všechny obrázky a aplikujeme jim nové styly
+        for (const id in projectImagesData) {
+            const imgElement = document.getElementById(id);
+            if (imgElement) {
+                applyImageStyles(imgElement, projectImagesData[id]);
+            }
+        }
+    });
+});
 </script>
 </body>
 </html>
