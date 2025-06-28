@@ -1719,10 +1719,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* --- VYLEPŠENÝ CSS PRO MODAL "Upravit URL odkazu" --- */
 
-/* Používáme tvé existující CSS proměnné z :root */
-
 /* Základní styl pro celý modal overlay */
-#url-edit-modal {
+#url-edit-modal.url-edit-modal.modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -1748,7 +1746,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 }
 
 /* Aktivní stav modalu */
-#url-edit-modal.active {
+#url-edit-modal.url-edit-modal.modal.active {
     opacity: 1;
     visibility: visible;
     transform: scale(1);
@@ -1814,7 +1812,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 }
 
 /* Animace obsahu při aktivaci modalu */
-#url-edit-modal.active .url-modal-content {
+#url-edit-modal.url-edit-modal.modal.active .url-modal-content {
     transform: translateY(0) scale(1);
 }
 
@@ -1847,7 +1845,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Vylepšené styly pro input pole */
 .url-modal-content input[type="text"],
-.url-modal-content input[type="url"] {
+.url-modal-content input[type="url"],
+.url-modal-content #url-edit-title-input,
+.url-modal-content #url-edit-url-input {
     width: 100%;
     padding: 16px 20px;
     margin: 15px 0;
@@ -1871,7 +1871,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Fokus efekt pro input pole */
 .url-modal-content input[type="text"]:focus,
-.url-modal-content input[type="url"]:focus {
+.url-modal-content input[type="url"]:focus,
+.url-modal-content #url-edit-title-input:focus,
+.url-modal-content #url-edit-url-input:focus {
     outline: none;
     border-color: #00ffff;
     background: rgba(42, 42, 62, 0.8);
@@ -1884,7 +1886,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Hover efekt pro input pole */
 .url-modal-content input[type="text"]:hover,
-.url-modal-content input[type="url"]:hover {
+.url-modal-content input[type="url"]:hover,
+.url-modal-content #url-edit-title-input:hover,
+.url-modal-content #url-edit-url-input:hover {
     border-color: rgba(0, 255, 255, 0.5);
     background: rgba(42, 42, 62, 0.9);
 }
@@ -1910,8 +1914,10 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     flex-wrap: wrap;
 }
 
-/* Základní styl tlačítek (pokud ho ještě nemáš) */
-.url-modal-buttons .button {
+/* Základní styl tlačítek */
+.url-modal-buttons .button,
+.url-modal-buttons #url-edit-cancel-btn,
+.url-modal-buttons #url-edit-save-btn {
     padding: 12px 24px;
     border: none;
     border-radius: 10px;
@@ -1924,32 +1930,36 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     min-width: 120px;
 }
 
-/* Primární tlačítko */
-.url-modal-buttons .button.primary {
+/* Primární tlačítko (Uložit změny) */
+.url-modal-buttons #url-edit-save-btn {
     background: linear-gradient(45deg, #00ffff, #8b5cf6);
     color: #ffffff;
     box-shadow: 0 8px 20px rgba(0, 255, 255, 0.4);
 }
 
-.url-modal-buttons .button.primary:hover {
+.url-modal-buttons #url-edit-save-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 25px rgba(0, 255, 255, 0.4);
 }
 
-/* Sekundární tlačítko */
-.url-modal-buttons .button.secondary {
+/* Sekundární tlačítko (Zrušit) */
+.url-modal-buttons #url-edit-cancel-btn,
+.url-modal-buttons .btn-secondary {
     background: rgba(255, 255, 255, 0.1);
     color: #ffffff;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.url-modal-buttons .button.secondary:hover {
+.url-modal-buttons #url-edit-cancel-btn:hover,
+.url-modal-buttons .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 }
 
 /* Efekt vlnění pro tlačítka */
-.url-modal-buttons .button::before {
+.url-modal-buttons .button::before,
+.url-modal-buttons #url-edit-cancel-btn::before,
+.url-modal-buttons #url-edit-save-btn::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -1962,7 +1972,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     transform: translate(-50%, -50%);
 }
 
-.url-modal-buttons .button:active::before {
+.url-modal-buttons .button:active::before,
+.url-modal-buttons #url-edit-cancel-btn:active::before,
+.url-modal-buttons #url-edit-save-btn:active::before {
     width: 300px;
     height: 300px;
 }
@@ -1981,7 +1993,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         font-size: 1.2rem;
         padding: 18px 24px;
     }
@@ -1997,7 +2011,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Tablet Landscape (768px - 991px) */
 @media (min-width: 768px) and (max-width: 991px) {
-    #url-edit-modal {
+    #url-edit-modal.url-edit-modal.modal {
         padding: 20px;
     }
     
@@ -2014,7 +2028,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         padding: 14px 18px;
         font-size: 1.1rem;
         margin: 12px 0;
@@ -2027,7 +2043,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         justify-content: center;
     }
     
-    .url-modal-buttons .button {
+    .url-modal-buttons .button,
+    .url-modal-buttons #url-edit-cancel-btn,
+    .url-modal-buttons #url-edit-save-btn {
         min-width: 140px;
         padding: 14px 20px;
     }
@@ -2053,7 +2071,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Tablet Portrait (481px - 767px) */
 @media (min-width: 481px) and (max-width: 767px) {
-    #url-edit-modal {
+    #url-edit-modal.url-edit-modal.modal {
         padding: 15px;
     }
     
@@ -2070,7 +2088,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         padding: 14px 16px;
         font-size: 1rem;
         margin: 12px 0;
@@ -2090,7 +2110,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         justify-content: center;
     }
     
-    .url-modal-buttons .button {
+    .url-modal-buttons .button,
+    .url-modal-buttons #url-edit-cancel-btn,
+    .url-modal-buttons #url-edit-save-btn {
         flex: 1;
         max-width: 150px;
         min-width: 120px;
@@ -2101,7 +2123,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Mobile Large (376px - 480px) */
 @media (min-width: 376px) and (max-width: 480px) {
-    #url-edit-modal {
+    #url-edit-modal.url-edit-modal.modal {
         padding: 10px;
     }
     
@@ -2119,7 +2141,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         padding: 12px 15px;
         font-size: 1rem;
         margin: 10px 0;
@@ -2132,7 +2156,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         margin-top: 25px;
     }
     
-    .url-modal-buttons .button {
+    .url-modal-buttons .button,
+    .url-modal-buttons #url-edit-cancel-btn,
+    .url-modal-buttons #url-edit-save-btn {
         width: 100%;
         max-width: none;
         padding: 14px 20px;
@@ -2142,7 +2168,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Mobile Standard (320px - 375px) */
 @media (max-width: 375px) {
-    #url-edit-modal {
+    #url-edit-modal.url-edit-modal.modal {
         padding: 8px;
     }
     
@@ -2160,7 +2186,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         padding: 12px 14px;
         font-size: 0.95rem;
         margin: 8px 0;
@@ -2179,7 +2207,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         margin-top: 20px;
     }
     
-    .url-modal-buttons .button {
+    .url-modal-buttons .button,
+    .url-modal-buttons #url-edit-cancel-btn,
+    .url-modal-buttons #url-edit-save-btn {
         width: 100%;
         max-width: none;
         padding: 12px 16px;
@@ -2201,7 +2231,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         padding: 10px 12px;
         font-size: 0.9rem;
     }
@@ -2227,7 +2259,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 
 /* Velmi krátké obrazovky (landscape mobily) */
 @media (max-height: 450px) and (orientation: landscape) {
-    #url-edit-modal {
+    #url-edit-modal.url-edit-modal.modal {
         align-items: flex-start;
         padding-top: 20px;
     }
@@ -2239,7 +2271,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         transform: none !important;
     }
     
-    #url-edit-modal.active .url-modal-content {
+    #url-edit-modal.url-edit-modal.modal.active .url-modal-content {
         transform: none !important;
     }
     
@@ -2249,7 +2281,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         margin: 8px 0;
         padding: 10px 15px;
     }
@@ -2259,15 +2293,17 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         gap: 10px;
     }
     
-    .url-modal-buttons .button {
+    .url-modal-buttons .button,
+    .url-modal-buttons #url-edit-cancel-btn,
+    .url-modal-buttons #url-edit-save-btn {
         padding: 10px 15px;
         font-size: 0.9rem;
     }
 }
 
-/* Tmavší varianta pro světlý režim */
+/* Světlý režim */
 @media (prefers-color-scheme: light) {
-    #url-edit-modal {
+    #url-edit-modal.url-edit-modal.modal {
         background: linear-gradient(135deg, 
             rgba(248, 250, 252, 0.95) 0%, 
             rgba(226, 232, 240, 0.98) 50%, 
@@ -2289,7 +2325,9 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .url-modal-content input[type="text"],
-    .url-modal-content input[type="url"] {
+    .url-modal-content input[type="url"],
+    .url-modal-content #url-edit-title-input,
+    .url-modal-content #url-edit-url-input {
         background: #ffffff;
         color: #1a202c;
     }
@@ -2298,6 +2336,8 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         color: #4a5568;
     }
 }
+/*tady je konec moladr okan??*
+    
 /* Styly pro rodičovský kontejner obrázku */
 .kontejner-obrazek {
     width: 450px;       /* Pevná šířka kontejneru */
