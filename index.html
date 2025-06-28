@@ -1717,138 +1717,587 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
             color: #333;
         }
 
-/* --- CSS PRO NOVÝ MODAL "Upravit URL odkazu" --- */
+/* --- VYLEPŠENÝ CSS PRO MODAL "Upravit URL odkazu" --- */
+
+/* Používáme tvé existující CSS proměnné z :root */
 
 /* Základní styl pro celý modal overlay */
 #url-edit-modal {
-    position: fixed; /* Fixní pozice, aby překryl celou obrazovku */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Tmavý, průhledný překryv pozadí */
-    backdrop-filter: blur(5px); /* Efekt rozostření pozadí pro moderní vzhled */
+    background: linear-gradient(135deg, 
+        rgba(10, 10, 15, 0.9) 0%, 
+        rgba(26, 26, 46, 0.95) 50%, 
+        rgba(22, 33, 62, 0.9) 100%);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
     
-    /* KLÍČOVÉ PRO SKRYTÍ MODALU NA ZAČÁTKU: */
-    display: none; /* Modal je ve výchozím stavu SKRYTÝ, nezabírá žádné místo */
-    
-    justify-content: center; /* Vycentrování obsahu horizontálně */
-    align-items: center; /* Vycentrování obsahu vertikálně */
-    z-index: 2000; /* Zajišťuje, že modal je nad většinou ostatního obsahu stránky */
-    
-    /* Tyto vlastnosti jsou pro plynulý fade-in/out, i když primární je display: none/flex */
-    opacity: 0; 
+    /* Animace pro zobrazení */
+    opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: scale(1.05);
 }
 
-/* Aktivní stav modalu (když ho JavaScript zobrazí) */
-/* V tvém JavaScriptu přímo manipuluješ style.display, takže tato třída není primárně používaná pro zobrazení/skrytí, */
-/* ale můžeme ji nechat pro konzistenci nebo pro případné budoucí animace opacity/visibility. */
-/* Nicméně pro zobrazení teď slouží JavaScriptové urlEditModal.style.display = 'flex'; */
-/* Protože se ale spoléháme na display: none/flex, fade animace opacity/visibility nebudou fungovat tak, jak by fungovaly s class.active */
-/* Doporučuji upravit JS, aby místo style.display používal classList.add/remove('active') pro hladké animace. */
-#url-edit-modal.active { 
-    display: flex; /* Zde se modal stane viditelným a použije flex pro centrování */
-    opacity: 1; /* Pro případné plynulé zobrazení, pokud JS použije classList.add/remove */
+/* Aktivní stav modalu */
+#url-edit-modal.active {
+    opacity: 1;
     visibility: visible;
-    transition: opacity 0.3s ease;
-}
-
-/* Styl pro vnitřní obsahovou krabici modalu (zůstává stejný) */
-.url-modal-content {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); /* Tvůj futuristický gradient */
-    border: 2px solid #00ffff; /* Kyberpunková záře */
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 500px; /* Standardní šířka pro modaly */
-    width: 90%; /* Responzivní šířka */
-    box-shadow:
-        0 10px 30px rgba(0, 255, 255, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    color: #ffffff; /* Bílý text */
-    position: relative;
-    transform: scale(0.7); /* Počáteční zmenšení pro animaci (při použití s třídou active) */
-    transition: transform 0.3s ease; /* Plynulá animace (při použití s třídou active) */
-    text-align: center;
-}
-
-/* Animace obsahu při aktivaci modalu (zůstává stejná) */
-#url-edit-modal.active .url-modal-content {
     transform: scale(1);
 }
 
-/* Styl pro nadpis uvnitř modalu (zůstává stejný) */
-.url-modal-content h3 {
-    color: #00ffff; /* Modrá barva pro nadpis */
-    margin-bottom: 20px;
-    font-size: 1.4rem;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Záře */
+/* Styl pro vnitřní obsahovou krabici modalu */
+.url-modal-content {
+    background: linear-gradient(145deg, 
+        #1a1a2e 0%, 
+        #16213e 50%, 
+        #1a1a2e 100%);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 550px;
+    width: 90%;
+    position: relative;
+    color: #ffffff;
+    text-align: center;
+    
+    /* Vylepšené stíny */
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 40px rgba(0, 255, 255, 0.4),
+        0 0 80px rgba(139, 92, 246, 0.3);
+    
+    /* Animace obsahu */
+    transform: translateY(30px) scale(0.9);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Styly pro input pole uvnitř modalu (zůstávají stejné) */
+/* Animovaný border gradient */
+.url-modal-content::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        #00ffff 0%, 
+        #8b5cf6 25%, 
+        #00ffff 50%, 
+        #8b5cf6 75%, 
+        #00ffff 100%);
+    background-size: 300% 300%;
+    border-radius: 22px;
+    z-index: -1;
+    animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* Animace border gradientu */
+@keyframes borderGlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Animace obsahu při aktivaci modalu */
+#url-edit-modal.active .url-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+/* Styl pro nadpis uvnitř modalu */
+.url-modal-content h3 {
+    background: linear-gradient(45deg, #00ffff, #8b5cf6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #00ffff; /* Fallback pro nepodporované prohlížeče */
+    margin-bottom: 30px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    position: relative;
+}
+
+/* Dekorativní linka pod nadpisem */
+.url-modal-content h3::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffff, transparent);
+    border-radius: 2px;
+}
+
+/* Vylepšené styly pro input pole */
 .url-modal-content input[type="text"],
 .url-modal-content input[type="url"] {
     width: 100%;
-    padding: 12px;
+    padding: 16px 20px;
     margin: 15px 0;
-    font-weight: bold;
-    border: 2px solid #333; /* Tmavý rámeček */
-    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: #2a2a3e;
     color: #ffffff;
-    font-size: 1.2rem;
-    font-family: 'Courier New', monospace;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    caret-color: #00ffff; /* Barva kurzoru */
-    background-color: #333;
+    font-size: 1.1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    caret-color: #00ffff;
+    box-sizing: border-box;
 }
 
-/* Fokus efekt pro input pole (zůstává stejný) */
+/* Placeholder styl */
+.url-modal-content input::placeholder {
+    color: #b0b0b0;
+    opacity: 0.7;
+}
+
+/* Fokus efekt pro input pole */
 .url-modal-content input[type="text"]:focus,
 .url-modal-content input[type="url"]:focus {
     outline: none;
     border-color: #00ffff;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-    animation: input-glow 2s infinite;
+    background: rgba(42, 42, 62, 0.8);
+    box-shadow: 
+        0 0 0 3px rgba(0, 255, 255, 0.2),
+        0 0 20px rgba(0, 255, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
-/* Styly pro popisky (labels) (zůstávají stejné) */
+/* Hover efekt pro input pole */
+.url-modal-content input[type="text"]:hover,
+.url-modal-content input[type="url"]:hover {
+    border-color: rgba(0, 255, 255, 0.5);
+    background: rgba(42, 42, 62, 0.9);
+}
+
+/* Styly pro popisky (labels) */
 .url-modal-content label {
     display: block;
     text-align: left;
     color: #00ffff;
     font-size: 1rem;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
 }
 
-/* Kontejner pro tlačítka uvnitř modalu (zůstává stejný) */
+/* Kontejner pro tlačítka uvnitř modalu */
 .url-modal-buttons {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     justify-content: center;
-    margin-top: 25px;
+    margin-top: 35px;
     flex-wrap: wrap;
 }
 
-/* Responzivní styly (zůstávají stejné) */
-@media (max-width: 600px) {
+/* Základní styl tlačítek (pokud ho ještě nemáš) */
+.url-modal-buttons .button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    min-width: 120px;
+}
+
+/* Primární tlačítko */
+.url-modal-buttons .button.primary {
+    background: linear-gradient(45deg, #00ffff, #8b5cf6);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 255, 255, 0.4);
+}
+
+.url-modal-buttons .button.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(0, 255, 255, 0.4);
+}
+
+/* Sekundární tlačítko */
+.url-modal-buttons .button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.url-modal-buttons .button.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Efekt vlnění pro tlačítka */
+.url-modal-buttons .button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.url-modal-buttons .button:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* === RESPONZIVNÍ STYLY PRO RŮZNÁ ZAŘÍZENÍ === */
+
+/* Desktop Large (1200px+) */
+@media (min-width: 1200px) {
     .url-modal-content {
-        margin: 20px;
-        padding: 20px;
-        max-width: none;
-        width: calc(100% - 40px);
+        max-width: 600px;
+        padding: 50px;
     }
-    .url-modal-buttons {
-        flex-direction: column;
-        align-items: center;
+    
+    .url-modal-content h3 {
+        font-size: 1.8rem;
     }
-    .url-modal-buttons .button {
-        width: 100%;
-        max-width: 200px;
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        font-size: 1.2rem;
+        padding: 18px 24px;
     }
 }
 
+/* Desktop Standard (992px - 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .url-modal-content {
+        max-width: 550px;
+        padding: 40px;
+    }
+}
+
+/* Tablet Landscape (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    #url-edit-modal {
+        padding: 20px;
+    }
+    
+    .url-modal-content {
+        max-width: 500px;
+        width: 95%;
+        padding: 35px 30px;
+        border-radius: 18px;
+    }
+    
+    .url-modal-content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        padding: 14px 18px;
+        font-size: 1.1rem;
+        margin: 12px 0;
+    }
+    
+    .url-modal-buttons {
+        gap: 18px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .url-modal-buttons .button {
+        min-width: 140px;
+        padding: 14px 20px;
+    }
+    
+    /* Přizpůsobení pro landscape orientaci */
+    @media (orientation: landscape) and (max-height: 600px) {
+        .url-modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px 30px;
+        }
+        
+        .url-modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        
+        .url-modal-buttons {
+            margin-top: 20px;
+        }
+    }
+}
+
+/* Tablet Portrait (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+    #url-edit-modal {
+        padding: 15px;
+    }
+    
+    .url-modal-content {
+        max-width: 450px;
+        width: 95%;
+        padding: 30px 25px;
+        border-radius: 16px;
+    }
+    
+    .url-modal-content h3 {
+        font-size: 1.4rem;
+        margin-bottom: 25px;
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        padding: 14px 16px;
+        font-size: 1rem;
+        margin: 12px 0;
+        border-radius: 10px;
+    }
+    
+    .url-modal-content label {
+        font-size: 0.95rem;
+        margin-top: 12px;
+        margin-bottom: 6px;
+    }
+    
+    .url-modal-buttons {
+        flex-direction: row;
+        gap: 15px;
+        margin-top: 25px;
+        justify-content: center;
+    }
+    
+    .url-modal-buttons .button {
+        flex: 1;
+        max-width: 150px;
+        min-width: 120px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile Large (376px - 480px) */
+@media (min-width: 376px) and (max-width: 480px) {
+    #url-edit-modal {
+        padding: 10px;
+    }
+    
+    .url-modal-content {
+        margin: 10px;
+        padding: 25px 20px;
+        max-width: none;
+        width: calc(100% - 20px);
+        border-radius: 15px;
+    }
+    
+    .url-modal-content h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        padding: 12px 15px;
+        font-size: 1rem;
+        margin: 10px 0;
+    }
+    
+    .url-modal-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-top: 25px;
+    }
+    
+    .url-modal-buttons .button {
+        width: 100%;
+        max-width: none;
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Mobile Standard (320px - 375px) */
+@media (max-width: 375px) {
+    #url-edit-modal {
+        padding: 8px;
+    }
+    
+    .url-modal-content {
+        margin: 8px;
+        padding: 20px 15px;
+        max-width: none;
+        width: calc(100% - 16px);
+        border-radius: 12px;
+    }
+    
+    .url-modal-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 18px;
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        margin: 8px 0;
+    }
+    
+    .url-modal-content label {
+        font-size: 0.9rem;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+    
+    .url-modal-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .url-modal-buttons .button {
+        width: 100%;
+        max-width: none;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Extra Small Mobile (max-width 319px) */
+@media (max-width: 319px) {
+    .url-modal-content {
+        padding: 15px 12px;
+        margin: 5px;
+        width: calc(100% - 10px);
+    }
+    
+    .url-modal-content h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Výškové optimalizace pro krátké obrazovky */
+@media (max-height: 600px) {
+    .url-modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    
+    .url-modal-content h3 {
+        margin-bottom: 15px;
+    }
+    
+    .url-modal-buttons {
+        margin-top: 20px;
+    }
+}
+
+/* Velmi krátké obrazovky (landscape mobily) */
+@media (max-height: 450px) and (orientation: landscape) {
+    #url-edit-modal {
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
+    .url-modal-content {
+        max-height: 95vh;
+        overflow-y: auto;
+        padding: 15px 20px;
+        transform: none !important;
+    }
+    
+    #url-edit-modal.active .url-modal-content {
+        transform: none !important;
+    }
+    
+    .url-modal-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        margin: 8px 0;
+        padding: 10px 15px;
+    }
+    
+    .url-modal-buttons {
+        margin-top: 15px;
+        gap: 10px;
+    }
+    
+    .url-modal-buttons .button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Tmavší varianta pro světlý režim */
+@media (prefers-color-scheme: light) {
+    #url-edit-modal {
+        background: linear-gradient(135deg, 
+            rgba(248, 250, 252, 0.95) 0%, 
+            rgba(226, 232, 240, 0.98) 50%, 
+            rgba(203, 213, 224, 0.95) 100%);
+    }
+    
+    .url-modal-content {
+        background: linear-gradient(145deg, 
+            #f8fafc 0%, 
+            #e2e8f0 50%, 
+            #f8fafc 100%);
+        color: #1a202c;
+        box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(0, 0, 0, 0.05),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            0 0 40px rgba(0, 255, 255, 0.4),
+            0 0 80px rgba(139, 92, 246, 0.3);
+    }
+    
+    .url-modal-content input[type="text"],
+    .url-modal-content input[type="url"] {
+        background: #ffffff;
+        color: #1a202c;
+    }
+    
+    .url-modal-content input::placeholder {
+        color: #4a5568;
+    }
+}
 /* Styly pro rodičovský kontejner obrázku */
 .kontejner-obrazek {
     width: 450px;       /* Pevná šířka kontejneru */
