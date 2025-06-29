@@ -772,137 +772,134 @@ document.addEventListener('DOMContentLoaded', () => {
             transition: background-color 0.2s ease, transform 0.2s ease;
         }
                /*tady ses ani nedostal pokračovat v upravach css až dolu kde je slovo konec*/ 
+        .log-controls .btn-danger {
+            background-color: #dc3545;
+            color: white;
         }
 
-        /* Dodatečné styly pro lepší zobrazení dlouhých textů */
-        .log-message-cell {
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            overflow-wrap: break-word;
-            max-width: 100%;
-            line-height: 1.4;
+        .log-controls .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .log-controls .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .log-controls .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        /* Styly pro tabulku logů */
+        .log-table-container {
+            flex-grow: 1; /* Umožní kontejneru zabírat dostupný prostor */
+            overflow-y: auto; /* Povolí rolování uvnitř tabulky */
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #1a1a1a;
+        }
+
+        #console-log-table {
+            width: 100%;
+            border-collapse: collapse;
             font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
         }
 
-        /* Styly pro zvýraznění syntaxe objektů */
-        .json-object {
-            background-color: #2d2d2d;
-            border-left: 3px solid #007bff;
-            padding: 8px;
-            margin: 4px 0;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            overflow-wrap: break-word;
+        #console-log-table th,
+        #console-log-table td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            text-align: left;
+            vertical-align: top; /* Důležité: text začíná nahoře v buňce */
         }
 
-        .json-key {
-            color: #9cdcfe;
-            font-weight: bold;
+        #console-log-table th {
+            background-color: #333;
+            color: #00ffff;
+            position: sticky; /* Sticky hlavička */
+            top: 0;
+            z-index: 1;
         }
 
-        .json-string {
-            color: #ce9178;
+        #console-log-table tbody tr:nth-child(even) {
+            background-color: #222;
         }
 
-        .json-number {
-            color: #b5cea8;
+        #console-log-table tbody tr:hover {
+            background-color: #3a3a3a;
         }
 
-        .json-boolean {
-            color: #569cd6;
+        /* Styly pro barvy podle typu logu */
+        .log-type-log { color: #f0f0f0; } /* Běžné logy */
+        .log-type-info { color: #87ceeb; } /* Světle modrá pro info */
+        .log-type-warn { color: #ffd700; } /* Zlatá pro varování */
+        .log-type-error { color: #ff6347; } /* Oranžovo-červená pro chyby */
+        .log-type-debug { color: #98fb98; } /* Světle zelená pro debug */
+
+        /* Styly pro text typu v tabulce */
+        .log-type-log-text { color: #f0f0f0; }
+        .log-type-info-text { color: #87ceeb; font-weight: bold; }
+        .log-type-warn-text { color: #ffd700; font-weight: bold; }
+        .log-type-error-text { color: #ff6347; font-weight: bold; }
+        .log-type-debug-text { color: #98fb98; font-weight: bold; }
+
+        /* KLÍČOVÉ STYLY PRO ZALAMOVÁNÍ TEXTU VE VŠECH BUŇKÁCH */
+        .log-cell {
+            word-wrap: break-word;     /* Zalamování dlouhých slov na libovolném místě */
+            white-space: pre-wrap;     /* Zachová zalomení řádků a mezery, ale zalamuje */
+            overflow-wrap: break-word; /* Alternativa/doplněk k word-wrap */
+            max-width: 100%;           /* Zajistí, že buňka nepřeteče svou rodičovskou šířku */
+        }
+        /* Nastavení relativních šířek sloupců pro lepší rozložení */
+        #console-log-table th:nth-child(1),
+        #console-log-table td:nth-child(1) {
+            width: 15%; /* Čas */
+            min-width: 120px; /* Minimální šířka pro čas */
+        }
+        #console-log-table th:nth-child(2),
+        #console-log-table td:nth-child(2) {
+            width: 10%; /* Typ */
+            min-width: 80px; /* Minimální šířka pro typ */
+        }
+        #console-log-table th:nth-child(3),
+        #console-log-table td:nth-child(3) {
+            width: 75%; /* Zpráva - zabere zbytek místa */
         }
 
-        .json-null {
-            color: #808080;
-            font-style: italic;
-        }
 
-        /* Styly pro scrollbar v dark tématu */
-        .log-table-container::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        .log-table-container::-webkit-scrollbar-track {
-            background: #2d2d2d;
-            border-radius: 6px;
-        }
-
-        .log-table-container::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 6px;
-            border: 2px solid #2d2d2d;
-        }
-
-        .log-table-container::-webkit-scrollbar-thumb:hover {
-            background: #777;
-        }
-
-        /* Animace pro nové řádky */
-        .log-row-new {
-            animation: slideIn 0.3s ease-out;
-            background-color: #3a3a3a !important;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Styly pro filtrování podle typu */
-        .log-filter-active .log-type-log { display: none; }
-        .log-filter-active .log-type-info { display: none; }
-        .log-filter-active .log-type-warn { display: none; }
-        .log-filter-active .log-type-error { display: none; }
-        .log-filter-active .log-type-debug { display: none; }
-
-        .log-filter-active.show-log .log-type-log { display: table-row; }
-        .log-filter-active.show-info .log-type-info { display: table-row; }
-        .log-filter-active.show-warn .log-type-warn { display: table-row; }
-        .log-filter-active.show-error .log-type-error { display: table-row; }
-        .log-filter-active.show-debug .log-type-debug { display: table-row; }
-
-        /* Responzivní úpravy pro velmi malé obrazovky */
-        @media (max-width: 480px) {
+        /* Responzivní design */
+        @media (max-width: 768px) {
             #console-log-modal .modal-content {
-                width: 98%;
-                height: 90%;
-                margin: 5% 1%;
+                width: 95%;
+                padding: 15px;
             }
-            
-            .modal-header {
-                padding: 10px 15px;
-                font-size: 1em;
-            }
-            
-            .log-controls {
-                padding: 10px 15px;
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .log-controls button {
-                width: 100%;
-                margin: 2px 0;
-            }
-            
             #console-log-table {
-                font-size: 0.75em;
+                font-size: 0.8em;
             }
-            
             #console-log-table th,
             #console-log-table td {
-                padding: 6px;
+                padding: 8px;
+            }
+            .log-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            /* Na mobilu můžeme povolit menší min-width, nebo se spolehnout na overflow-x na kontejneru */
+            #console-log-table th:nth-child(1),
+            #console-log-table td:nth-child(1) {
+                min-width: 90px;
+            }
+            #console-log-table th:nth-child(2),
+            #console-log-table td:nth-child(2) {
+                min-width: 60px;
             }
         }
     `;
     document.head.appendChild(style);
 
-    console.log('✅ Console-log.js: CSS styly inicializovány a připraveny.');
+    console.log('✅ Conzol-log.js: Systém inicializován a připraven.');
 });
+ 
