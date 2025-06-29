@@ -1858,7 +1858,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
      <section id="contacts">
     <div id="cloude-projek-test">
         <h2>Moje projekty</h2>
-        
+        <p>Testovací verze s novými názvy bez konfliktů.</p>
 
         <div class="portfolio-items">
             <div class="portfolio-item" data-item-id="project-genesis" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative;">
@@ -2377,14 +2377,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     const initialImageUrls = [ ];
        
 
-    let initialExternalLinksData = [
-        { title: 'Claude AI', url: 'https://claude.ai/' }, { title: 'SledujSerialy', url: 'https://sledujserialy.sx/' },
-        { title: 'Kukaj.me', url: 'https://serial.kukaj.me/' }, { title: 'ProSebe.cz', url: 'https://prosebe.cz/user/project' },
-        { title: 'Populace.cz', url: 'https://www.populace.cz' }, { title: 'My-Map.eu', url: 'https://www.my-map.eu/odmeny' },
-        { title: 'Národní Panel', url: 'https://www.narodnipanel.cz/?backlink=expx2' }, { title: 'Lifepoints Panel', url: 'https://app.lifepointspanel.com/en-US/login' },
-        { title: 'Voyo', url: 'https://voyo.nova.cz/' }, { title: 'Přehraj.to', url: 'https://prehrajto.cz/' },
-        { title: 'SledovaniTV.cz', url: 'https://sledovanitv.cz/' }, { title: 'Bombuj', url: 'https://www.bombuj.si/' },
-    ];
+    let initialExternalLinksData = [ ];
           //tady začíná hlavní logika
     // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
     async function saveDataToFirestore() {
