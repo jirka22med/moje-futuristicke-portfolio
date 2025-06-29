@@ -1741,6 +1741,21 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     object-fit: cover;  /* MEGA KLÍČOVÉ! Zachová poměr stran a vyplní kontejner, ořízne přesahy */
     display: block;     /* Pomáhá s odstraněním nežádoucích mezer */
 }
+    .custom-button {
+    background-color: #007bff; /* Pěkná modrá barva */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.custom-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
     </style>
 </head>
 <body style="visibility: hidden;">
@@ -1794,6 +1809,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         <button id="clear-all-data-btn" class="button btn-danger" >🗑️ Vymazat vše</button>
         <button id="export-data-btn" class="button btn-secondary" >📤 Export</button>
         <button id="import-data-btn" class="button btn-secondary" >📥 Import</button>
+        <button id="open-console-log-modal-btn" class="button custom-button">Zobrazit konzoli</button>
         <button id="logout-button" class="button btn-danger hidden" onclick="signOut()">Odhlásit se</button>
     </div>
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
@@ -2153,7 +2169,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
  
-
+<script src="conzol-log.js"></script>
 <script>
  // --- Supabase Konstanty pro AUTENTIZACI ---
     const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
