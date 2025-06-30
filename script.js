@@ -955,14 +955,14 @@ function openImageModal(index) {
     // console.log(`🚀 Otevírám modal s obrázkem na indexu: ${index}`);
 
     if (galleryImagesData.length === 0) {
-        // console.warn('⚠️ Galerie je prázdná!');
+        
         return;
     }
 
     // OPRAVA: Bezpečná kontrola a korekce indexu
     const safeIndex = getSafeIndex(index);
     if (safeIndex === -1) {
-        // console.error('❌ Nelze zobrazit obrázek - prázdná galerie');
+         
         return;
     }
 
@@ -972,7 +972,7 @@ function openImageModal(index) {
     const modalImg = document.getElementById('modal-img');
 
     if (!modal || !modalImg) {
-        // console.error('❌ Modal nebo modalImg element nenalezen!');
+       
         return;
     }
 
@@ -989,13 +989,13 @@ function openImageModal(index) {
         modalImg.src = finalUrl; // Nastaví src až po načtení do imgLoader
         modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
         modalImg.style.opacity = '1'; // Zprůhlední obrázek
-        // console.log(`✅ Obrázek načten do modalu: ${currentImage.name}`);
+        
         // Pre-načtení sousedních obrázků pro plynulou navigaci
         preloadNeighboringImages();
     };
 
     imgLoader.onerror = function() {
-        // console.error(`❌ Chyba načítání obrázku v modalu: ${currentImage.name}`);
+         
         modalImg.src = 'https://placehold.co/800x600/cccccc/ffffff?text=Obrázek+nelze+načíst'; // Zástupný obrázek při chybě
         modalImg.alt = `❌ Chyba načítání: ${currentImage.name}`;
         modalImg.style.opacity = '1';
@@ -1104,7 +1104,7 @@ function addPositionIndicator(index, total, name) {
 // HLAVNÍ OPRAVA: Kompletně přepsaná navigace
 function navigateImageModal(direction) {
     if (galleryImagesData.length === 0) {
-        // console.warn('⚠️ Nelze navigovat - prázdná galerie!');
+        
         return;
     }
 
@@ -1236,7 +1236,7 @@ function setupGallery() {
 function updateGalleryDisplay() {
     const container = document.getElementById('gallery-container');
     if (!container) {
-        // console.error('❌ Gallery container nenalezen!');
+         
         return;
     }
 
@@ -1296,33 +1296,23 @@ function updateGalleryDisplay() {
 
 // VYLEPŠENÁ DEBUG FUNKCE - Nyní by měla být volána jen pro explicitní ladění
 function debugGallery() {
-   // console.log('🔍 === DEBUG GALERIE ===');
-    //console.log(`📊 Celkem obrázků: ${galleryImagesData.length}`);
-   // console.log(`📍 Aktuální index: ${currentModalImageIndex}`);
-   // console.log(`🎯 Aktuální obrázek: ${galleryImagesData[currentModalImageIndex]?.name || 'ŽÁDNÝ/NEPLATNÝ'}`);
-   // console.log(`✅ Index je platný: ${currentModalImageIndex >= 0 && currentModalImageIndex < galleryImagesData.length}`);
+   
 
-   // console.log('📋 Seznam všech obrázků:');
+    
     galleryImagesData.forEach((img, index) => {
         const indicator = index === currentModalImageIndex ? '👉 AKTUÁLNÍ' : '  ';
-       // console.log(`${indicator} [${index}]: ${img.name} - ${img.url.substring(0, 50)}...`);
+      
     });
 
-   // console.log('🧪 Simulace navigace:');
+ 
     if (galleryImagesData.length > 0) {
         const prevIndex = getSafeIndex(currentModalImageIndex - 1);
         const nextIndex = getSafeIndex(currentModalImageIndex + 1);
-        //console.log(`⬅️ Předchozí: index ${prevIndex} (${galleryImagesData[prevIndex]?.name || 'N/A'})`);
-       // console.log(`➡️ Další: index ${nextIndex} (${galleryImagesData[nextIndex]?.name || 'N/A'})`);
+        
+       
     }
 
-    //console.log('🔧 Stav DOM elementů:');
-    //console.log(`Modal existuje: ${!!document.getElementById('image-modal')}`);
-    //console.log(`Modal img existuje: ${!!document.getElementById('modal-img')}`);
-   // console.log(`Prev button existuje: ${!!document.getElementById('prev-image-btn')}`);
-  //  console.log(`Next button existuje: ${!!document.getElementById('next-image-btn')}`);
-
-  //  console.log('======================');
+    
 }
 
 // POMOCNÉ FUNKCE (zůstávají stejné)
