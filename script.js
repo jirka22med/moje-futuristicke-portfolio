@@ -981,8 +981,10 @@ function openImageModal(index) {
     console.log(`📸 Zobrazuji obrázek: "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
 
     // Loading indikátor a plynulý přechod
-    modalImg.style.opacity = '0.5'; // Ztmaví obrázek během načítání
-    modalImg.src = ''; // Vyprázdní src pro nové načtení
+    // Nastavíme průhlednost a zajistíme, že tranzice proběhne.
+    // Dříve zde bylo modalImg.src = ''; což způsobovalo zbytečné reflowy.
+    // Nyní necháme starý obrázek s nižší průhledností, dokud se nenačte nový.
+    modalImg.style.opacity = '0.5';
 
     // Použijeme Image objekt pro pre-načítání a zajištění, že se obrázek zobrazí až po plném načtení
     const imgLoader = new Image();
@@ -991,7 +993,7 @@ function openImageModal(index) {
     imgLoader.onload = function() {
         modalImg.src = finalUrl; // Nastaví src až po načtení do imgLoader
         modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
-        modalImg.style.opacity = '1'; // Zprůhlední obrázek
+        modalImg.style.opacity = '1'; // Zprůhlední obrázek, spustí se tranzice
         console.log(`✅ Obrázek načten do modalu: ${currentImage.name}`);
         // Pre-načtení sousedních obrázků pro plynulou navigaci
         preloadNeighboringImages();
@@ -1001,7 +1003,7 @@ function openImageModal(index) {
         console.error(`❌ Chyba načítání obrázku v modalu: ${currentImage.name}`);
         modalImg.src = 'https://placehold.co/800x600/cccccc/ffffff?text=Obrázek+nelze+načíst'; // Zástupný obrázek při chybě
         modalImg.alt = `❌ Chyba načítání: ${currentImage.name}`;
-        modalImg.style.opacity = '1';
+        modalImg.style.opacity = '1'; // Zprůhlední i při chybě
     };
 
     imgLoader.src = finalUrl; // Spustí načítání do skrytého Image objektu
