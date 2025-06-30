@@ -79,13 +79,7 @@
 
             ' currentModalImageIndex',
             ' 📋 Seznam všech obrázků',
-            '🎭 APRÍLOVÁ NAVIGACE START: direction=1',
-
-'📍 Před: currentModalImageIndex=0',
-
-'📍 Po: currentModalImageIndex=0',
-
-'🎭 APRÍLÁ NAVIGACE END',
+            
         ];
 
         // Fráze, které mají vždy projít, i když obsahují filtrovaná slova
@@ -155,9 +149,30 @@
         }
 
         // Přepíšeme standardní konzolové metody
+        // Přepíšeme standardní konzolové metody
         console.log = function(...args) {
-            originalConsole.log.apply(console, args);
-            addLogEntry('LOG', String(args[0]), args.slice(1));
+            originalConsole.log.apply(console, args); // Toto loguje do skutečné konzole prohlížeče
+
+            const logMessage = String(args[0]); // Získání textu zprávy
+
+            // =========================================================================
+            // ZDE VLOŽÍŠ SVOJI FILTRAČNÍ LOGIKU, JIŘÍKU!
+            // Použij ten seznam prefixů, které jsem ti vypsal.
+            // Příklad (musíš doplnit všechny své prefixy z galerie a aprílové navigace):
+            if (
+                !logMessage.startsWith('🔍 === DEBUG GALERIE ===') &&
+                !logMessage.startsWith('📊 Celkem obrázků:') &&
+                !logMessage.startsWith('📍 Aktuální index:') &&
+                !logMessage.startsWith('🎯 Aktuální obrázek:') &&
+                // ... DALŠÍ PREFIXY, KTERÉ CHCEŠ ODSTINĚT (těch 65 položek) ...
+                !logMessage.startsWith('🎭 APRÍLOVÁ NAVIGACE START:') &&
+                !logMessage.startsWith('📍 Před: currentModalImageIndex=')
+                // ... atd.
+            ) {
+                // Pokud zpráva NENÍ na blacklistu, pak ji přidáme do tvého interního logovacího systému
+                addLogEntry('LOG', logMessage, args.slice(1));
+            }
+            // =========================================================================
         };
         console.warn = function(...args) {
             originalConsole.warn.apply(console, args);
