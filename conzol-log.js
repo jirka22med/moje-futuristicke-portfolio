@@ -399,22 +399,22 @@
             #jirik-log-table th:nth-child(1),
             #jirik-log-table td:nth-child(1) {
                 width: 80% !important; /* Čas */
-                min-width: 150px !important; /* Minimální šířka pro čas */
+                min-width: 300px !important; /* Minimální šířka pro čas */
             }
             #jirik-log-table th:nth-child(2),
             #jirik-log-table td:nth-child(2) {
                 width: 80% !important; /* Typ */
-                min-width: 150px !important; /* Minimální šířka pro typ */
+                min-width: 300px !important; /* Minimální šířka pro typ */
             }
             #jirik-log-table th:nth-child(3),
             #jirik-log-table td:nth-child(3) {
                 width: 80% !important; /* Zpráva */
-                min-width: 150px !important; /* Minimální šířka pro typ */
+                min-width: 300px !important; /* Minimální šířka pro typ */
             }
              #jirik-log-table th:nth-child(4),
             #jirik-log-table td:nth-child(4) {
                 width: 80% !important; /* Akce */
-                min-width: 150px !important;
+                min-width: 300px !important;
             }
 
 
@@ -429,22 +429,22 @@
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
             }
 
@@ -469,22 +469,22 @@
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
             }
 
@@ -501,22 +501,22 @@
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
             }
 
@@ -533,22 +533,22 @@
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
                     width: 160px !important;
-                    min-width: 160px !important;
+                    min-width: 300px !important;
                 }
             }
         `;
