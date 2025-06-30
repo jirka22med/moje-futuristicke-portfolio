@@ -418,6 +418,36 @@
 
 
             /* Responzivní design */
+            
+            /* Tablety na výšku (do 1024px) */
+            @media (max-width: 1024px) {
+                #jirik-log-table th,
+                #jirik-log-table td {
+                    height: 25px !important;
+                }
+                #jirik-log-table th:nth-child(1),
+                #jirik-log-table td:nth-child(1) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(2),
+                #jirik-log-table td:nth-child(2) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(3),
+                #jirik-log-table td:nth-child(3) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(4),
+                #jirik-log-table td:nth-child(4) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+            }
+
+            /* Tablety menší (do 768px) */
             @media (max-width: 768px) {
                 .jirik-modal-content {
                     width: 100% !important;
@@ -428,7 +458,8 @@
                 }
                 #jirik-log-table th,
                 #jirik-log-table td {
-                    padding: 30px !important;
+                    padding: 25px !important;
+                    height: 25px !important;
                 }
                 .jirik-log-controls {
                     flex-direction: column !important;
@@ -436,11 +467,87 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    min-width: 250px !important;
+                    width: 160px !important;
+                    min-width: 160px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    min-width: 250px !important;
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(3),
+                #jirik-log-table td:nth-child(3) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(4),
+                #jirik-log-table td:nth-child(4) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+            }
+
+            /* Mobily větší (do 480px) */
+            @media (max-width: 480px) {
+                .jirik-modal-content {
+                    padding: 15px !important;
+                }
+                #jirik-log-table th,
+                #jirik-log-table td {
+                    padding: 15px !important;
+                    height: 25px !important;
+                }
+                #jirik-log-table th:nth-child(1),
+                #jirik-log-table td:nth-child(1) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(2),
+                #jirik-log-table td:nth-child(2) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(3),
+                #jirik-log-table td:nth-child(3) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(4),
+                #jirik-log-table td:nth-child(4) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+            }
+
+            /* Mobily malé (do 320px) */
+            @media (max-width: 320px) {
+                .jirik-modal-content {
+                    padding: 10px !important;
+                }
+                #jirik-log-table th,
+                #jirik-log-table td {
+                    padding: 10px !important;
+                    height: 25px !important;
+                }
+                #jirik-log-table th:nth-child(1),
+                #jirik-log-table td:nth-child(1) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(2),
+                #jirik-log-table td:nth-child(2) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(3),
+                #jirik-log-table td:nth-child(3) {
+                    width: 160px !important;
+                    min-width: 160px !important;
+                }
+                #jirik-log-table th:nth-child(4),
+                #jirik-log-table td:nth-child(4) {
+                    width: 160px !important;
+                    min-width: 160px !important;
                 }
             }
         `;
