@@ -424,7 +424,7 @@
             @media (max-width: 1024px) {
                 #jirik-log-table th,
                 #jirik-log-table td {
-                    height: 25px !important;
+                    height: 100px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
