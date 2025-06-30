@@ -411,7 +411,7 @@
             #jirik-log-table th:nth-child(3),
             #jirik-log-table td:nth-child(3) {
                 width: 100% !important; /* Zpráva */
-                min-width: 300px !important; /* Minimální šířka pro typ */
+                min-width: 150px !important; /* Minimální šířka pro typ */
                 white-space: nowrap !important;
             }
              #jirik-log-table th:nth-child(4),
