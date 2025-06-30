@@ -1099,8 +1099,8 @@ function navigateImageModal(direction) {
     let newIndex = currentModalImageIndex + direction;
     newIndex = getSafeIndex(newIndex);
     
-    console.log(`➡️ Změna indexu: ${currentModalImageIndex} → ${newIndex}`);
-    console.log(`🖼️ Nový obrázek: "${galleryImagesData[newIndex]?.name || 'NEZNÁMÝ'}"`);
+   // console.log(`➡️ Změna indexu: ${currentModalImageIndex} → ${newIndex}`);
+   // console.log(`🖼️ Nový obrázek: "${galleryImagesData[newIndex]?.name || 'NEZNÁMÝ'}"`);
     
     // Plynulý přechod
     const modalImg = document.getElementById('modal-img');
@@ -1123,7 +1123,7 @@ function closeImageModal() {
     hideModal(modal);
     
     // Reset indexu není potřeba - zůstává pro příští otevření
-    console.log(`💾 Index zůstává: ${currentModalImageIndex} pro příští otevření`);
+  //  console.log(`💾 Index zůstává: ${currentModalImageIndex} pro příští otevření`);
 }
 
 // VYLEPŠENÉ KLÁVESOVÉ ZKRATKY
@@ -1160,7 +1160,7 @@ function setupKeyboardNavigation() {
             event.stopPropagation();
         }
         
-        console.log(`⌨️ Klávesa stisknuta: ${event.key}`);
+        //console.log(`⌨️ Klávesa stisknuta: ${event.key}`);
         
         switch(event.key) {
             case 'ArrowLeft':
@@ -1181,7 +1181,7 @@ function setupKeyboardNavigation() {
 
 // OPRAVENÁ FUNKCE SETUP S LEPŠÍMI EVENT LISTENERY
 function setupGallery() {
-    console.log('🚀 Inicializuji galerii s opraveným indexováním...');
+   // console.log('🚀 Inicializuji galerii s opraveným indexováním...');
     
     const addBtn = document.getElementById('addImageUrlBtn');
     const closeBtn = document.getElementById('close-modal-btn');
@@ -1206,7 +1206,7 @@ function setupGallery() {
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('⬅️ Klik na předchozí tlačítko');
+          //  console.log('⬅️ Klik na předchozí tlačítko');
             navigateImageModal(-1);
         });
         console.log('✅ Previous button listener nastaven');
@@ -1217,9 +1217,9 @@ function setupGallery() {
             e.preventDefault();
             e.stopPropagation();
             console.log('➡️ Klik na další tlačítko');
-            navigateImageModal(1);
+           // navigateImageModal(1);
         });
-        console.log('✅ Next button listener nastaven');
+       // console.log('✅ Next button listener nastaven');
     }
     
     // Ostatní listenery
