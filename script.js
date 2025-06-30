@@ -2294,13 +2294,13 @@ document.getElementById('cancel-edit-portfolio-btn').addEventListener('click', f
     // Přidej tohle do konzole a pak zkus navigaci
 let originalNavigate = navigateImageModal;
 navigateImageModal = function(direction) {
-    console.log(`🎭 APRÍLOVÁ NAVIGACE START: direction=${direction}`);
-    console.log(`📍 Před: currentModalImageIndex=${currentModalImageIndex}`);
+    //console.log(`🎭 APRÍLOVÁ NAVIGACE START: direction=${direction}`);
+    //console.log(`📍 Před: currentModalImageIndex=${currentModalImageIndex}`);
     
     let result = originalNavigate.call(this, direction);
     
-    console.log(`📍 Po: currentModalImageIndex=${currentModalImageIndex}`);
-    console.log(`🎭 APRÍLOVÁ NAVIGACE END`);
+    //console.log(`📍 Po: currentModalImageIndex=${currentModalImageIndex}`);
+    //console.log(`🎭 APRÍLOVÁ NAVIGACE END`);
     
     return result;
 };
