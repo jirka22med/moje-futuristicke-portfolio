@@ -408,7 +408,7 @@
             }
             #jirik-log-table th:nth-child(3),
             #jirik-log-table td:nth-child(3) {
-                width: 65% !important; /* Zpráva */
+                width: 80% !important; /* Zpráva */
             }
              #jirik-log-table th:nth-child(4),
             #jirik-log-table td:nth-child(4) {
