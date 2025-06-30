@@ -428,22 +428,22 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    height: 300px !important;
+                    height: 500px !important;
                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    height: 300px !important;
+                    height: 500px !important;
                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
             }
@@ -468,22 +468,22 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                   height: 300px !important;
+                   height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    height: 300px !important;
+                   height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    height: 300px !important;
+                    height: 500px !important;
                     max-width: 25px !important;
                 }
             }
@@ -500,17 +500,17 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                   height: 300px !important;
+                   height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
@@ -532,22 +532,22 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    height: 300px !important;
+                    height: 500px !important;
                      max-width: 25px !important;
                 }
             }
