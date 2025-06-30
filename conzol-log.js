@@ -81,8 +81,7 @@
             'Registrace proběhla úspěšně!',
             'Zkontrolujte svůj email pro potvrzení registrace.',
             'Byli jste úspěšně odhlášeni.',
-            '✅ Zobrazení galerie aktualizováno', // Důležité pro vizuální potvrzení
-            '🔄 Aktualizuji zobrazení galerie...'
+            
         ];
 
         /**
