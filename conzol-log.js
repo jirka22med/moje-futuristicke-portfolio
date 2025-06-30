@@ -168,7 +168,7 @@
             <div id="jirik-modal" class="jirik-modal-overlay">
                 <div class="jirik-modal-content">
                     <span class="jirik-close-button" id="jirik-close-button">&times;</span>
-                    <h3>Výpis Konzole (Jiřík)</h3>
+                    <h5>Výpis Konzole (Jiřík)</h5>
                     <div class="jirik-log-controls">
                         <button id="jirik-clear-button" class="jirik-button jirik-btn-danger">Vyčistit log</button>
                         <button id="jirik-export-button" class="jirik-button jirik-btn-secondary">Extrahovat log (HTML)</button>
@@ -257,7 +257,7 @@
                 cursor: pointer !important;
             }
 
-            h3 {
+            h5 {
                 color: #00ffff !important;
                 text-align: center !important;
                 margin-top: 0 !important;
