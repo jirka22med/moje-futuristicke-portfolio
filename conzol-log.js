@@ -436,11 +436,11 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    min-width: 190px !important;
+                    min-width: 250px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    min-width: 190px !important;
+                    min-width: 250px !important;
                 }
             }
         `;
