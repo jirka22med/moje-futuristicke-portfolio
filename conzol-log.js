@@ -377,7 +377,7 @@
             }
 
             .jirik-log-message-cell {
-                word-break: break-word !important; /* Dlouhé zprávy se zalomí */
+            /*    word-break: break-word !important;  Dlouhé zprávy se zalomí */
             }
 
             .jirik-copy-log-btn {
