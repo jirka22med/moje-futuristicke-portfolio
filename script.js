@@ -1110,7 +1110,7 @@ function navigateImageModal(direction) {
         
         setTimeout(() => {
             openImageModal(newIndex);
-        }, 50);
+        }, 0);
     } else {
         openImageModal(newIndex);
     }
