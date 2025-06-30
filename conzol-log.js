@@ -399,13 +399,13 @@
             #jirik-log-table th:nth-child(1),
             #jirik-log-table td:nth-child(1) {
                 width: 50% !important; /* Čas */
-                min-width: 300px !important; /* Minimální šířka pro čas */
+                min-width: 150px !important; /* Minimální šířka pro čas */
                 white-space: nowrap !important;
             }
             #jirik-log-table th:nth-child(2),
             #jirik-log-table td:nth-child(2) {
                 width: 50% !important; /* Typ */
-                min-width: 300px !important; /* Minimální šířka pro typ */
+                min-width: 150px !important; /* Minimální šířka pro typ */
                 white-space: nowrap !important;
             }
             #jirik-log-table th:nth-child(3),
@@ -417,7 +417,7 @@
              #jirik-log-table th:nth-child(4),
             #jirik-log-table td:nth-child(4) {
                 width: 50% !important; /* Akce */
-                min-width: 300px !important;
+                min-width: 150px !important;
                 white-space: nowrap !important;
             }
 
