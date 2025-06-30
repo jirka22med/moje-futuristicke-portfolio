@@ -72,55 +72,14 @@
             'Chyba při registraci:',
             'Chyba při přihlašování:',
             'Inicializace editoru HTML',
-            '🎭 APRÍLOVÁ NAVIGACE END',
-            '📍 Před: currentModalImageIndex=1',
-            '🎭 APRÍLOVÁ NAVIGACE START: direction=1',
+            ' 📊 Celkem obrázků',
+            ' 📍 Aktuální index',
+            '🎯 Aktuální obrázek ',
+            ' ✅ Index je platný',
 
-            '📍 Před: currentModalImageIndex=0',
-
-'📍 Před: currentModalImageIndex=1',
-
-'📍 Před: currentModalImageIndex=2',
-
-'📍 Před: currentModalImageIndex=3',
-
-'📍 Před: currentModalImageIndex=4',
-
-'📍 Před: currentModalImageIndex=5',
-
-'📍 Před: currentModalImageIndex=6',
-
-'📍 Před: currentModalImageIndex=7',
-
-'📍 Před: currentModalImageIndex=8',
-
-'📍 Před: currentModalImageIndex=9',
-
-'📍 Před: currentModalImageIndex=10',
-
-'📍 Před: currentModalImageIndex=11',
-
-'📍 Před: currentModalImageIndex=12',
-
-'📍 Před: currentModalImageIndex=13',
-
-'📍 Před: currentModalImageIndex=14',
-
-'📍 Před: currentModalImageIndex=15',
-
-'📍 Před: currentModalImageIndex=16',
-
-'📍 Před: currentModalImageIndex=17',
-
-'📍 Před: currentModalImageIndex=18',
-
-'📍 Před: currentModalImageIndex=19',
-
-'📍 Před: currentModalImageIndex=20',
-
-'📍 Před: currentModalImageIndex=21',
-
-'📍 Před: currentModalImageIndex=22',
+            ' currentModalImageIndex',
+            ' 📋 Seznam všech obrázků',
+            
         ];
 
         // Fráze, které mají vždy projít, i když obsahují filtrovaná slova
