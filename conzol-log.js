@@ -496,26 +496,26 @@
                 #jirik-log-table th,
                 #jirik-log-table td {
                     padding: 15px !important;
-                    height: 25px !important;
+                    height: 250px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    height: 25px !important;
+                    height: 250px !important;
                      max-width: 500px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                   height: 25px !important;
+                    height: 250px !important;
                      max-width: 500px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    height: 25px !important;
+                    height: 250px !important;
                      max-width: 500px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    height: 25px !important;
+                     height: 250px !important;
                      max-width: 500px !important;
                 }
             }
@@ -528,26 +528,26 @@
                 #jirik-log-table th,
                 #jirik-log-table td {
                     padding: 10px !important;
-                    height: 25px !important;
+                     height: 250px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    height: 25px !important;
+                    height: 250px !important;
                      max-width: 500px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    height: 25px !important;
+                     height: 250px !important;
                      max-width: 500px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    height: 25px !important;
+                     height: 250px !important;
                      max-width: 500px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    height: 25px !important;
+                     height: 250px !important;
                      max-width: 500px !important;
                 }
             }
