@@ -420,7 +420,7 @@
             /* Responzivní design */
             @media (max-width: 768px) {
                 .jirik-modal-content {
-                    width: 95% !important;
+                    width: 100% !important;
                     padding: 15px !important;
                 }
                 #jirik-log-table {
@@ -428,7 +428,7 @@
                 }
                 #jirik-log-table th,
                 #jirik-log-table td {
-                    padding: 8px !important;
+                    padding: 10px !important;
                 }
                 .jirik-log-controls {
                     flex-direction: column !important;
@@ -436,11 +436,11 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    min-width: 120px !important;
+                    min-width: 130px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    min-width: 60px !important;
+                    min-width: 120px !important;
                 }
             }
         `;
