@@ -428,30 +428,30 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                    max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                    max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
             }
 
             /* Tablety menší (do 768px) */
             @media (max-width: 768px) {
                 .jirik-modal-content {
-                    width: 100% !important;
+                    height: 300px !important;
                     padding: 30px !important;
                 }
                 #jirik-log-table {
@@ -468,23 +468,23 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                   height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                    max-width: 25px !important;
                 }
             }
 
@@ -500,23 +500,23 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                   height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
             }
 
@@ -532,23 +532,23 @@
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(3),
                 #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
                 #jirik-log-table th:nth-child(4),
                 #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 300px !important;
+                    height: 300px !important;
+                     max-width: 25px !important;
                 }
             }
         `;
