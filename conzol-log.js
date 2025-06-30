@@ -79,7 +79,13 @@
 
             ' currentModalImageIndex',
             ' 📋 Seznam všech obrázků',
-            
+            '🎭 APRÍLOVÁ NAVIGACE START: direction=1',
+
+'📍 Před: currentModalImageIndex=0',
+
+'📍 Po: currentModalImageIndex=0',
+
+'🎭 APRÍLÁ NAVIGACE END',
         ];
 
         // Fráze, které mají vždy projít, i když obsahují filtrovaná slova
@@ -149,138 +155,26 @@
         }
 
         // Přepíšeme standardní konzolové metody
-        // Přepíšeme standardní konzolové metody
-       console.log = function(...args) {
-    originalConsole.log.apply(console, args); // Toto loguje do skutečné konzole prohlížeče
-
-    const logMessage = String(args[0]); // Získání textu zprávy
-
-    // =========================================================================
-    // FILTRAČNÍ LOGIKA PRO console.log
-    // Zde VLOŽÍŠ VŠECHNY SVÉ PREFIXY pro LOG zprávy
-    if (
-        !logMessage.startsWith('🚀 Otevírám modal s obrázkem na indexu:') &&
-        !logMessage.startsWith('✅ Obrázek načten do modalu:') &&
-        !logMessage.startsWith('🚪 Zavírám modal') &&
-        !logMessage.startsWith('🔍 === DEBUG GALERIE ===') &&
-        !logMessage.startsWith('📊 Celkem obrázků:') &&
-        !logMessage.startsWith('📍 Aktuální index:') &&
-        !logMessage.startsWith('🎯 Aktuální obrázek:') &&
-        !logMessage.startsWith('✅ Index je platný:') &&
-        !logMessage.startsWith('📋 Seznam všech obrázků:') &&
-        !logMessage.startsWith('👉 AKTUÁLNÍ') &&
-        !logMessage.startsWith('🧪 Simulace navigace:') &&
-        !logMessage.startsWith('⬅️ Předchozí: index') &&
-        !logMessage.startsWith('➡️ Další: index') &&
-        !logMessage.startsWith('🔧 Stav DOM elementů:') &&
-        !logMessage.startsWith('Modal existuje:') &&
-        !logMessage.startsWith('Modal img existuje:') &&
-        !logMessage.startsWith('Prev button existuje:') &&
-        !logMessage.startsWith('Next button existuje:') &&
-        !logMessage.startsWith('======================') &&
-        !logMessage.startsWith('🎭 APRÍLOVÁ NAVIGACE START:') &&
-        !logMessage.startsWith('📍 Před: currentModalImageIndex=') &&
-        !logMessage.startsWith('📍 Po: currentModalImageIndex=') &&
-        !logMessage.startsWith('🎭 APRÍLÁ NAVIGACE END') &&
-        !logMessage.startsWith('🚀 Inicializuji galerii s opraveným indexováním...') &&
-        !logMessage.startsWith('✅ Add button listener nastaven') &&
-        !logMessage.startsWith('✅ Close button listener nastaven') &&
-        !logMessage.startsWith('✅ Previous button listener nastaven') &&
-        !logMessage.startsWith('✅ Next button listener nastaven') &&
-        !logMessage.startsWith('✅ Save edit listener nastaven') &&
-        !logMessage.startsWith('✅ Cancel edit listener nastaven') &&
-        !logMessage.startsWith('✅ Klávesové zkratky nastaveny') &&
-        !logMessage.startsWith('🎉 Galerie s opraveným indexováním je připravena!') &&
-        !logMessage.startsWith('🔄 Aktualizuji zobrazení galerie...') &&
-        !logMessage.startsWith('📭 Galerie je prázdná') &&
-        !logMessage.startsWith('🖱️ Klik na obrázek s indexem:') &&
-        !logMessage.startsWith('✅ Zobrazení galerie aktualizováno') &&
-        !logMessage.startsWith('🔧 Index resetován na:') &&
-        !logMessage.startsWith('📸 Zobrazuji obrázek:') &&
-        !logMessage.startsWith('Optimalizuji načítání obrázku v modalu pro plynulejší zážitek.') &&
-        !logMessage.startsWith('Plynulé načítání:') &&
-        !logMessage.startsWith('🔄 Pre-načítám předchozí obrázek:') &&
-        !logMessage.startsWith('🔄 Pre-načítám další obrázek:')
-        // POKRAČUJ ZDE S DALŠÍMI PREFIXY PRO LOGY, POKUD JSOU NĚJAKÉ ZAPOMENUTÉ
-    ) {
-        // Pokud zpráva NENÍ na blacklistu, pak ji přidáme do tvého interního logovacího systému
-        addLogEntry('LOG', logMessage, args.slice(1));
-    }
-    // =========================================================================
-};
-
-console.warn = function(...args) {
-    originalConsole.warn.apply(console, args);
-
-    const logMessage = String(args[0]);
-
-    // =========================================================================
-    // FILTRAČNÍ LOGIKA PRO console.warn
-    // Zde VLOŽÍŠ VŠECHNY SVÉ PREFIXY pro WARN zprávy
-    if (
-        !logMessage.startsWith('⚠️ Galerie je prázdná!') &&
-        !logMessage.startsWith('⚠️ Nelze navigovat - prázdná galerie!') &&
-        !logMessage.startsWith('ℹ️ Pouze jeden obrázek - zůstáváme na místě')
-        // DOPLŇ DALŠÍ PREFIXY PRO VAROVÁNÍ, KTERÉ CHCEŠ ODSTINĚT
-    ) {
-        addLogEntry('WARN', logMessage, args.slice(1));
-    }
-    // =========================================================================
-};
-
-console.error = function(...args) {
-    originalConsole.error.apply(console, args);
-
-    const logMessage = String(args[0]);
-
-    // =========================================================================
-    // FILTRAČNÍ LOGIKA PRO console.error
-    // Zde VLOŽÍŠ VŠECHNY SVÉ PREFIXY pro ERROR zprávy
-    if (
-        !logMessage.startsWith('❌ Nelze zobrazit obrázek - prázdná galerie') &&
-        !logMessage.startsWith('❌ Modal nebo modalImg element nenalezen!') &&
-        !logMessage.startsWith('❌ Chyba načítání:') &&
-        !logMessage.startsWith('❌ Gallery container nenalezen!') &&
-        !logMessage.startsWith('Element #newImageUrl not found for adding gallery image.') &&
-        !logMessage.startsWith('Chyba při přidávání obrázku do Firestore:') &&
-        !logMessage.startsWith('Chyba při mazání obrázku z Firestore:') &&
-        !logMessage.startsWith('Chyba při ukládání upraveného obrázku do Firestore:')
-        // DOPLŇ DALŠÍ PREFIXY PRO CHYBY, KTERÉ CHCEŠ ODSTINĚT
-    ) {
-        addLogEntry('ERROR', logMessage, args.slice(1));
-    }
-    // =========================================================================
-};
-
-console.info = function(...args) {
-    originalConsole.info.apply(console, args);
-
-    const logMessage = String(args[0]);
-
-    // =========================================================================
-    // FILTRAČNÍ LOGIKA PRO console.info
-    // Zde VLOŽÍŠ VŠECHNY SVÉ PREFIXY pro INFO zprávy
-    // Pokud nemáš info zprávy k filtrování, můžeš nechat podmínku prázdnou
-    if (true /* Můžeš přidat podmínky jako: !logMessage.startsWith('Něco') */) {
-        addLogEntry('INFO', logMessage, args.slice(1));
-    }
-    // =========================================================================
-};
-
-console.debug = function(...args) {
-    originalConsole.debug.apply(console, args);
-
-    const logMessage = String(args[0]);
-
-    // =========================================================================
-    // FILTRAČNÍ LOGIKA PRO console.debug
-    // Zde VLOŽÍŠ VŠECHNY SVÉ PREFIXY pro DEBUG zprávy
-    // Pokud nemáš debug zprávy k filtrování, můžeš nechat podmínku prázdnou
-    if (true /* Můžeš přidat podmínky jako: !logMessage.startsWith('Něco') */) {
-        addLogEntry('DEBUG', logMessage, args.slice(1));
-    }
-    // =========================================================================
-};
+        console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            addLogEntry('LOG', String(args[0]), args.slice(1));
+        };
+        console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            addLogEntry('WARN', String(args[0]), args.slice(1));
+        };
+        console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            addLogEntry('ERROR', String(args[0]), args.slice(1));
+        };
+        console.info = function(...args) {
+            originalConsole.info.apply(console, args);
+            addLogEntry('INFO', String(args[0]), args.slice(1));
+        };
+        console.debug = function(...args) {
+            originalConsole.debug.apply(console, args);
+            addLogEntry('DEBUG', String(args[0]), args.slice(1));
+        };
 
         // 1. HTML struktura pro modalní okno s tabulkou logů (vložená přímo v JS)
         const jirikModalHTML = `
