@@ -404,19 +404,19 @@
             }
             #jirik-log-table th:nth-child(2),
             #jirik-log-table td:nth-child(2) {
-                width: 50% !important; /* Typ */
+                width: 25% !important; /* Typ */
                 min-width: 150px !important; /* Minimální šířka pro typ */
                 white-space: nowrap !important;
             }
             #jirik-log-table th:nth-child(3),
             #jirik-log-table td:nth-child(3) {
-                width: 100% !important; /* Zpráva */
+                width: 120% !important; /* Zpráva */
                 min-width: 150px !important; /* Minimální šířka pro typ */
                 white-space: nowrap !important;
             }
              #jirik-log-table th:nth-child(4),
             #jirik-log-table td:nth-child(4) {
-                width: 50% !important; /* Akce */
+                width: 25% !important; /* Akce */
                 min-width: 150px !important;
                 white-space: nowrap !important;
             }
