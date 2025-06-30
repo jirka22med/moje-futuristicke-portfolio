@@ -79,7 +79,13 @@
 
             ' currentModalImageIndex',
             ' 📋 Seznam všech obrázků',
-            
+            '🎭 APRÍLOVÁ NAVIGACE START: direction=1',
+
+'📍 Před: currentModalImageIndex=0',
+
+'📍 Po: currentModalImageIndex=0',
+
+'🎭 APRÍLÁ NAVIGACE END',
         ];
 
         // Fráze, které mají vždy projít, i když obsahují filtrovaná slova
