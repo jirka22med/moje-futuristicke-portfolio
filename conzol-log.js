@@ -421,26 +421,26 @@
             @media (max-width: 768px) {
                 .jirik-modal-content {
                     width: 100% !important;
-                    padding: 15px !important;
+                    padding: 20px !important;
                 }
                 #jirik-log-table {
                     font-size: 0.8em !important;
                 }
                 #jirik-log-table th,
                 #jirik-log-table td {
-                    padding: 10px !important;
+                    padding: 20px !important;
                 }
                 .jirik-log-controls {
                     flex-direction: column !important;
-                    gap: 10px !important;
+                    gap: 15px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
-                    min-width: 130px !important;
+                    min-width: 150px !important;
                 }
                 #jirik-log-table th:nth-child(2),
                 #jirik-log-table td:nth-child(2) {
-                    min-width: 120px !important;
+                    min-width: 140px !important;
                 }
             }
         `;
