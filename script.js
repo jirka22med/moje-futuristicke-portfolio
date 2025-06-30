@@ -1308,7 +1308,7 @@ function debugGallery() {
        // console.log(`${indicator} [${index}]: ${img.name} - ${img.url.substring(0, 50)}...`);
     });
 
-    console.log('🧪 Simulace navigace:');
+   // console.log('🧪 Simulace navigace:');
     if (galleryImagesData.length > 0) {
         const prevIndex = getSafeIndex(currentModalImageIndex - 1);
         const nextIndex = getSafeIndex(currentModalImageIndex + 1);
