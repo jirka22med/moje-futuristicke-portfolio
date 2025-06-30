@@ -71,7 +71,10 @@
             'Chyba při odhlašování:',
             'Chyba při registraci:',
             'Chyba při přihlašování:',
-            'Inicializace editoru HTML'
+            'Inicializace editoru HTML',
+            '🎭 APRÍLOVÁ NAVIGACE END',
+            '📍 Před: currentModalImageIndex=1',
+            '🎭 APRÍLOVÁ NAVIGACE START: direction=1',
         ];
 
         // Fráze, které mají vždy projít, i když obsahují filtrovaná slova
