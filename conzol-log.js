@@ -419,138 +419,141 @@
 
 
            /* Responzivní design */
-            
-            /* Tablety na výšku (do 1024px) */
-            @media (max-width: 1024px) {
-                #jirik-log-table th,
-                #jirik-log-table td {
-                    height: 25px !important;
-                }
-                #jirik-log-table th:nth-child(1),
-                #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(2),
-                #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(3),
-                #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(4),
-                #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-            }
 
-            /* Tablety menší (do 768px) */
-            @media (max-width: 768px) {
-                .jirik-modal-content {
-                    width: 100% !important;
-                    padding: 30px !important;
-                }
-                #jirik-log-table {
-                    font-size: 0.8em !important;
-                }
-                #jirik-log-table th,
-                #jirik-log-table td {
-                    padding: 25px !important;
-                    height: 25px !important;
-                }
-                .jirik-log-controls {
-                    flex-direction: column !important;
-                    gap: 20px !important;
-                }
-                #jirik-log-table th:nth-child(1),
-                #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(2),
-                #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(3),
-                #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(4),
-                #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-            }
+/* Tablety na výšku (do 1024px) */
+@media (max-width: 1024px) {
+    #jirik-log-table th,
+    #jirik-log-table td {
+        height: 25px !important; /* Nastavuje VÝŠKU všech buněk v tabulce */
+    }
+    #jirik-log-table th:nth-child(1),
+    #jirik-log-table td:nth-child(1) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU prvního sloupce (Čas) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU prvního sloupce (Čas) */
+    }
+    #jirik-log-table th:nth-child(2),
+    #jirik-log-table td:nth-child(2) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU druhého sloupce (Typ) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU druhého sloupce (Typ) */
+    }
+    #jirik-log-table th:nth-child(3),
+    #jirik-log-table td:nth-child(3) {
+       width: 500px !important;    /* Nastavuje ŠÍŘKU třetího sloupce (Zpráva) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU třetího sloupce (Zpráva) */
+    }
+    #jirik-log-table th:nth-child(4),
+    #jirik-log-table td:nth-child(4) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU čtvrtého sloupce (Akce) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU čtvrtého sloupce (Akce) */
+    }
+}
 
-            /* Mobily větší (do 480px) */
-            @media (max-width: 480px) {
-                .jirik-modal-content {
-                    padding: 15px !important;
-                }
-                #jirik-log-table th,
-                #jirik-log-table td {
-                    padding: 15px !important;
-                    height: 25px !important;
-                }
-                #jirik-log-table th:nth-child(1),
-                #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(2),
-                #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(3),
-                #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(4),
-                #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-            }
+/* Tablety menší (do 768px) */
+@media (max-width: 768px) {
+    .jirik-modal-content {
+        width: 100% !important;
+        padding: 30px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ obsahu modalu od jeho okrajů */
+    }
+    #jirik-log-table {
+        font-size: 0.8em !important;
+        padding: 10px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ pro celou tabulku logů */
+    }
+    #jirik-log-table th,
+    #jirik-log-table td {
+        padding: 25px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ (prostor mezi obsahem a okrajem) buněk tabulky */
+        height: 25px !important; /* Nastavuje VÝŠKU všech buněk v tabulce */
+    }
+    .jirik-log-controls {
+        flex-direction: column !important;
+        gap: 20px !important;
+        padding: 15px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ pro ovládací prvky logu */
+    }
+    #jirik-log-table th:nth-child(1),
+    #jirik-log-table td:nth-child(1) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU prvního sloupce (Čas) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU prvního sloupce (Čas) */
+    }
+    #jirik-log-table th:nth-child(2),
+    #jirik-log-table td:nth-child(2) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU druhého sloupce (Typ) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU druhého sloupce (Typ) */
+    }
+    #jirik-log-table th:nth-child(3),
+    #jirik-log-table td:nth-child(3) {
+        width: 500px !important;    /* Nastavuje ŠÍŘKU třetího sloupce (Zpráva) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU třetího sloupce (Zpráva) */
+    }
+    #jirik-log-table th:nth-child(4),
+    #jirik-log-table td:nth-child(4) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU čtvrtého sloupce (Akce) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU čtvrtého sloupce (Akce) */
+    }
+}
 
-            /* Mobily malé (do 320px) */
-            @media (max-width: 320px) {
-                .jirik-modal-content {
-                    padding: 10px !important;
-                }
-                #jirik-log-table th,
-                #jirik-log-table td {
-                    padding: 10px !important;
-                    height: 25px !important;
-                }
-                #jirik-log-table th:nth-child(1),
-                #jirik-log-table td:nth-child(1) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(2),
-                #jirik-log-table td:nth-child(2) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(3),
-                #jirik-log-table td:nth-child(3) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-                #jirik-log-table th:nth-child(4),
-                #jirik-log-table td:nth-child(4) {
-                    width: 160px !important;
-                    min-width: 160px !important;
-                }
-            }
+/* Mobily větší (do 480px) */
+@media (max-width: 480px) {
+    .jirik-modal-content {
+        padding: 15px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ obsahu modalu od jeho okrajů */
+    }
+    #jirik-log-table th,
+    #jirik-log-table td {
+        padding: 15px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ (prostor mezi obsahem a okrajem) buněk tabulky */
+        height: 25px !important; /* Nastavuje VÝŠKU všech buněk v tabulce */
+    }
+    #jirik-log-table th:nth-child(1),
+    #jirik-log-table td:nth-child(1) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU prvního sloupce (Čas) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU prvního sloupce (Čas) */
+    }
+    #jirik-log-table th:nth-child(2),
+    #jirik-log-table td:nth-child(2) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU druhého sloupce (Typ) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU druhého sloupce (Typ) */
+    }
+    #jirik-log-table th:nth-child(3),
+    #jirik-log-table td:nth-child(3) {
+        width: 500px !important;    /* Nastavuje ŠÍŘKU třetího sloupce (Zpráva) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU třetího sloupce (Zpráva) */
+    }
+    #jirik-log-table th:nth-child(4),
+    #jirik-log-table td:nth-child(4) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU čtvrtého sloupce (Akce) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU čtvrtého sloupce (Akce) */
+    }
+}
+
+/* Mobily malé (do 320px) */
+@media (max-width: 320px) {
+    .jirik-modal-content {
+        padding: 10px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ obsahu modalu od jeho okrajů */
+    }
+    #jirik-log-table th,
+    #jirik-log-table td {
+        padding: 10px !important; /* Nastavuje VNITŘNÍ ODSKOČENÍ (prostor mezi obsahem a okrajem) buněk tabulky */
+        height: 25px !important; /* Nastavuje VÝŠKU všech buněk v tabulce */
+    }
+    #jirik-log-table th:nth-child(1),
+    #jirik-log-table td:nth-child(1) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU prvního sloupce (Čas) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU prvního sloupce (Čas) */
+    }
+    #jirik-log-table th:nth-child(2),
+    #jirik-log-table td:nth-child(2) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU druhého sloupce (Typ) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU druhého sloupce (Typ) */
+    }
+    #jirik-log-table th:nth-child(3),
+    #jirik-log-table td:nth-child(3) {
+        width: 500px !important;    /* Nastavuje ŠÍŘKU třetího sloupce (Zpráva) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU třetího sloupce (Zpráva) */
+    }
+    #jirik-log-table th:nth-child(4),
+    #jirik-log-table td:nth-child(4) {
+        width: 160px !important;    /* Nastavuje ŠÍŘKU čtvrtého sloupce (Akce) */
+        min-width: 160px !important; /* Nastavuje MINIMÁLNÍ ŠÍŘKU čtvrtého sloupce (Akce) */
+    }
+}
+
         `;
         
         originalConsole.log('🔍 Pokouším se vložit HTML modalu do dokumentu...');
