@@ -1296,33 +1296,33 @@ function updateGalleryDisplay() {
 
 // VYLEPŠENÁ DEBUG FUNKCE - Nyní by měla být volána jen pro explicitní ladění
 function debugGallery() {
-    console.log('🔍 === DEBUG GALERIE ===');
-    console.log(`📊 Celkem obrázků: ${galleryImagesData.length}`);
-    console.log(`📍 Aktuální index: ${currentModalImageIndex}`);
-    console.log(`🎯 Aktuální obrázek: ${galleryImagesData[currentModalImageIndex]?.name || 'ŽÁDNÝ/NEPLATNÝ'}`);
-    console.log(`✅ Index je platný: ${currentModalImageIndex >= 0 && currentModalImageIndex < galleryImagesData.length}`);
+   // console.log('🔍 === DEBUG GALERIE ===');
+    //console.log(`📊 Celkem obrázků: ${galleryImagesData.length}`);
+   // console.log(`📍 Aktuální index: ${currentModalImageIndex}`);
+   // console.log(`🎯 Aktuální obrázek: ${galleryImagesData[currentModalImageIndex]?.name || 'ŽÁDNÝ/NEPLATNÝ'}`);
+   // console.log(`✅ Index je platný: ${currentModalImageIndex >= 0 && currentModalImageIndex < galleryImagesData.length}`);
 
-    console.log('📋 Seznam všech obrázků:');
+   // console.log('📋 Seznam všech obrázků:');
     galleryImagesData.forEach((img, index) => {
         const indicator = index === currentModalImageIndex ? '👉 AKTUÁLNÍ' : '  ';
-        console.log(`${indicator} [${index}]: ${img.name} - ${img.url.substring(0, 50)}...`);
+       // console.log(`${indicator} [${index}]: ${img.name} - ${img.url.substring(0, 50)}...`);
     });
 
     console.log('🧪 Simulace navigace:');
     if (galleryImagesData.length > 0) {
         const prevIndex = getSafeIndex(currentModalImageIndex - 1);
         const nextIndex = getSafeIndex(currentModalImageIndex + 1);
-        console.log(`⬅️ Předchozí: index ${prevIndex} (${galleryImagesData[prevIndex]?.name || 'N/A'})`);
-        console.log(`➡️ Další: index ${nextIndex} (${galleryImagesData[nextIndex]?.name || 'N/A'})`);
+        //console.log(`⬅️ Předchozí: index ${prevIndex} (${galleryImagesData[prevIndex]?.name || 'N/A'})`);
+       // console.log(`➡️ Další: index ${nextIndex} (${galleryImagesData[nextIndex]?.name || 'N/A'})`);
     }
 
-    console.log('🔧 Stav DOM elementů:');
-    console.log(`Modal existuje: ${!!document.getElementById('image-modal')}`);
-    console.log(`Modal img existuje: ${!!document.getElementById('modal-img')}`);
-    console.log(`Prev button existuje: ${!!document.getElementById('prev-image-btn')}`);
-    console.log(`Next button existuje: ${!!document.getElementById('next-image-btn')}`);
+    //console.log('🔧 Stav DOM elementů:');
+    //console.log(`Modal existuje: ${!!document.getElementById('image-modal')}`);
+    //console.log(`Modal img existuje: ${!!document.getElementById('modal-img')}`);
+   // console.log(`Prev button existuje: ${!!document.getElementById('prev-image-btn')}`);
+  //  console.log(`Next button existuje: ${!!document.getElementById('next-image-btn')}`);
 
-    console.log('======================');
+  //  console.log('======================');
 }
 
 // POMOCNÉ FUNKCE (zůstávají stejné)
