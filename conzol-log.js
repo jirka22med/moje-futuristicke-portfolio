@@ -424,7 +424,7 @@
             @media (max-width: 1024px) {
                 #jirik-log-table th,
                 #jirik-log-table td {
-                    height: 100px !important;
+                    height: 300px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
@@ -460,7 +460,7 @@
                 #jirik-log-table th,
                 #jirik-log-table td {
                     padding: 25px !important;
-                    height: 25px !important;
+                    height: 300px !important;
                 }
                 .jirik-log-controls {
                     flex-direction: column !important;
@@ -496,7 +496,7 @@
                 #jirik-log-table th,
                 #jirik-log-table td {
                     padding: 15px !important;
-                    height: 25px !important;
+                    height: 300px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
@@ -528,7 +528,7 @@
                 #jirik-log-table th,
                 #jirik-log-table td {
                     padding: 10px !important;
-                    height: 25px !important;
+                    height: 300px !important;
                 }
                 #jirik-log-table th:nth-child(1),
                 #jirik-log-table td:nth-child(1) {
