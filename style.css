@@ -6,18 +6,7 @@
 }
 /* --- GLOBÁLNÍ ZÁKAZ ANIMACÍ A PŘECHODŮ (experimentální) --- */
 /* NA POŽADAVEK JIŘÍKA */
-html, body {
-    -webkit-transition: none !important;
-    -moz-transition: none !important;
-    -ms-transition: none !important;
-    -o-transition: none !important;
-    transition: none !important;
-    -webkit-animation: none !important;
-    -moz-animation: none !important;
-    -ms-animation: none !important;
-    -o-animation: none !important;
-    animation: none !important;
-}
+
 /* --- KONEC GLOBÁLNÍHO ZÁKAZU ANIMACÍ A PŘECHODŮ --- */
 
 body {
@@ -170,9 +159,7 @@ section {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;
-    transform: translateY(0px); /* Důležité: Tuto řádku jsem přidal, pokud tam chyběla */
-    /* Přidáme transition pro visibility pro plynulé skrytí/zobrazení */
-    transition: opacity 9.59s ease-out, transform 9.59s ease-out, visibility 9.59s ease-out; 
+    
 }
 
 
