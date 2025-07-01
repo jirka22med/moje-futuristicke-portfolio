@@ -1034,7 +1034,7 @@ function openImageModal(index) {
     console.log(`📸 Zobrazuji obrázek: "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
     
     // Loading indikátor
-    modalImg.style.opacity = '0.5';
+    modalImg.style.opacity = '0';
     modalImg.onload = function() {
         console.log(`✅ Obrázek načten: ${currentImage.name}`);
         modalImg.style.opacity = '1';
@@ -1158,12 +1158,12 @@ function navigateImageModal(direction) {
     // Plynulý přechod
     const modalImg = document.getElementById('modal-img');
     if (modalImg) {
-        modalImg.style.transition = 'none';
-        modalImg.style.opacity = '0.7';
+        modalImg.style.transition = 'opacity 0';
+        modalImg.style.opacity = '0';
         
         setTimeout(() => {
             openImageModal(newIndex);
-        }, 50);
+        }, 2);
     } else {
         openImageModal(newIndex);
     }
