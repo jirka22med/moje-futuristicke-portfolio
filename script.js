@@ -973,7 +973,7 @@ function showSection(id, isInitial = false) {
 
  
 
-// --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
+   // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
 // DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
 // GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
  
@@ -1131,6 +1131,7 @@ function navigateImageModal(direction) {
         return;
     }
     
+    function showNextImage(direction) {
     // Výpočet nového indexu s cyklickou navigací
     let newIndex = currentModalImageIndex + direction;
     newIndex = getSafeIndex(newIndex);
@@ -1138,18 +1139,9 @@ function navigateImageModal(direction) {
     console.log(`➡️ Změna indexu: ${currentModalImageIndex} → ${newIndex}`);
     console.log(`🖼️ Nový obrázek: "${galleryImagesData[newIndex]?.name || 'NEZNÁMÝ'}"`);
     
-    // Plynulý přechod
-    const modalImg = document.getElementById('modal-img');
-    if (modalImg) {
-        modalImg.style.transition = 'none';
-        modalImg.style.opacity = '0.7';
-        
-        setTimeout(() => {
-            openImageModal(newIndex);
-        }, 50);
-    } else {
-        openImageModal(newIndex);
-    }
+    // Tady už není potřeba žádné speciální zacházení s modalImg pro ztmavení
+    // Stačí rovnou zavolat funkci pro otevření nového obrázku
+    openImageModal(newIndex);
 }
 
 // FUNKCE PRO ZAVŘENÍ MODALU
@@ -1273,7 +1265,7 @@ function setupGallery() {
     
     // Nastavení klávesových zkratek
     setupKeyboardNavigation();
-    console.log('✅ Klávesové zkratky nastaveny');
+    //console.log('✅ Klávesové zkratky nastaveny');
     
     console.log('🎉 Galerie s opraveným indexováním je připravena!');
 }
