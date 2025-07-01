@@ -140,7 +140,12 @@ main {
 }
 
 section {
-    display: none;
+    /* display: none; */ /* Tuto řádku jsme zakomentovali/smazali */
+    visibility: hidden; /* NOVĚ: Sekci skryjeme, ale "ponecháme ji na místě" */
+    position: absolute;  /* NOVĚ: Umístíme ji mimo běžný tok dokumentu, aby nepřekážela */
+    top: 0;              /* NOVĚ: Přesuneme ji nahoru */
+    left: 0;             /* NOVĚ: Přesuneme ji doleva */
+    width: 100%;         /* NOVĚ: Zajistíme, aby měla plnou šířku */
     background: rgba(255, 255, 255, 0.95);
     margin: 1rem 0;
     padding: 1.5rem;
@@ -151,12 +156,14 @@ section {
     border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.25s ease-out, transform 0.5s ease-out;
-    width: 100%;
+    /* NOVĚ: Přidali jsme transition pro visibility, aby se skrytí/zobrazení animovalo */
+    transition: opacity 0.25s ease-out, transform 0.5s ease-out, visibility 0.25s ease-out;
 }
 
 section.active {
-    display: block;
+    /* display: block; */ /* Tuto řádku jsme zakomentovali/smazali */
+    visibility: visible; /* NOVĚ: Sekci zviditelníme */
+    position: relative;  /* NOVĚ: Vrátíme ji zpět do běžného toku, aby zabírala místo */
     opacity: 1;
     transform: translateY(0);
 }
