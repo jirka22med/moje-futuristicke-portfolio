@@ -1577,7 +1577,7 @@ async function saveEditedImage() {
             const row = tableBody.insertRow();
             const cell = row.insertCell();
             cell.colSpan = 4;
-            cell.textContent = 'Žádné externí odkazy k zobrazení.';
+            cell.textContent = 'Žádné odkazy.';
             cell.style.textAlign = 'center';
             return;
         }
