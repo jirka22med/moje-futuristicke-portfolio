@@ -1141,7 +1141,7 @@ function navigateImageModal(direction) {
     // Plynulý přechod
     const modalImg = document.getElementById('modal-img');
     if (modalImg) {
-        modalImg.style.transition = 'opacity 0.15s ease-in-out';
+        modalImg.style.transition = 'none';
         modalImg.style.opacity = '0.7';
         
         setTimeout(() => {
