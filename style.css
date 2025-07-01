@@ -4,6 +4,21 @@
     padding: 0;
     box-sizing: border-box;
 }
+/* --- GLOBÁLNÍ ZÁKAZ ANIMACÍ A PŘECHODŮ (experimentální) --- */
+/* NA POŽADAVEK JIŘÍKA */
+html, body {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -ms-animation: none !important;
+    -o-animation: none !important;
+    animation: none !important;
+}
+/* --- KONEC GLOBÁLNÍHO ZÁKAZU ANIMACÍ A PŘECHODŮ --- */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
