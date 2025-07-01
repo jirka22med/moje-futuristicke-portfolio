@@ -150,8 +150,8 @@ section {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    /*transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;*/
     width: 100%;
 }
 
@@ -534,13 +534,13 @@ body.edit-mode #links-table tbody tr {
     z-index: 2000; 
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    /*transition: opacity 0.3s ease, visibility 0s linear 0.3s;*/
 }
 
 .modal.visible {
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.3s ease;
+    /*transition: opacity 0.3s ease;*/
 }
 
 .modal-content {
@@ -552,7 +552,7 @@ body.edit-mode #links-table tbody tr {
     text-align: center;
     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     transform: scale(0.95);
-    transition: transform 0.3s ease;
+    /*transition: transform 0.3s ease;*/
 }
 .modal.visible .modal-content {
     transform: scale(1);
@@ -1440,7 +1440,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+   /* transition: opacity 0.3s ease, visibility 0.3s ease;*/
 }
 
 /* Modal aktivní stav */
@@ -1463,7 +1463,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     color: #ffffff;
     position: relative;
     transform: scale(0.7);
-    transition: transform 0.3s ease;
+    /*transition: transform 0.3s ease;*/
     text-align: center;
 }
 
