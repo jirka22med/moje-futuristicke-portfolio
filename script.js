@@ -973,12 +973,7 @@ function showSection(id, isInitial = false) {
 
  
 
-   // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
-// DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
-// GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
- 
-
-// --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
+     // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
 // DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
 // GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
  
@@ -1120,24 +1115,41 @@ function addPositionIndicator(index, total, name) {
     console.log(`📍 Indikátor aktualizován: ${indicator.textContent}`);
 }
 
-// HLAVNÍ OPRAVA: Kompletně přepsaná navigace - ODSTRANĚNY ANIMACE
+// HLAVNÍ OPRAVA: Kompletně přepsaná navigace
 function navigateImageModal(direction) {
+    console.log(`🧭 NAVIGACE: směr=${direction}, současný index=${currentModalImageIndex}`);
+    console.log(`📊 Stav galerie: ${galleryImagesData.length} obrázků`);
+    
     if (galleryImagesData.length === 0) {
-        
+        console.warn('⚠️ Nelze navigovat - prázdná galerie!');
         return;
     }
-
+    
     if (galleryImagesData.length === 1) {
+        console.log('ℹ️ Pouze jeden obrázek - zůstáváme na místě');
         updateAllIndicators(); // Aktualizuj indikátory pro jistotu
         return;
     }
-
+    
     // Výpočet nového indexu s cyklickou navigací
     let newIndex = currentModalImageIndex + direction;
     newIndex = getSafeIndex(newIndex);
-
-    // Okamžité otevření nového obrázku bez animací
-    openImageModal(newIndex);
+    
+    console.log(`➡️ Změna indexu: ${currentModalImageIndex} → ${newIndex}`);
+    console.log(`🖼️ Nový obrázek: "${galleryImagesData[newIndex]?.name || 'NEZNÁMÝ'}"`);
+    
+    // Plynulý přechod
+    const modalImg = document.getElementById('modal-img');
+    if (modalImg) {
+        modalImg.style.transition = 'none';
+        modalImg.style.opacity = 'none';
+        
+        setTimeout(() => {
+            openImageModal(newIndex);
+        }, 0);
+    } else {
+        openImageModal(newIndex);
+    }
 }
 
 // FUNKCE PRO ZAVŘENÍ MODALU
