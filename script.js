@@ -778,7 +778,9 @@ const navigationConfig = [
     { id: 'editor', text: 'HTML Editor' },
     { id: 'saved', text: 'Moje HTML kódy' },
     { id: 'gallery', text: 'Galerie' },
-    { id: 'links', text: 'Odkazy' }
+    { id: 'links', text: 'Odkazy' },
+    { id: 'fullscreenButton', text: '⛶' }
+    
 ];
 
 // CSS pro zakázání animací a problisků
