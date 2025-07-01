@@ -4,7 +4,7 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
      
     // --- Firebase Konfigurace pro FIRESTORE DATABÁZI ---
-    const firebaseConfig = {
+    const firebaseConfig = { 
         apiKey: "AIzaSyBBep6Nyn9jEp_Q1bryULEbfuWfngMT07Y",
         authDomain: "muj-osobni-web-pokus-10.firebaseapp.com",
         projectId: "muj-osobni-web-pokus-10",
