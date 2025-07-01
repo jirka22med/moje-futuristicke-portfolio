@@ -143,13 +143,13 @@ main {
     width: 100%;
 }
 
-section {
-     display: none;  /* Tuto řádku zakomentujeme nebo smažeme */
-    visibility: hidden; /* NOVÁ ŘÁDKA: Skryje prvek, ale stále ho ponechá v DOMu */
-    position: absolute;  /* NOVÁ ŘÁDKA: Vezme prvek z toku dokumentu, aby nezabíral místo */
-    top: 0;              /* NOVÁ ŘÁDKA: Umístí ho na stejné místo jako ostatní sekce */
-    left: 0;             /* NOVÁ ŘÁDKA: Umístí ho na stejné místo jako ostatní sekce */
-    width: 100%;         /* DŮLEŽITÉ: Zajistí, že sekce mají stejnou šířku */
+/*section {
+     display: none;     
+    visibility: hidden;  
+    position: absolute;   
+    top: 0;               
+    left: 0;              
+    width: 100%;          
     background: rgba(255, 255, 255, 0.95);
     margin: 1rem 0;
     padding: 1.5rem;
@@ -164,12 +164,12 @@ section {
 
 
 section.active {
-     display: block;  /* Tuto řádku zakomentujeme nebo smažeme */
-    visibility: visible; /* NOVÁ ŘÁDKA: Zviditelní prvek */
-    position: relative;  /* NOVÁ ŘÁDKA: Vrátí prvek do toku dokumentu, aby zabíral místo */
+     display: block;   
+    visibility: visible;  
+    position: relative;   
     opacity: 1;
-    /* Důležité: Tuto řádku jsem přidal, pokud tam chyběla */
-}
+     
+}*/
 
 
 section h2, section h3 {
