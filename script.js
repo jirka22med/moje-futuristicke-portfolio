@@ -798,13 +798,13 @@ function disableEditMode() {
         const sectionElement = document.getElementById(id);
         if (sectionElement) {
             sectionElement.style.display = 'block';
-            setTimeout(() => sectionElement.classList.add('active'), 10);
+            setTimeout(() => sectionElement.classList.add('active'), 0);
         } else {
             console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
             const aboutSection = document.getElementById('about');
             if(aboutSection) {
                 aboutSection.style.display = 'block';
-                setTimeout(() => aboutSection.classList.add('active'), 10);
+                setTimeout(() => aboutSection.classList.add('active'), 1);
                 activeSection = 'about';
                 document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
                 document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
