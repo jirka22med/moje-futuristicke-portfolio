@@ -973,7 +973,7 @@ function showSection(id, isInitial = false) {
 
  
 
-     // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
+       // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
 // DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
 // GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
  
@@ -1142,11 +1142,11 @@ function navigateImageModal(direction) {
     const modalImg = document.getElementById('modal-img');
     if (modalImg) {
         modalImg.style.transition = 'none';
-        modalImg.style.opacity = 'none';
+        modalImg.style.opacity = '0.7';
         
         setTimeout(() => {
             openImageModal(newIndex);
-        }, 0);
+        }, 50);
     } else {
         openImageModal(newIndex);
     }
