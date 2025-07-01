@@ -1034,7 +1034,7 @@ function openImageModal(index) {
     console.log(`📸 Zobrazuji obrázek: "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
     
     // Loading indikátor
-    modalImg.style.opacity = '0';
+    modalImg.style.opacity = '1';
     modalImg.onload = function() {
         console.log(`✅ Obrázek načten: ${currentImage.name}`);
         modalImg.style.opacity = '1';
@@ -1113,14 +1113,14 @@ function addPositionIndicator(index, total, name) {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: rgba(0,0,0,0.8);
+            /*background: rgba(0,0,0,0.8);*/
             color: white;
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 14px;
             font-weight: bold;
             z-index: 1001;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            /*box-shadow: 0 2px 10px rgba(0,0,0,0.3);*/
         `;
         const modalContent = modal.querySelector('.modal-content');
         if (modalContent) {
@@ -1161,9 +1161,9 @@ function navigateImageModal(direction) {
         modalImg.style.transition = 'opacity 0';
         modalImg.style.opacity = '0';
         
-        setTimeout(() => {
+         {
             openImageModal(newIndex);
-        }, 2);
+        }  
     } else {
         openImageModal(newIndex);
     }
