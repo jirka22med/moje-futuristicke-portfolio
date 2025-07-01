@@ -155,7 +155,7 @@ main {
 }
 
 section {
-    /* display: none; */ /* Tuto řádku zakomentujeme nebo smažeme */
+     display: none;  /* Tuto řádku zakomentujeme nebo smažeme */
     visibility: hidden; /* NOVÁ ŘÁDKA: Skryje prvek, ale stále ho ponechá v DOMu */
     position: absolute;  /* NOVÁ ŘÁDKA: Vezme prvek z toku dokumentu, aby nezabíral místo */
     top: 0;              /* NOVÁ ŘÁDKA: Umístí ho na stejné místo jako ostatní sekce */
@@ -177,7 +177,7 @@ section {
 
 
 section.active {
-    /* display: block; */ /* Tuto řádku zakomentujeme nebo smažeme */
+     display: block;  /* Tuto řádku zakomentujeme nebo smažeme */
     visibility: visible; /* NOVÁ ŘÁDKA: Zviditelní prvek */
     position: relative;  /* NOVÁ ŘÁDKA: Vrátí prvek do toku dokumentu, aby zabíral místo */
     opacity: 1;
