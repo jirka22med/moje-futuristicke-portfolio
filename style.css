@@ -125,7 +125,7 @@ nav {
 
 main {
     padding: 2rem 0;
-    margin-top: 140px; 
+     
     min-height: calc(100vh - 140px - 70px);
     margin-top: -20px;
     width: 100%;
@@ -135,7 +135,7 @@ main {
     max-width: 100%;
     margin: 0 auto;
     padding: 0 1rem;
-    margin-top: -20px;
+     
     width: 100%;
 }
 
@@ -151,12 +151,12 @@ section {
     border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.25s ease-out, transform 0.5s ease-out, visibility 0.25s ease-out; /* Toto je řádka k úpravě */
+    transition: opacity 0.25s ease-out, transform 0.5s ease-out;
     width: 100%;
 }
 
 section.active {
-   /* display: block;*/
+    display: block;
     opacity: 1;
     transform: translateY(0);
 }
