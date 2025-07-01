@@ -770,47 +770,136 @@ function disableEditMode() {
     }
 
     // --- Navigace a sekce (beze změny) ---
-    // --- Navigace a sekce (beze změny) ---
-    function setupNavigation() {
-        const navLinks = document.querySelectorAll('.nav-container a.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const sectionId = link.dataset.section;
-                showSection(sectionId);
-                navLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
-        const initialActiveLink = document.querySelector(`.nav-container a.nav-link[data-section="${activeSection}"]`);
-        if (initialActiveLink) initialActiveLink.classList.add('active');
-    }
+   // Konfigurace navigačních tlačítek
+const navigationConfig = [
+    { id: 'about', text: 'O mně' },
+    { id: 'portfolio', text: 'Portfolio' },
+    { id: 'contacts', text: 'Moje Projekty' },
+    { id: 'editor', text: 'HTML Editor' },
+    { id: 'saved', text: 'Moje HTML kódy' },
+    { id: 'gallery', text: 'Galerie' },
+    { id: 'links', text: 'Odkazy' }
+];
 
-    function showSection(id, isInitial = false) {
-        if (!id) id = 'about';
-        activeSection = id;
-        document.querySelectorAll('main section').forEach(section => {
-            section.classList.remove('active');
-            if (!(isInitial && section.id === id)) {
-                section.style.display = 'none';
-            }
-        });
-        const sectionElement = document.getElementById(id);
-        if (sectionElement) {
-            sectionElement.style.display = 'block';
-            setTimeout(() => sectionElement.classList.add('active'), 0);
-        } else {
-            console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
-            const aboutSection = document.getElementById('about');
-            if(aboutSection) {
-                aboutSection.style.display = 'block';
-                setTimeout(() => aboutSection.classList.add('active'), 1);
-                activeSection = 'about';
-                document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
-                document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
-            }
-        }
-    }
+// CSS pro zakázání animací a problisků
+const optimizedCSS = `
+    /* Zakázání všech animací a přechodů pro sekce */
+    main section {
+        transition: none !important;
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    
+    main section.active {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    /* Zakázání přechodů pro navigační odkazy */
+    .nav-container a.nav-link {
+        transition: none !important;
+    }
+`;
+
+// Přidání CSS do hlavy dokumentu
+function injectOptimizedCSS() {
+    const style = document.createElement('style');
+    style.textContent = optimizedCSS;
+    document.head.appendChild(style);
+}
+
+// Funkce pro dynamické vytvoření navigačních tlačítek
+function createNavigationButtons() {
+    const navContainer = document.querySelector('.nav-container');
+    if (!navContainer) {
+        console.error('Nav container nenalezen!');
+        return;
+    }
+    
+    // Vyčistíme existující obsah
+    navContainer.innerHTML = '';
+    
+    // Vytvoříme tlačítka podle konfigurace
+    navigationConfig.forEach(navItem => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.className = 'nav-link';
+        link.dataset.section = navItem.id;
+        link.textContent = navItem.text;
+        navContainer.appendChild(link);
+    });
+}
+
+// --- Optimalizovaná navigace bez animací ---
+function setupNavigation() {
+    // Nejdřív přidáme CSS pro zakázání animací
+    injectOptimizedCSS();
+    
+    // Dynamicky vytvoříme navigační tlačítka
+    createNavigationButtons();
+    
+    // Přidáme event listenery
+    const navLinks = document.querySelectorAll('.nav-container a.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = link.dataset.section;
+            showSection(sectionId);
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+    
+    // Nastavíme aktivní link
+    const initialActiveLink = document.querySelector(`.nav-container a.nav-link[data-section="${activeSection}"]`);
+    if (initialActiveLink) initialActiveLink.classList.add('active');
+}
+
+// Funkce pro přidání nového tlačítka do navigace
+function addNavigationButton(id, text) {
+    navigationConfig.push({ id, text });
+    createNavigationButtons();
+    setupNavigation(); // Znovu nastavíme event listenery
+}
+
+// Funkce pro odebrání tlačítka z navigace
+function removeNavigationButton(id) {
+    const index = navigationConfig.findIndex(item => item.id === id);
+    if (index > -1) {
+        navigationConfig.splice(index, 1);
+        createNavigationButtons();
+        setupNavigation(); // Znovu nastavíme event listenery
+    }
+}
+
+function showSection(id, isInitial = false) {
+    if (!id) id = 'about';
+    activeSection = id;
+    
+    // Okamžité skrytí všech sekcí
+    document.querySelectorAll('main section').forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+    });
+    
+    // Okamžité zobrazení cílové sekce BEZ setTimeout!
+    const sectionElement = document.getElementById(id);
+    if (sectionElement) {
+        sectionElement.style.display = 'block';
+        sectionElement.classList.add('active'); // Bez čekání!
+    } else {
+        console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
+        const aboutSection = document.getElementById('about');
+        if(aboutSection) {
+            aboutSection.style.display = 'block';
+            aboutSection.classList.add('active'); // Bez čekání!
+            activeSection = 'about';
+            document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
+        }
+    }
+}
 
     // --- HTML Editor (ukládá do Firestore) ---
     function setupHtmlEditor() {
