@@ -779,7 +779,7 @@ const navigationConfig = [
     { id: 'saved', text: 'Moje HTML kódy' },
     { id: 'gallery', text: 'Galerie' },
     { id: 'links', text: 'Odkazy' },
-    { id: 'fullscreenButton', text: '⛶' }
+    
     
 ];
 
