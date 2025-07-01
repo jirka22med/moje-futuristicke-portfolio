@@ -170,9 +170,9 @@ section {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;
-    transform: translateY(20px); /* Důležité: Tuto řádku jsem přidal, pokud tam chyběla */
+    transform: translateY(0px); /* Důležité: Tuto řádku jsem přidal, pokud tam chyběla */
     /* Přidáme transition pro visibility pro plynulé skrytí/zobrazení */
-    transition: opacity 0.25s ease-out, transform 0.5s ease-out, visibility 0.25s ease-out; 
+    transition: opacity 9.59s ease-out, transform 9.59s ease-out, visibility 9.59s ease-out; 
 }
 
 
@@ -181,7 +181,7 @@ section.active {
     visibility: visible; /* NOVÁ ŘÁDKA: Zviditelní prvek */
     position: relative;  /* NOVÁ ŘÁDKA: Vrátí prvek do toku dokumentu, aby zabíral místo */
     opacity: 1;
-    transform: translateY(0); /* Důležité: Tuto řádku jsem přidal, pokud tam chyběla */
+    /* Důležité: Tuto řádku jsem přidal, pokud tam chyběla */
 }
 
 
