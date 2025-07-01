@@ -971,6 +971,8 @@ function showSection(id, isInitial = false) {
     }
 
 
+ 
+
 // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
 // DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
 // GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
@@ -1012,9 +1014,6 @@ function openImageModal(index) {
 
     const currentImage = galleryImagesData[currentModalImageIndex];
 
-    // Loading indikátor a plynulý přechod
-    modalImg.style.opacity = '0.5'; // Ztmaví obrázek během načítání
-
     // Použijeme Image objekt pro pre-načítání a zajištění, že se obrázek zobrazí až po plném načtení
     const imgLoader = new Image();
     const finalUrl = currentImage.url + (currentImage.url.includes('?') ? '&' : '?') + `t=${Date.now()}`;
@@ -1022,7 +1021,6 @@ function openImageModal(index) {
     imgLoader.onload = function() {
         modalImg.src = finalUrl; // Nastaví src až po načtení do imgLoader
         modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
-        modalImg.style.opacity = '1'; // Zprůhlední obrázek
         
         // Pre-načtení sousedních obrázků pro plynulou navigaci
         preloadNeighboringImages();
@@ -1032,7 +1030,6 @@ function openImageModal(index) {
          
         modalImg.src = 'https://placehold.co/800x600/cccccc/ffffff?text=Obrázek+nelze+načíst'; // Zástupný obrázek při chybě
         modalImg.alt = `❌ Chyba načítání: ${currentImage.name}`;
-        modalImg.style.opacity = '1';
     };
 
     imgLoader.src = finalUrl; // Spustí načítání do skrytého Image objektu
@@ -1135,7 +1132,7 @@ function addPositionIndicator(index, total, name) {
     indicator.textContent = `${index + 1}/${total} - ${name}`;
 }
 
-// HLAVNÍ OPRAVA: Kompletně přepsaná navigace
+// HLAVNÍ OPRAVA: Kompletně přepsaná navigace - ODSTRANĚNY ANIMACE
 function navigateImageModal(direction) {
     if (galleryImagesData.length === 0) {
         
@@ -1151,19 +1148,8 @@ function navigateImageModal(direction) {
     let newIndex = currentModalImageIndex + direction;
     newIndex = getSafeIndex(newIndex);
 
-    // Plynulý přechod a otevření nového obrázku
-    const modalImg = document.getElementById('modal-img');
-    if (modalImg) {
-        modalImg.style.transition = 'opacity 0.15s ease-in-out'; // Plynulost pro ztmavení
-        modalImg.style.opacity = '0.7'; // Ztmaví obrázek pro plynulý přechod
-
-        // Krátká prodleva pro vizuální efekt přechodu, než se začne načítat nový obrázek
-        setTimeout(() => {
-            openImageModal(newIndex);
-        }, 150); // 150ms pro animaci opacity
-    } else {
-        openImageModal(newIndex);
-    }
+    // Okamžité otevření nového obrázku bez animací
+    openImageModal(newIndex);
 }
 
 // FUNKCE PRO ZAVŘENÍ MODALU
@@ -1238,7 +1224,6 @@ function setupGallery() {
     if (prevBtn) {
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
             navigateImageModal(-1);
         });
     }
@@ -1246,7 +1231,6 @@ function setupGallery() {
     if (nextBtn) {
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
             navigateImageModal(1);
         });
     }
@@ -1266,11 +1250,10 @@ function setupGallery() {
     setupKeyboardNavigation();
 }
 
-// OPRAVENÁ FUNKCE PRO AKTUALIZACI ZOBRAZENÍ GALERIE
+// OPTIMALIZOVANÁ FUNKCE PRO AKTUALIZACI ZOBRAZENÍ GALERIE
 function updateGalleryDisplay() {
     const container = document.getElementById('gallery-container');
     if (!container) {
-         
         return;
     }
 
@@ -1280,73 +1263,69 @@ function updateGalleryDisplay() {
         return;
     }
 
-    container.innerHTML = '';
+    // Optimalizace: Vytvoříme fragment pro lepší výkon
+    const fragment = document.createDocumentFragment();
 
     galleryImagesData.forEach((imgData, index) => {
         const div = document.createElement('div');
         div.className = 'gallery-image-wrapper';
         const isOwner = currentUserId && imgData.userId === currentUserId;
 
-        // Klíčová optimalizace: loading="lazy" pro miniatury
-        div.innerHTML = `
-            <img src="${imgData.url}" alt="${imgData.name || 'Obrázek z galerie'}" loading="lazy"
-                 onerror="this.onerror=null;this.src='https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';this.alt='Obrázek nelze načíst';">
-            <button class="delete-img-btn ${isEditMode && isOwner ? '' : 'hidden'}" title="Smazat obrázek">&times;</button>
-            <i class="fas fa-edit edit-icon ${isEditMode && isOwner ? '' : 'hidden'}" data-image-id="${imgData.id}"></i>
-        `;
+        // Optimalizace: Vytvoříme elementy přímo
+        const img = document.createElement('img');
+        img.src = imgData.url;
+        img.alt = imgData.name || 'Obrázek z galerie';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/250x200/cccccc/ffffff?text=Obrázek+nelze+načíst';
+            this.alt = 'Obrázek nelze načíst';
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = `delete-img-btn ${isEditMode && isOwner ? '' : 'hidden'}`;
+        deleteBtn.title = 'Smazat obrázek';
+        deleteBtn.innerHTML = '&times;';
+
+        const editIcon = document.createElement('i');
+        editIcon.className = `fas fa-edit edit-icon ${isEditMode && isOwner ? '' : 'hidden'}`;
+        editIcon.setAttribute('data-image-id', imgData.id);
 
         // OPRAVA: Správné předání indexu při kliku na obrázek
-        const img = div.querySelector('img');
         img.addEventListener('click', () => {
            openImageModal(index);
         });
 
-        // Delete button
-        const deleteBtn = div.querySelector('.delete-img-btn');
-        if (deleteBtn) {
+        // Delete button event
+        if (isEditMode && isOwner) {
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteGalleryImageFromFirestore(imgData.id);
             });
         }
 
-        // Edit button
-        const editIcon = div.querySelector('.edit-icon');
-        if (editIcon) {
+        // Edit button event
+        if (isEditMode && isOwner) {
             editIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
                 editImage(imgData.id);
             });
         }
 
-        container.appendChild(div);
+        div.appendChild(img);
+        div.appendChild(deleteBtn);
+        div.appendChild(editIcon);
+        fragment.appendChild(div);
     });
+
+    // Vyčistíme container a přidáme všechny elementy najednou
+    container.innerHTML = '';
+    container.appendChild(fragment);
 
     // OPRAVA: Po změně galerie resetujeme index pokud je neplatný
     if (currentModalImageIndex >= galleryImagesData.length) {
         currentModalImageIndex = Math.max(0, galleryImagesData.length - 1);
     }
-}
-
-// VYLEPŠENÁ DEBUG FUNKCE - Nyní by měla být volána jen pro explicitní ladění
-function debugGallery() {
-   
-
-    
-    galleryImagesData.forEach((img, index) => {
-        const indicator = index === currentModalImageIndex ? '👉 AKTUÁLNÍ' : '  ';
-      
-    });
-
- 
-    if (galleryImagesData.length > 0) {
-        const prevIndex = getSafeIndex(currentModalImageIndex - 1);
-        const nextIndex = getSafeIndex(currentModalImageIndex + 1);
-        
-       
-    }
-
-    
 }
 
 // POMOCNÉ FUNKCE (zůstávají stejné)
@@ -1370,7 +1349,6 @@ async function handleAddImageUrl() {
 
     const urlInput = document.getElementById('newImageUrl');
     if (!urlInput) {
-        // console.error("Element #newImageUrl not found for adding gallery image.");
         return;
     }
 
@@ -1399,7 +1377,6 @@ async function handleAddImageUrl() {
 
             hideLoading();
         } catch (error) {
-            // console.error('Chyba při přidávání obrázku do Firestore:', error);
             showAlertModal("Chyba přidání", `Nepodařilo se přidat obrázek: ${error.message}`);
             hideLoading();
         }
@@ -1445,7 +1422,6 @@ async function deleteGalleryImageFromFirestore(idToDelete) {
 
             hideLoading();
         } catch (error) {
-            // console.error('Chyba při mazání obrázku z Firestore:', error);
             showAlertModal("Chyba mazání", `Nepodařilo se smazat obrázek: ${error.message}`);
             hideLoading();
         }
@@ -1506,7 +1482,6 @@ async function saveEditedImage() {
         hideModal(document.getElementById('edit-image-modal'));
         hideLoading();
     } catch (error) {
-        // console.error('Chyba při ukládání upraveného obrázku do Firestore:', error);
         showAlertModal("Chyba ukládání", `Nepodařilo se uložit úpravy obrázku: ${error.message}`);
         hideLoading();
     }
