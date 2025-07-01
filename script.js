@@ -770,46 +770,36 @@ function disableEditMode() {
     }
 
     // --- Navigace a sekce (beze změny) ---
-    function setupNavigation() {
-        const navLinks = document.querySelectorAll('.nav-container a.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const sectionId = link.dataset.section;
-                showSection(sectionId);
-                navLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
-        const initialActiveLink = document.querySelector(`.nav-container a.nav-link[data-section="${activeSection}"]`);
-        if (initialActiveLink) initialActiveLink.classList.add('active');
-    }
-
     function showSection(id, isInitial = false) {
-        if (!id) id = 'about';
-        activeSection = id;
-        document.querySelectorAll('main section').forEach(section => {
-            section.classList.remove('active');
-            if (!(isInitial && section.id === id)) {
-                section.style.display = 'none';
-            }
-        });
-        const sectionElement = document.getElementById(id);
-        if (sectionElement) {
-            sectionElement.style.display = 'block';
-            setTimeout(() => sectionElement.classList.add('active'), 10);
-        } else {
-            console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
-            const aboutSection = document.getElementById('about');
-            if(aboutSection) {
-                aboutSection.style.display = 'block';
-                setTimeout(() => aboutSection.classList.add('active'), 10);
-                activeSection = 'about';
-                document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
-                document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
-            }
+    if (!id) id = 'about';
+    activeSection = id;
+
+    // KROK A: Odebereme 'active' třídu ze všech sekcí
+    // (a tím se díky CSS pravidlům skryjí přes visibility/opacity)
+    document.querySelectorAll('main section').forEach(section => {
+        section.classList.remove('active');
+        // Zde jsme odstranili: section.style.display = 'none';
+        // Nyní to řeší CSS pravidlo pro section:not(.active)
+    });
+
+    const sectionElement = document.getElementById(id);
+    if (sectionElement) {
+        // KROK B: Přidáme 'active' třídu na vybranou sekci
+        // (a tím se díky CSS pravidlům zviditelní přes visibility/opacity)
+        sectionElement.classList.add('active'); // Přidáme aktivní třídu hned
+        // Zde jsme odstranili: sectionElement.style.display = 'block';
+        // A také setTimeout, protože třída 'active' teď ovládá i zobrazení
+    } else {
+        console.warn(`Sekce s ID "${id}" nebyla nalezena. Zobrazuji 'about'.`);
+        const aboutSection = document.getElementById('about');
+        if(aboutSection) {
+            aboutSection.classList.add('active'); // Také přidáme aktivní třídu hned
+            activeSection = 'about';
+            document.querySelectorAll('.nav-container a.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-container a.nav-link[data-section="about"]')?.classList.add('active');
         }
     }
+}
 
     // --- HTML Editor (ukládá do Firestore) ---
     function setupHtmlEditor() {
