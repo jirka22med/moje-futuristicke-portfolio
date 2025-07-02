@@ -81,7 +81,7 @@ nav {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-.nav-link {
+.nav-link, .cela-obrazovka  {
     color: white;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -93,7 +93,7 @@ nav {
     font-size: 0.9rem;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover, .nav-link.active, .cela-obrazovka:hover, .cela-obrazovka.active {
     background: rgba(255, 255, 255, 0.25);
      
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
