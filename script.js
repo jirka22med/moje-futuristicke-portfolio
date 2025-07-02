@@ -2963,6 +2963,7 @@ div#url-edit-modal .url-modal-buttons #url-edit-cancel-btn:hover,
                 objectFit: 'contain', 
                 borderRadius: '6px',
                 border: '1px solid #5cb85c'
+             }
              },                                         
         'zly-obrazek-5': {
             src: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/Tutorial.jpg?ver=0',
