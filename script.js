@@ -2947,7 +2947,7 @@ div#url-edit-modal .url-modal-buttons #url-edit-cancel-btn:hover,
                 borderRadius: '6px',
                 border: '1px solid #a0a0a0'
             }
-        },
+        },                                         
         'zly-obrazek-4': {
             src: 'https://img40.rajce.idnes.cz/d4003/19/19517/19517492_984d6887838eae80a8eb677199393188/images/mapy-html-kodu.jpg?ver=0',
             desktop: { 
@@ -2956,6 +2956,22 @@ div#url-edit-modal .url-modal-buttons #url-edit-cancel-btn:hover,
                 objectFit: 'cover', 
                 borderRadius: '12px',
                 border: '5px solid #5cb85c' // Příklad: zelený rámeček
+            },
+            mobile: { 
+                width: '100%', 
+                height: 'auto', 
+                objectFit: 'contain', 
+                borderRadius: '6px',
+                border: '1px solid #5cb85c'
+             },                                         
+        'zly-obrazek-5': {
+            src: 'https://img41.rajce.idnes.cz/d4102/19/19244/19244630_db82ad174937335b1a151341387b7af2/images/Tutorial.jpg?ver=0',
+            desktop: { 
+                width: '450px', 
+                height: '250px', 
+                objectFit: 'cover', 
+                borderRadius: '12px',
+                border: '5px solid #FF00FF' // Příklad: zelený rámeček
             },
             mobile: { 
                 width: '100%', 
