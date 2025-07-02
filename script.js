@@ -1037,7 +1037,7 @@ function openImageModal(index) {
     modalImg.style.opacity = '1';
     modalImg.onload = function() {
         console.log(`✅ Obrázek načten: ${currentImage.name}`);
-        //modalImg.style.opacity = '1';
+        modalImg.style.opacity = '1';
     };
     
     modalImg.onerror = function() {
@@ -1158,8 +1158,8 @@ function navigateImageModal(direction) {
     // Plynulý přechod
     const modalImg = document.getElementById('modal-img');
     if (modalImg) {
-       // modalImg.style.transition = 'opacity 0';
-        //modalImg.style.opacity = '0';
+         modalImg.style.transition = 'opacity 0';
+        modalImg.style.opacity = '0';
         
          {
             openImageModal(newIndex);
