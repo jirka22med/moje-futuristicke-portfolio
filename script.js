@@ -2011,46 +2011,67 @@ function addPortfolioItem() {
         }
     }
 
-    async function deletePortfolioItem() {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
-            return;
-        }
-        if (!editingPortfolioItemId) return;
+    // Asynchronní funkce pro smazání položky portfolia
+async function deletePortfolioItem() {
+    // Krok A: Kontrola, zda je uživatel přihlášen.
+    // Pokud není, zobrazí varování a ukončí funkci.
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
+        return;
+    }
+    // Krok B: Kontrola, zda existuje itemId pro editaci.
+    // Pokud ne, ukončí funkci (nemá co mazat).
+    if (!editingPortfolioItemId) return;
 
-        if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
-            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
-            return;
-        }
+    // Krok C: Kontrola oprávnění uživatele.
+    // Uživatel může smazat pouze své vlastní položky.
+    if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
+        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
+        return;
+    }
 
-        const confirmed = await (window.showConfirmModal ?
-            showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
-            confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
-        );
+    // Krok D: ZAVŘENÍ HLAVNÍHO MODALU A RESETOVÁNÍ STAVU EDITACE.
+    // TENTO KÓD JE NYNÍ PŘED ZOBRAZENÍM POTVRZOVACÍHO MODALU,
+    // což zajišťuje, že se hlavní modál 'edit-portfolio-modal' zavře okamžitě po kliknutí na "Smazat položku".
+    hideModal(document.getElementById('edit-portfolio-modal'));
+    editingPortfolioItemId = null; // Resetuje ID editované položky, protože editace této položky je u konce.
 
-        if (confirmed) {
-            showLoading("Mažu položku portfolia...");
-            try {
-                delete editableContentData[`${editingPortfolioItemId}-title`];
-                delete editableContentData[`${editingPortfolioItemId}-desc-1`];
-                delete editableContentData[`${editingPortfolioItemId}-desc-2`];
-                delete editableContentData[`${editingPortfolioItemId}-link-text`];
-                delete editableContentData[`${editingPortfolioItemId}-link-url`];
-                delete editableContentData[`${editingPortfolioItemId}-userId`];
-                delete editableContentData[`${editingPortfolioItemId}-createdAt`]; // ZMĚNA ZDE: Smažeme i createdAt
+    // Krok E: Zobrazení potvrzovacího modalu.
+    // Používá buď vlastní showConfirmModal (pokud je definován), nebo standardní confirm().
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
+        confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
+    );
 
-                await saveDataToFirestore();
-                showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu.");
-                hideLoading();
-            } catch (error) {
-                console.error('Chyba při mazání položky portfolia z Firestore:', error);
-                showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
-                hideLoading();
-            }
-            hideModal(document.getElementById('edit-portfolio-modal'));
-            editingPortfolioItemId = null;
+    // Krok F: Provedení smazání, pokud uživatel potvrdil.
+    if (confirmed) {
+        showLoading("Mažu položku portfolia..."); // Zobrazí indikátor načítání
+        try {
+            // Smazání všech relevantních datových polí pro danou položku z editableContentData.
+            delete editableContentData[`${editingPortfolioItemId}-title`];
+            delete editableContentData[`${editingPortfolioItemId}-desc-1`];
+            delete editableContentData[`${editingPortfolioItemId}-desc-2`];
+            delete editableContentData[`${editingPortfolioItemId}-link-text`];
+            delete editableContentData[`${editingPortfolioItemId}-link-url`];
+            delete editableContentData[`${editingPortfolioItemId}-userId`];
+            delete editableContentData[`${editingPortfolioItemId}-createdAt`];
+            // DŮLEŽITÉ: Smazání i YouTube URL, pokud existuje
+            delete editableContentData[`${editingPortfolioItemId}-youtube-url`]; 
+
+            await saveDataToFirestore(); // Uloží změny do Firestore
+            showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu."); // Zobrazí potvrzení
+            hideLoading(); // Skryje indikátor načítání
+        } catch (error) {
+            // Zachycení a zobrazení chyby, pokud se smazání nezdaří.
+            console.error('Chyba při mazání položky portfolia z Firestore:', error);
+            showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
+            hideLoading();
         }
     }
+    // Pokud uživatel zruší smazání v potvrzovacím modalu, hlavní editovací modal je již zavřen.
+    // Není potřeba zde znovu volat hideModal.
+}
+
 
     // --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
     (function() {
