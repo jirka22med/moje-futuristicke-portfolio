@@ -313,12 +313,17 @@
             }
 
             .jirik-log-controls .jirik-button {
-                padding: 10px 20px !important;
-                border: none !important;
-                border-radius: 5px !important;
-                cursor: pointer !important;
-                font-size: 1em !important;
-                transition: background-color 0.3s ease !important;
+                color: #FF7F50 !important;
+    text-decoration: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 25px !important;
+    transition: all 0.3s ease !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    font-size: 1em !important;
+    border: none !important;
+    cursor: pointer !important;
             }
 
             .jirik-log-controls .jirik-btn-danger {
