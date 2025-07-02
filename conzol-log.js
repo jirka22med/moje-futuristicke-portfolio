@@ -493,7 +493,7 @@
                 openJirikModalBtn = document.createElement('button');
                 openJirikModalBtn.id = 'jirik-open-modal-btn';
                 openJirikModalBtn.className = 'button custom-button'; // Přidáme tvé třídy
-                openJirikModalBtn.textContent = 'Zobrazit konzoli (Jiřík)';
+                openJirikModalBtn.textContent = '📋';
                 
                 dataManagementContainer.appendChild(openJirikModalBtn);
                 originalConsole.log('✅ Tlačítko pro otevření konzole (Jiřík) bylo úspěšně vytvořeno a navázáno do .function-setupDataManagement .data-management-container!');
