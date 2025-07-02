@@ -990,7 +990,7 @@ function showSection(id, isInitial = false) {
 
  
 
-    // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
+   // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
 // DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
 // GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
 let currentModalImageIndex = 0; // <-- DŮLEŽITÉ: Musí být definovaná někde na začátku!
@@ -1003,7 +1003,7 @@ function getSafeIndex(index) {
     return index;
 }
 
-// HLAVNÍ FUNKCE PRO OTEVŘENÍ MODALU S OPRAVOU INDEXOVÁNÍ
+// HLAVNÍ FUNKCE PRO OTEVŘENÍ MODALU - ZPĚT K JEDNODUCHOSTI
 function openImageModal(index) {
     console.log(`🚀 openImageModal voláno s indexem: ${index}, celkem obrázků: ${galleryImagesData.length}`);
     
@@ -1019,7 +1019,7 @@ function openImageModal(index) {
         return;
     }
     
-    // KLÍČOVÁ OPRAVA: Vždy nastav index, i když už je modal otevřený
+    // KLÍČOVÁ OPRAVA: Vždy nastav index
     currentModalImageIndex = safeIndex;
     console.log(`✅ Nastavuji currentModalImageIndex na: ${currentModalImageIndex}`);
     
@@ -1040,8 +1040,9 @@ function openImageModal(index) {
     const currentImage = galleryImagesData[currentModalImageIndex];
     console.log(`📸 Zobrazuji obrázek: "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
     
-    // OPRAVA: Plynulejší loading
-    modalImg.style.opacity = '0.7'; // Mírné ztmavení během načítání
+    // JEDNODUCHÉ loading
+    modalImg.style.transition = 'opacity 0.15s ease-out';
+    modalImg.style.opacity = '0.8';
     
     modalImg.onload = function() {
         console.log(`✅ Obrázek načten: ${currentImage.name}`);
@@ -1059,7 +1060,7 @@ function openImageModal(index) {
     modalImg.src = finalUrl;
     modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
     
-    // OPRAVA: Aktualizace všech indikátorů
+    // Aktualizace všech indikátorů
     updateAllIndicators();
     
     // Otevři modal pouze pokud není už otevřený
@@ -1141,8 +1142,16 @@ function addPositionIndicator(index, total, name) {
     console.log(`📍 Indikátor aktualizován: ${indicator.textContent}`);
 }
 
-// KLÍČOVÁ OPRAVA: Kompletně přepracovaná navigace
+// JEDNODUŠE OPTIMALIZOVANÁ NAVIGACE - bez cache komplikací
+let isNavigating = false; // Jen anti-spam ochrana
+
 function navigateImageModal(direction) {
+    // Zabránění spam klikání
+    if (isNavigating) {
+        console.log('⏳ Navigace již probíhá...');
+        return;
+    }
+    
     console.log(`🧭 NAVIGACE: směr=${direction}, současný index=${currentModalImageIndex}`);
     console.log(`📊 Stav galerie: ${galleryImagesData.length} obrázků`);
     
@@ -1153,40 +1162,54 @@ function navigateImageModal(direction) {
     
     if (galleryImagesData.length === 1) {
         console.log('ℹ️ Pouze jeden obrázek - zůstáváme na místě');
-        updateAllIndicators(); // Aktualizuj indikátory pro jistotu
+        updateAllIndicators();
         return;
     }
     
-    // OPRAVA: Výpočet nového indexu s DEBUG informacemi
+    isNavigating = true;
+    
+    // BEZPEČNÝ výpočet nového indexu - STEP BY STEP DEBUG
     const oldIndex = currentModalImageIndex;
-    let newIndex = currentModalImageIndex + direction;
+    console.log(`🔢 PŘED: currentModalImageIndex = ${oldIndex}`);
     
-    console.log(`🔄 Před getSafeIndex: oldIndex=${oldIndex}, newIndex=${newIndex}, direction=${direction}`);
+    let rawNewIndex = currentModalImageIndex + direction;
+    console.log(`🔢 RAW: ${oldIndex} + ${direction} = ${rawNewIndex}`);
     
-    newIndex = getSafeIndex(newIndex);
+    let safeNewIndex = getSafeIndex(rawNewIndex);
+    console.log(`🔢 SAFE: getSafeIndex(${rawNewIndex}) = ${safeNewIndex}`);
     
-    console.log(`➡️ Po getSafeIndex: ${oldIndex} → ${newIndex}`);
-    console.log(`🖼️ Nový obrázek: "${galleryImagesData[newIndex]?.name || 'NEZNÁMÝ'}"`);
+    // KRITICKY DŮLEŽITÉ: Nastav index JEDNOZNAČNĚ
+    currentModalImageIndex = safeNewIndex;
+    console.log(`🔢 FINÁL: currentModalImageIndex nastaveno na ${currentModalImageIndex}`);
     
-    // KRITICKÁ OPRAVA: Nepoužívej openImageModal pro navigaci!
-    // Jen aktualizuj aktuální index a obrázek
-    currentModalImageIndex = newIndex;
+    // OVĚŘENÍ že se opravdu nastavilo
+    if (currentModalImageIndex !== safeNewIndex) {
+        console.error(`❌ FATÁLNÍ CHYBA: Index se nenastavil správně! Očekáváno: ${safeNewIndex}, Skutečnost: ${currentModalImageIndex}`);
+        currentModalImageIndex = safeNewIndex; // Force fix
+    }
+    
+    // OKAMŽITÁ aktualizace indikátorů
+    updateAllIndicators();
     
     const modalImg = document.getElementById('modal-img');
     if (modalImg) {
         const currentImage = galleryImagesData[currentModalImageIndex];
+        console.log(`🖼️ Zobrazuji: "${currentImage.name}" na indexu ${currentModalImageIndex}`);
         
-        // Plynulý přechod
-        modalImg.style.opacity = '0.7';
+        // RYCHLÁ vizuální odezva
+        modalImg.style.transition = 'opacity 0.1s ease-out';
+        modalImg.style.opacity = '0.8';
         
         modalImg.onload = function() {
-            console.log(`✅ Navigace dokončena: ${currentImage.name}`);
+            console.log(`✅ Navigace dokončena: "${currentImage.name}" na indexu ${currentModalImageIndex}`);
             modalImg.style.opacity = '1';
+            isNavigating = false; // Uvolni navigaci
         };
         
         modalImg.onerror = function() {
-            console.error(`❌ Chyba při navigaci: ${currentImage.name}`);
+            console.error(`❌ Chyba při navigaci: "${currentImage.name}" na indexu ${currentModalImageIndex}`);
             modalImg.style.opacity = '1';
+            isNavigating = false; // Uvolni navigaci i při chybě
         };
         
         // Nastavení nového obrázku
@@ -1194,10 +1217,9 @@ function navigateImageModal(direction) {
         modalImg.src = finalUrl;
         modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
         
-        // Aktualizace indikátorů
-        updateAllIndicators();
-        
-        console.log(`🎯 Navigace úspěšná: index=${currentModalImageIndex}, obrázek="${currentImage.name}"`);
+        console.log(`🎯 NAVIGACE HOTOVÁ: Zobrazuji obrázek "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
+    } else {
+        isNavigating = false; // Uvolni i když není modalImg
     }
 }
 
