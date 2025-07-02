@@ -55,7 +55,8 @@
         <button id="export-data-btn" class="button btn-secondary">📤 Export</button>
         <button id="import-data-btn" class="button btn-secondary">📥 Import</button>
         
-        <button id="logout-button" class="button btn-danger hidden" onclick="signOut()">Odhlásit se</button>
+       <button id="logout-button" class="button btn-danger hidden" onclick="signOut()"> <i data-lucide="log-out"></i> </button>
+
     </div>
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
 </div>
@@ -423,5 +424,8 @@
 <script src="script.js"></script>
      
   <script src="conzol-log.js"></script> 
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>lucide.createIcons();</script>
+
     </body>
 </html>
