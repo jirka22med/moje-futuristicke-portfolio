@@ -990,7 +990,7 @@ function showSection(id, isInitial = false) {
 
  
 
-      // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
+    // --- Galerie (ukládá do Firestore) s podporou klávesových zkratek ---
 // DŮLEŽITÉ: Definuj globální proměnnou na začátku skriptu
 // GLOBÁLNÍ PROMĚNNÁ PRO AKTUÁLNÍ INDEX
 let currentModalImageIndex = 0; // <-- DŮLEŽITÉ: Musí být definovaná někde na začátku!
@@ -1003,7 +1003,7 @@ function getSafeIndex(index) {
     return index;
 }
 
-// HLAVNÍ FUNKCE PRO OTEVŘENÍ MODALU S OPRAVOU INDEXOVÁNÍ
+// HLAVNÍ FUNKCE PRO OTEVŘENÍ MODALU S OPRAVOU INDEXOVÁNÍ + PRELOAD
 function openImageModal(index) {
     console.log(`🚀 openImageModal voláno s indexem: ${index}, celkem obrázků: ${galleryImagesData.length}`);
     
@@ -1041,11 +1041,15 @@ function openImageModal(index) {
     console.log(`📸 Zobrazuji obrázek: "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
     
     // OPRAVA: Plynulejší loading
-    modalImg.style.opacity = '0.7'; // Mírné ztmavení během načítání
+    modalImg.style.transition = 'opacity 0.2s ease-out';
+    modalImg.style.opacity = '0.7';
     
     modalImg.onload = function() {
         console.log(`✅ Obrázek načten: ${currentImage.name}`);
         modalImg.style.opacity = '1';
+        
+        // NOVĚ: Spusť preload po načtení hlavního obrázku
+        setTimeout(() => preloadAdjacentImages(), 100);
     };
     
     modalImg.onerror = function() {
@@ -1141,10 +1145,18 @@ function addPositionIndicator(index, total, name) {
     console.log(`📍 Indikátor aktualizován: ${indicator.textContent}`);
 }
 
-// KLÍČOVÁ OPRAVA: Kompletně přepracovaná navigace
+// OPTIMALIZOVANÁ NAVIGACE: Rychlá odezva tlačítek
+let isNavigating = false; // Zabránění spam klikání
+let preloadedImages = new Map(); // Cache pro rychlejší načítání
+
 function navigateImageModal(direction) {
+    // Zabránění spam klikání
+    if (isNavigating) {
+        console.log('⏳ Navigace již probíhá...');
+        return;
+    }
+    
     console.log(`🧭 NAVIGACE: směr=${direction}, současný index=${currentModalImageIndex}`);
-    console.log(`📊 Stav galerie: ${galleryImagesData.length} obrázků`);
     
     if (galleryImagesData.length === 0) {
         console.warn('⚠️ Nelze navigovat - prázdná galerie!');
@@ -1153,52 +1165,99 @@ function navigateImageModal(direction) {
     
     if (galleryImagesData.length === 1) {
         console.log('ℹ️ Pouze jeden obrázek - zůstáváme na místě');
-        updateAllIndicators(); // Aktualizuj indikátory pro jistotu
+        updateAllIndicators();
         return;
     }
     
-    // OPRAVA: Výpočet nového indexu s DEBUG informacemi
+    isNavigating = true;
+    
+    // RYCHLÝ výpočet nového indexu
     const oldIndex = currentModalImageIndex;
-    let newIndex = currentModalImageIndex + direction;
+    let newIndex = getSafeIndex(currentModalImageIndex + direction);
     
-    console.log(`🔄 Před getSafeIndex: oldIndex=${oldIndex}, newIndex=${newIndex}, direction=${direction}`);
+    console.log(`⚡ Rychlá navigace: ${oldIndex} → ${newIndex}`);
     
-    newIndex = getSafeIndex(newIndex);
-    
-    console.log(`➡️ Po getSafeIndex: ${oldIndex} → ${newIndex}`);
-    console.log(`🖼️ Nový obrázek: "${galleryImagesData[newIndex]?.name || 'NEZNÁMÝ'}"`);
-    
-    // KRITICKÁ OPRAVA: Nepoužívej openImageModal pro navigaci!
-    // Jen aktualizuj aktuální index a obrázek
+    // OKAMŽITÁ aktualizace indexu a indikátorů
     currentModalImageIndex = newIndex;
+    updateAllIndicators(); // Aktualizuj indikátory HNED
     
     const modalImg = document.getElementById('modal-img');
     if (modalImg) {
         const currentImage = galleryImagesData[currentModalImageIndex];
         
-        // Plynulý přechod
-        modalImg.style.opacity = '0.7';
+        // OKAMŽITÁ vizuální odezva
+        modalImg.style.transition = 'opacity 0.15s ease-out';
+        modalImg.style.opacity = '0.8';
         
-        modalImg.onload = function() {
-            console.log(`✅ Navigace dokončena: ${currentImage.name}`);
+        // Zkontroluj cache
+        const imageKey = `${currentModalImageIndex}_${currentImage.url}`;
+        const cachedImg = preloadedImages.get(imageKey);
+        
+        if (cachedImg && cachedImg.complete) {
+            // CACHE HIT - okamžité zobrazení
+            console.log(`⚡ Cache hit: ${currentImage.name}`);
+            modalImg.src = cachedImg.src;
+            modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
             modalImg.style.opacity = '1';
-        };
-        
-        modalImg.onerror = function() {
-            console.error(`❌ Chyba při navigaci: ${currentImage.name}`);
-            modalImg.style.opacity = '1';
-        };
-        
-        // Nastavení nového obrázku
-        const finalUrl = currentImage.url + (currentImage.url.includes('?') ? '&' : '?') + `t=${Date.now()}`;
-        modalImg.src = finalUrl;
-        modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
-        
-        // Aktualizace indikátorů
-        updateAllIndicators();
-        
-        console.log(`🎯 Navigace úspěšná: index=${currentModalImageIndex}, obrázek="${currentImage.name}"`);
+            isNavigating = false;
+            
+            // Preload dalších obrázků
+            preloadAdjacentImages();
+        } else {
+            // CACHE MISS - standardní načítání
+            console.log(`🔄 Načítám: ${currentImage.name}`);
+            
+            const finalUrl = currentImage.url + (currentImage.url.includes('?') ? '&' : '?') + `t=${Date.now()}`;
+            
+            modalImg.onload = function() {
+                console.log(`✅ Navigace dokončena: ${currentImage.name}`);
+                modalImg.style.opacity = '1';
+                isNavigating = false;
+                
+                // Uložit do cache
+                const img = new Image();
+                img.src = finalUrl;
+                preloadedImages.set(imageKey, img);
+                
+                // Preload dalších obrázků
+                preloadAdjacentImages();
+            };
+            
+            modalImg.onerror = function() {
+                console.error(`❌ Chyba při navigaci: ${currentImage.name}`);
+                modalImg.style.opacity = '1';
+                isNavigating = false;
+            };
+            
+            modalImg.src = finalUrl;
+            modalImg.alt = `${currentImage.name} (${currentModalImageIndex + 1}/${galleryImagesData.length})`;
+        }
     }
+}
+
+// NOVÁ FUNKCE: Preload sousedních obrázků pro rychlejší navigaci
+function preloadAdjacentImages() {
+    if (galleryImagesData.length <= 1) return;
+    
+    // Preload předchozí a následující obrázek
+    const prevIndex = getSafeIndex(currentModalImageIndex - 1);
+    const nextIndex = getSafeIndex(currentModalImageIndex + 1);
+    
+    [prevIndex, nextIndex].forEach(index => {
+        if (index >= 0 && index < galleryImagesData.length) {
+            const image = galleryImagesData[index];
+            const imageKey = `${index}_${image.url}`;
+            
+            if (!preloadedImages.has(imageKey)) {
+                const img = new Image();
+                img.src = image.url;
+                img.onload = () => {
+                    preloadedImages.set(imageKey, img);
+                    console.log(`🚀 Preloaded: ${image.name}`);
+                };
+            }
+        }
+    });
 }
 
 // ZACHOVÁNO: Funkce pro zavření modalu
