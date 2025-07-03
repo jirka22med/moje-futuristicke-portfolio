@@ -81,10 +81,10 @@
                 
                 if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                     enableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = '🖖🏻'; // Upraveno
                 } else {
                     disableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
                 }
             } else {
                 console.log('Uživatel není přihlášen přes Supabase.');
