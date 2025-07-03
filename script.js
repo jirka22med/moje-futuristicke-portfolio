@@ -2178,7 +2178,7 @@ function addPortfolioItem() {
             `;
             innerContainer.style.cssText += `
                 display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
+                grid-template-columns: repeat(5, 1fr) !important;
                 gap: 0.6rem !important;
                 justify-items: center !important;
                 align-items: center !important;
