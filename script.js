@@ -1,4 +1,4 @@
- // --- Supabase Konstanty pro AUTENTIZACI ---  
+ // --- Supabase Konstanty pro AUTENTIZACI ---
     const SUPABASE_URL = 'https://aknjpurxdbtsxillmqbd.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrbmpwdXJ4ZGJ0c3hpbGxtcWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgxOTEzMzAsImV4cCI6MjA2Mzc2NzMzMH0.otk-74BBM-SwC_zA0WqqcwGVab5lBfrLiyeYOmh4Xio';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -77,14 +77,14 @@
                 if (currentUserId && userIdDisplaySpan && userIdContainer) {
                     userIdDisplaySpan.textContent = currentUserId;
                     userIdContainer.classList.remove('hidden');
-                }
+                }                                                                                
                 
                 if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                     enableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = ' 💾'; // Upraveno
                 } else {
                     disableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = '🔧'; // Upraveno
                 }
             } else {
                 console.log('Uživatel není přihlášen přes Supabase.');
