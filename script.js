@@ -2074,10 +2074,81 @@ function addPortfolioItem() {
     function showDataManagementButtons() {
         const container = document.querySelector('.function-setupDataManagement');
         if (container) {
-            container.style.display = 'flex'; // Změna na flex, pokud používáš flexbox pro layout
-            // applyDataManagementResponsiveStyles(); // Toto se nyní volá v initDataManagementVisibility a na resize
+            container.style.display = 'flex'; // Zobrazí kontejner (flex)
+            // applyDataManagementResponsiveStyles() se volá v initDataManagementVisibility a na resize
         }
     }
+
+    // Funkce pro aplikaci ZÁKLADNÍCH vizuálních stylů kontejneru a tlačítek
+    // Tyto styly se aplikují jednou a nemění se s responsivitou (pokud nejsou explicitně přepsány)
+    function applyBaseVisualStyles() {
+        const container = document.querySelector('.function-setupDataManagement');
+        const innerContainer = document.querySelector('.function-setupDataManagement .data-management-container');
+        const buttons = document.querySelectorAll('.function-setupDataManagement .button');
+        const logoutBtn = document.getElementById('logout-button');
+
+        // Základní styly pro vnější kontejner
+        if (container) {
+            container.style.cssText = `
+                justify-content: center !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                border-radius: 10px !important;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+            `;
+        }
+
+        // Základní styly pro vnitřní kontejner
+        if (innerContainer) {
+            innerContainer.style.cssText = `
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+            `;
+        }
+
+        // Základní vizuální styly pro všechna tlačítka (kromě responzivních vlastností)
+        const baseButtonVisuals = `
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(5px) !important;
+            -webkit-backdrop-filter: blur(5px) !important;
+            border: none !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+            border-radius: 10px !important;
+        `;
+
+        const baseColorStyles = {
+            saveBtn: `color: white !important;`,
+            clearBtn: `color: red !important;`,
+            exportBtn: `color: white !important;`,
+            importBtn: `color: white !important;`,
+            logoutBtn: `color: red !important;`
+        };
+
+        // Aplikace základních vizuálních stylů a barev
+        if (document.getElementById('save-all-data-btn')) {
+            document.getElementById('save-all-data-btn').style.cssText = baseButtonVisuals + baseColorStyles.saveBtn;
+        }
+        if (document.getElementById('clear-all-data-btn')) {
+            document.getElementById('clear-all-data-btn').style.cssText = baseButtonVisuals + baseColorStyles.clearBtn;
+        }
+        if (document.getElementById('export-data-btn')) {
+            document.getElementById('export-data-btn').style.cssText = baseButtonVisuals + baseColorStyles.exportBtn;
+        }
+        if (document.getElementById('import-data-btn')) {
+            document.getElementById('import-data-btn').style.cssText = baseButtonVisuals + baseColorStyles.importBtn;
+        }
+        if (logoutBtn) {
+            // Logout tlačítko má specifický padding
+            logoutBtn.style.cssText = `
+                padding: 0.1rem 1rem !important; /* Zachování původního paddingu */
+                ${baseButtonVisuals}
+                ${baseColorStyles.logoutBtn}
+            `;
+        }
+    }
+
 
     // NOVÁ FUNKCE: Aplikace responzivních stylů pro kontejner tlačítek
     function applyDataManagementResponsiveStyles() {
@@ -2089,26 +2160,16 @@ function addPortfolioItem() {
             return;
         }
 
+        // KLÍČOVÁ OPRAVA: Kontrola, zda je kontejner viditelný před aplikací stylů
+        // Pokud je kontejner skrytý, neaplikujeme styly, které by ho mohly zobrazit
+        if (container.style.display === 'none') {
+            return;
+        }
+
         const width = window.innerWidth;
 
-        // Aplikace základních stylů pro kontejner, které se nemění s responsivitou
-        // DŮLEŽITÉ: Nyní se zde NENASTAVUJE 'display', ten řídí show/hideDataManagementButtons
-        container.style.justifyContent = 'center';
-        container.style.margin = '0 auto';
-        container.style.border = '1px solid rgba(255, 255, 255, 0.2)';
-        container.style.padding = '1rem';
-        container.style.borderRadius = '10px';
-        container.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-
-        // Aplikace základních stylů pro vnitřní kontejner
-        innerContainer.style.justifyContent = 'center';
-        innerContainer.style.flexWrap = 'wrap';
-
-
-        // Resetování responzivních stylů pro tlačítka před aplikací nových
-        // Základní styly (barva, přechody, pozadí atd.) jsou aplikovány v initDataManagementVisibility
+        // --- Reset responzivních stylů pro tlačítka (pouze ty, které se mění v media queries) ---
         buttons.forEach(btn => {
-            // Resetujeme jen ty vlastnosti, které se mění v media queries
             btn.style.padding = '';
             btn.style.fontSize = '';
             btn.style.margin = '';
@@ -2117,22 +2178,9 @@ function addPortfolioItem() {
             btn.style.whiteSpace = '';
             btn.style.overflow = '';
             btn.style.textOverflow = '';
-            // Znovu aplikujeme základní vizuální styl (kromě barvy, která je specifická)
-            btn.style.cssText += `
-                text-decoration: none !important;
-                transition: all 0.3s ease !important;
-                background: rgba(255, 255, 255, 0.1) !important;
-                backdrop-filter: blur(5px) !important;
-                -webkit-backdrop-filter: blur(5px) !important;
-                border: none !important;
-                cursor: pointer !important;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-                border-radius: 10px !important; /* Důležité pro zaoblení */
-            `;
         });
 
-
-        // Aplikace responzivních stylů na základě šířky okna
+        // --- Aplikace responzivních stylů na základě šířky okna ---
         if (width >= 768) {
             // Tablet landscape a větší (notebook)
             container.style.maxWidth = '800px';
@@ -2231,8 +2279,10 @@ function addPortfolioItem() {
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    if (body.classList.contains('edit-mode')) { // OPRAVENO: .Contains na .contains
+                    if (body.classList.contains('edit-mode')) {
                         showDataManagementButtons();
+                        // Aplikace responzivních stylů pouze po zobrazení
+                        applyDataManagementResponsiveStyles();
                     } else {
                         hideDataManagementButtons();
                     }
@@ -2245,9 +2295,10 @@ function addPortfolioItem() {
             attributeFilter: ['class']
         });
 
-        // Kontrola současného stavu při načtení
-        if (body.classList.contains('edit-mode')) { // OPRAVENO: .Contains na .contains
+        // OPRAVENÁ KONTROLA: Nejdříve kontrola stavu, pak aplikace stylů
+        if (body.classList.contains('edit-mode')) {
             showDataManagementButtons();
+            applyDataManagementResponsiveStyles();
         } else {
             hideDataManagementButtons();
         }
@@ -2255,66 +2306,9 @@ function addPortfolioItem() {
 
     // Inicializace
     function initDataManagementVisibility() {
-        hideDataManagementButtons(); // Skryje kontejner na začátku
-        observeEditMode(); // Nastaví sledování edit režimu
-        applyDataManagementResponsiveStyles(); // Aplikuje responzivní styly na základě aktuální velikosti okna
-
-        // --- APLIKACE SPECIFICKÝCH BAREV TLAČÍTEK (nemění se s responsivitou) ---
-        // Tyto styly se aplikují pouze jednou při inicializaci
-        const saveBtn = document.getElementById('save-all-data-btn');
-        const clearBtn = document.getElementById('clear-all-data-btn');
-        const exportBtn = document.getElementById('export-data-btn');
-        const importBtn = document.getElementById('import-data-btn');
-        const logoutBtn = document.getElementById('logout-button');
-
-        const baseColorStyles = {
-            saveBtn: `color: white !important;`,
-            clearBtn: `color: red !important;`,
-            exportBtn: `color: white !important;`,
-            importBtn: `color: white !important;`,
-            logoutBtn: `color: red !important;`
-        };
-
-        // Aplikujeme základní vizuální styl a poté barvu
-        const applyBaseVisualsAndColor = (element, colorStyle) => {
-            if (element) {
-                element.style.cssText = `
-                    text-decoration: none !important;
-                    transition: all 0.3s ease !important;
-                    background: rgba(255, 255, 255, 0.1) !important;
-                    backdrop-filter: blur(5px) !important;
-                    -webkit-backdrop-filter: blur(5px) !important;
-                    border: none !important;
-                    cursor: pointer !important;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-                    border-radius: 10px !important; /* Důležité pro zaoblení */
-                    ${colorStyle}
-                `;
-            }
-        };
-
-        applyBaseVisualsAndColor(saveBtn, baseColorStyles.saveBtn);
-        applyBaseVisualsAndColor(clearBtn, baseColorStyles.clearBtn);
-        applyBaseVisualsAndColor(exportBtn, baseColorStyles.exportBtn);
-        applyBaseVisualsAndColor(importBtn, baseColorStyles.importBtn);
-
-        if (logoutBtn) {
-            // Logout tlačítko má specifický padding
-            logoutBtn.style.cssText = `
-                padding: 0.1rem 1rem !important; /* Zachování původního paddingu */
-                text-decoration: none !important;
-                transition: all 0.3s ease !important;
-                background: rgba(255, 255, 255, 0.1) !important;
-                backdrop-filter: blur(5px) !important;
-                -webkit-backdrop-filter: blur(5px) !important;
-                border: none !important;
-                cursor: pointer !important;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-                border-radius: 10px !important;
-                ${baseColorStyles.logoutBtn}
-            `;
-        }
-        // --- KONEC APLIKACE SPECIFICKÝCH BAREV ---
+        // OPRAVENÉ POŘADÍ: Nejdříve aplikace základních stylů, pak kontrola stavu
+        applyBaseVisualStyles(); // Aplikuje základní vizuální styly
+        observeEditMode(); // Nastaví sledování edit režimu a kontroluje aktuální stav
     }
 
     if (document.readyState === 'loading') {
@@ -2326,8 +2320,14 @@ function addPortfolioItem() {
     window.hideDataManagementButtons = hideDataManagementButtons;
     window.showDataManagementButtons = showDataManagementButtons;
 
-    // NOVÁ ČÁST: Posluchač události 'resize' pro dynamickou aktualizaci stylů
-    window.addEventListener('resize', applyDataManagementResponsiveStyles);
+    // OPRAVENÝ posluchač události 'resize' - kontrola viditelnosti před aplikací stylů
+    window.addEventListener('resize', function() {
+        // Aplikace responzivních stylů pouze pokud je kontejner viditelný
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container && container.style.display !== 'none') {
+            applyDataManagementResponsiveStyles();
+        }
+    });
 
 })();
 
