@@ -37,14 +37,14 @@
 
         // Keywords, které mají být filtrovány (pokud nejsou v allowedPhrases)
         const filterKeywords = [
-             'Supabase Auth State Change:', // Generické zprávy Supabase
+          //   'Supabase Auth State Change:', // Generické zprávy Supabase
       //       'Supabase library not loaded',
      //        'Firebase Firestore úspěšně inicializován.',
      //        'Chyba při inicializaci Firebase Firestore:',
      //        'Kritická chyba: Knihovna Firebase Firestore se nenačetla.',
      //        'Kritická chyba: Knihovna Supabase se nenačetla.',
      //        'Změna velikosti okna, aktualizuji styly obrázků.',
-             'Realtime aktualizace z Firestore:',
+        //     'Realtime aktualizace z Firestore:', //toto je výpis z cloudu
      //        'Data načtena z Firestore.',
      //        'Žádná data v Firestore, použiji výchozí lokální data.',
       //       'Hlavní dokument v Firestore neexistuje, nebo byl smazán.',
@@ -313,17 +313,12 @@
             }
 
             .jirik-log-controls .jirik-button {
-                color: #FF7F50 !important;
-    text-decoration: none !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 25px !important;
-    transition: all 0.3s ease !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
-    font-size: 1em !important;
-    border: none !important;
-    cursor: pointer !important;
+                padding: 10px 20px !important;
+                border: none !important;
+                border-radius: 5px !important;
+                cursor: pointer !important;
+                font-size: 1em !important;
+                transition: background-color 0.3s ease !important;
             }
 
             .jirik-log-controls .jirik-btn-danger {
@@ -499,14 +494,14 @@
                 openJirikModalBtn.id = 'jirik-open-modal-btn';
                 openJirikModalBtn.className = 'button custom-button'; // Přidáme tvé třídy
                 openJirikModalBtn.textContent = '📋';
-
+                
                  // >>> ZDE JE MÍSTO, KDE MŮŽEŠ EDITOVAT STYLY PRO TLAČÍTKO <<<
                 // Vložíme sem ty styly, které jsi mi poslal, a zde je můžeš měnit!
                 openJirikModalBtn.style.cssText = `
                     color: #FF7F50 !important;
                     text-decoration: none !important;
-                    padding: 0.5rem 1rem !important;
-                    border-radius: 25px !important;
+                    padding: 8px 40px !important;
+                    border-radius: 10px !important;
                     transition: all 0.3s ease !important;
                     background: rgba(255, 255, 255, 0.1) !important;
                     backdrop-filter: blur(5px) !important;
