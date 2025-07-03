@@ -500,7 +500,7 @@
                 openJirikModalBtn.style.cssText = `
                     color: #FF7F50 !important;
                     text-decoration: none !important;
-                    padding: 8px 40px !important;
+                    padding: 10px 10px !important;
                     border-radius: 10px !important;
                     transition: all 0.3s ease !important;
                     background: rgba(255, 255, 255, 0.1) !important;
@@ -551,6 +551,23 @@
         const jirikManualOpenerBtn = document.getElementById('jirik-manual-opener-btn');
         if (jirikManualOpenerBtn) {
             originalConsole.log('✅ Záložní tlačítko "jirik-manual-opener-btn" nalezeno.');
+            
+                        // Aplikace tvých vlastních stylů pro jirik-manual-opener-btn
+            jirikManualOpenerBtn.style.cssText = `
+                color: #FF7F50 !important;
+                    text-decoration: none !important;
+                    padding: 10px 10px !important;
+                    border-radius: 10px !important;
+                    transition: all 0.3s ease !important;
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    backdrop-filter: blur(5px) !important;
+                    -webkit-backdrop-filter: blur(5px) !important;
+                    font-size: 1em !important;
+                    border: none !important;
+                    cursor: pointer !important;
+            `;
+
+            
             if (!jirikManualOpenerBtn.hasAttribute('data-console-listener-bound-manual')) {
                 originalConsole.log('🔍 Připojuji event listener k záložnímu tlačítku konzole...');
                 jirikManualOpenerBtn.addEventListener('click', (e) => {
