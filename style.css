@@ -1221,7 +1221,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     border-radius: 15px  ;
     padding: 0.5rem  ;
     margin: 1rem auto  ; /* PŘIDÁNO/ZMĚNA: Nastavuje automatické okraje vlevo a vpravo pro centrování */
-   max-width: 70% !important  ; /* PŘIDÁNO: Nastavuje maximální šířku kontejneru, aby se mohl vycentrovat.
+   width: 100%;/* PŘIDÁNO: Nastavuje maximální šířku kontejneru, aby se mohl vycentrovat.
                        * Tuto hodnotu budeš muset PŘIZPŮSOBIT, aby se na různých zařízeních vešel grid.
                        */
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37)  ;
