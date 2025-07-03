@@ -81,10 +81,10 @@
                 
                 if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                     enableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = '🖖🏻'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
                 } else {
                     disableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
                 }
             } else {
                 console.log('Uživatel není přihlášen přes Supabase.');
@@ -429,7 +429,7 @@
                 portfolioItemIds.add(itemId);
             }
         }
-
+const missingDataRenderingWarningCounts = new Map();
        portfolioItemIds.forEach(itemId => {
     const title = editableContentData[`${itemId}-title`];
     const desc1 = editableContentData[`${itemId}-desc-1`];
@@ -459,9 +459,15 @@
     // --- KONEC NOVÉHO KÓDU ---
 
     if (!title || !desc1) {
-        console.warn(`Chybí data pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
-        return;
+    let currentCount = missingDataRenderingWarningCounts.get(itemId) || 0;
+    currentCount++;
+    missingDataRenderingWarningCounts.set(itemId, currentCount);
+
+    if (currentCount === 1 || currentCount % 5 === 0) { // Zobrazí při prvním výskytu a pak každých 5
+        console.warn(`[${currentCount}x] Chybí data pro portfolio položku s ID: ${itemId}. Nebude vykreslena.`);
     }
+    return; // Důležité: nezapomeň na tento return, aby se položka bez dat nevykreslila
+}
 
     const newItemHtml = `
         <div class="portfolio-item" data-item-id="${itemId}" style="background-color: #f9f9f9; padding: 1rem; border-radius: 4px; border: 1px solid #ddd; position: relative; margin-bottom: 20px;">
@@ -565,9 +571,8 @@ function enableEditMode() {
     isEditMode = true;
     document.body.classList.add('edit-mode');
     document.getElementById('login-button').classList.add('hidden');
-    document.getElementById('edit-mode-toggle-btn').textContent = '🖖🏻'; // Upraveno
-    document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');            
- 
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
 
     document.querySelectorAll('[data-editable]').forEach(el => {
         el.setAttribute('contenteditable', 'true');
@@ -602,7 +607,7 @@ function enableEditMode() {
 function disableEditMode() {
     isEditMode = false;
     document.body.classList.remove('edit-mode');
-    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
 
     if (!currentUserId) {
         document.getElementById('login-button').classList.remove('hidden');
@@ -1042,7 +1047,7 @@ function openImageModal(index) {
   //  console.log(`📸 Zobrazuji obrázek: "${currentImage.name}" na pozici ${currentModalImageIndex + 1}/${galleryImagesData.length}`);
     
     // JEDNODUCHÉ loading
-    modalImg.style.transition = 'opacity 0.15s ease-out';
+    modalImg.style.transition = 'opacity 0.5s ease-out';
     modalImg.style.opacity = '0.8';
     
     modalImg.onload = function() {
@@ -2012,67 +2017,46 @@ function addPortfolioItem() {
         }
     }
 
-    // Asynchronní funkce pro smazání položky portfolia
-async function deletePortfolioItem() {
-    // Krok A: Kontrola, zda je uživatel přihlášen.
-    // Pokud není, zobrazí varování a ukončí funkci.
-    if (!currentUserId) {
-        showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
-        return;
-    }
-    // Krok B: Kontrola, zda existuje itemId pro editaci.
-    // Pokud ne, ukončí funkci (nemá co mazat).
-    if (!editingPortfolioItemId) return;
+    async function deletePortfolioItem() {
+        if (!currentUserId) {
+            showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
+            return;
+        }
+        if (!editingPortfolioItemId) return;
 
-    // Krok C: Kontrola oprávnění uživatele.
-    // Uživatel může smazat pouze své vlastní položky.
-    if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
-        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
-        return;
-    }
+        if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
+            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
+            return;
+        }
 
-    // Krok D: ZAVŘENÍ HLAVNÍHO MODALU A RESETOVÁNÍ STAVU EDITACE.
-    // TENTO KÓD JE NYNÍ PŘED ZOBRAZENÍM POTVRZOVACÍHO MODALU,
-    // což zajišťuje, že se hlavní modál 'edit-portfolio-modal' zavře okamžitě po kliknutí na "Smazat položku".
-    hideModal(document.getElementById('edit-portfolio-modal'));
-    editingPortfolioItemId = null; // Resetuje ID editované položky, protože editace této položky je u konce.
+        const confirmed = await (window.showConfirmModal ?
+            showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
+            confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
+        );
 
-    // Krok E: Zobrazení potvrzovacího modalu.
-    // Používá buď vlastní showConfirmModal (pokud je definován), nebo standardní confirm().
-    const confirmed = await (window.showConfirmModal ?
-        showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
-        confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
-    );
+        if (confirmed) {
+            showLoading("Mažu položku portfolia...");
+            try {
+                delete editableContentData[`${editingPortfolioItemId}-title`];
+                delete editableContentData[`${editingPortfolioItemId}-desc-1`];
+                delete editableContentData[`${editingPortfolioItemId}-desc-2`];
+                delete editableContentData[`${editingPortfolioItemId}-link-text`];
+                delete editableContentData[`${editingPortfolioItemId}-link-url`];
+                delete editableContentData[`${editingPortfolioItemId}-userId`];
+                delete editableContentData[`${editingPortfolioItemId}-createdAt`]; // ZMĚNA ZDE: Smažeme i createdAt
 
-    // Krok F: Provedení smazání, pokud uživatel potvrdil.
-    if (confirmed) {
-        showLoading("Mažu položku portfolia..."); // Zobrazí indikátor načítání
-        try {
-            // Smazání všech relevantních datových polí pro danou položku z editableContentData.
-            delete editableContentData[`${editingPortfolioItemId}-title`];
-            delete editableContentData[`${editingPortfolioItemId}-desc-1`];
-            delete editableContentData[`${editingPortfolioItemId}-desc-2`];
-            delete editableContentData[`${editingPortfolioItemId}-link-text`];
-            delete editableContentData[`${editingPortfolioItemId}-link-url`];
-            delete editableContentData[`${editingPortfolioItemId}-userId`];
-            delete editableContentData[`${editingPortfolioItemId}-createdAt`];
-            // DŮLEŽITÉ: Smazání i YouTube URL, pokud existuje
-            delete editableContentData[`${editingPortfolioItemId}-youtube-url`]; 
-
-            await saveDataToFirestore(); // Uloží změny do Firestore
-            showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu."); // Zobrazí potvrzení
-            hideLoading(); // Skryje indikátor načítání
-        } catch (error) {
-            // Zachycení a zobrazení chyby, pokud se smazání nezdaří.
-            console.error('Chyba při mazání položky portfolia z Firestore:', error);
-            showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
-            hideLoading();
+                await saveDataToFirestore();
+                showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu.");
+                hideLoading();
+            } catch (error) {
+                console.error('Chyba při mazání položky portfolia z Firestore:', error);
+                showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
+                hideLoading();
+            }
+            hideModal(document.getElementById('edit-portfolio-modal'));
+            editingPortfolioItemId = null;
         }
     }
-    // Pokud uživatel zruší smazání v potvrzovacím modalu, hlavní editovací modal je již zavřen.
-    // Není potřeba zde znovu volat hideModal.
-}
-
 
     // --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
     (function() {
@@ -3049,11 +3033,12 @@ div#url-edit-modal .url-modal-buttons #url-edit-cancel-btn:hover,
     });
 });
 
+//TADY JE JS PRO CELOOBRAZOVÝ REŽIM?
+
 document.addEventListener('DOMContentLoaded', () => {
     const fullscreenButton = document.getElementById('fullscreenButton');
 
-    // Funkce pro přepínání celoobrazovkového režimu
-    function toggleFullscreen() {
+    fullscreenButton.addEventListener('click', () => {
         if (!document.fullscreenElement) {
             // Pokud nejsme v celoobrazovkovém režimu, přepneme se
             document.documentElement.requestFullscreen().catch(err => {
@@ -3063,39 +3048,5 @@ document.addEventListener('DOMContentLoaded', () => {
             // Pokud už jsme v celoobrazovkovém režimu, opustíme ho
             document.exitFullscreen();
         }
-    }
-
-    // Posluchač pro kliknutí na tlačítko
-    fullscreenButton.addEventListener('click', () => {
-        toggleFullscreen(); // Voláme společnou funkci
     });
-
-    // Posluchač pro událost fullscreenchange (aktualizace třídy 'active')
-    document.addEventListener('fullscreenchange', () => {
-        if (document.fullscreenElement) {
-            fullscreenButton.classList.add('active'); // Přidá třídu 'active'
-        } else {
-            fullscreenButton.classList.remove('active'); // Odebere třídu 'active'
-        }
-    });
-
-    // Důležité: Na začátku zkontrolujeme stav celoobrazovkového režimu
-    // a nastavíme třídu, pokud je už stránka v celoobrazovém režimu (např. po F11).
-    if (document.fullscreenElement) {
-        fullscreenButton.classList.add('active');
-    }
-
-    // --- NOVÁ ČÁST: POSLUCHAČ PRO KLÁVESOVOU ZKRATKU ---
-    document.addEventListener('keydown', (event) => {
-        // Kontrolujeme, zda byla stisknuta klávesa 'F' nebo 'f'
-        if (event.key === 'f' || event.key === 'F') {
-            // Zabráníme výchozímu chování prohlížeče pro klávesu 'F' (pokud existuje)
-            event.preventDefault(); 
-            // Zavoláme funkci pro přepínání celoobrazovkového režimu
-            toggleFullscreen();
-            console.log('🔵 Klávesa "F" stisknuta, přepínám celoobrazovkový režim.');
-        }
-    });
-    // --- KONEC NOVÉ ČÁSTI ---
 });
-
