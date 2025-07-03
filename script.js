@@ -79,12 +79,13 @@
                     userIdContainer.classList.remove('hidden');
                 }
                 
-                if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
+                if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {         
+ 
                     enableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = '🖖'; // Upraveno
                 } else {
                     disableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
                 }
             } else {
                 console.log('Uživatel není přihlášen přes Supabase.');
@@ -568,10 +569,10 @@ function toggleEditMode() {
 }
 //tady končí celá logika pro ukládaní a vykreslování
 function enableEditMode() {
-    isEditMode = true;
+    isEditMode = true;                                                                                 
     document.body.classList.add('edit-mode');
     document.getElementById('login-button').classList.add('hidden');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').textContent = '🖖'; // Upraveno
     document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
 
     document.querySelectorAll('[data-editable]').forEach(el => {
@@ -607,7 +608,7 @@ function enableEditMode() {
 function disableEditMode() {
     isEditMode = false;
     document.body.classList.remove('edit-mode');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
 
     if (!currentUserId) {
         document.getElementById('login-button').classList.remove('hidden');
