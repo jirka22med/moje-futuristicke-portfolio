@@ -565,8 +565,9 @@ function enableEditMode() {
     isEditMode = true;
     document.body.classList.add('edit-mode');
     document.getElementById('login-button').classList.add('hidden');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
-    document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
+    document.getElementById('edit-mode-toggle-btn').textContent = '🖖🏻'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');            
+ 
 
     document.querySelectorAll('[data-editable]').forEach(el => {
         el.setAttribute('contenteditable', 'true');
@@ -601,7 +602,7 @@ function enableEditMode() {
 function disableEditMode() {
     isEditMode = false;
     document.body.classList.remove('edit-mode');
-    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
 
     if (!currentUserId) {
         document.getElementById('login-button').classList.remove('hidden');
