@@ -2074,8 +2074,8 @@ function addPortfolioItem() {
     function showDataManagementButtons() {
         const container = document.querySelector('.function-setupDataManagement');
         if (container) {
-            container.style.display = 'flex'; // Základní display pro kontejner
-            applyDataManagementResponsiveStyles(); // Voláme funkci pro responzivní styly
+            container.style.display = 'flex'; // Změna na flex, pokud používáš flexbox pro layout
+            // applyDataManagementResponsiveStyles(); // Toto se nyní volá v initDataManagementVisibility a na resize
         }
     }
 
@@ -2091,137 +2091,135 @@ function addPortfolioItem() {
 
         const width = window.innerWidth;
 
-        // Reset stylů před aplikací nových, aby se zabránilo přetrvávání stylů z předchozích breakpointů
-        container.style.cssText = '';
-        innerContainer.style.cssText = '';
+        // Aplikace základních stylů pro kontejner, které se nemění s responsivitou
+        // DŮLEŽITÉ: Nyní se zde NENASTAVUJE 'display', ten řídí show/hideDataManagementButtons
+        container.style.justifyContent = 'center';
+        container.style.margin = '0 auto';
+        container.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+        container.style.padding = '1rem';
+        container.style.borderRadius = '10px';
+        container.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+
+        // Aplikace základních stylů pro vnitřní kontejner
+        innerContainer.style.justifyContent = 'center';
+        innerContainer.style.flexWrap = 'wrap';
+
+
+        // Resetování responzivních stylů pro tlačítka před aplikací nových
+        // Základní styly (barva, přechody, pozadí atd.) jsou aplikovány v initDataManagementVisibility
         buttons.forEach(btn => {
-            // Ponecháme pouze barvy, které jsou aplikovány níže, zbytek resetujeme
-            const currentColor = btn.style.color;
-            btn.style.cssText = `color: ${currentColor} !important;`;
+            // Resetujeme jen ty vlastnosti, které se mění v media queries
+            btn.style.padding = '';
+            btn.style.fontSize = '';
+            btn.style.margin = '';
+            btn.style.width = '';
+            btn.style.textAlign = '';
+            btn.style.whiteSpace = '';
+            btn.style.overflow = '';
+            btn.style.textOverflow = '';
+            // Znovu aplikujeme základní vizuální styl (kromě barvy, která je specifická)
+            btn.style.cssText += `
+                text-decoration: none !important;
+                transition: all 0.3s ease !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                backdrop-filter: blur(5px) !important;
+                -webkit-backdrop-filter: blur(5px) !important;
+                border: none !important;
+                cursor: pointer !important;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+                border-radius: 10px !important; /* Důležité pro zaoblení */
+            `;
         });
 
-        // Základní styly pro .function-setupDataManagement (vždy aplikované)
-        container.style.cssText += `
-            display: flex !important;
-            justify-content: center !important;
-            margin: 0 auto !important;
-            max-width: 800px !important;
-            width: 100% !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            padding: 1rem !important;
-            border-radius: 10px !important;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-        `;
-
-        // Základní styly pro .data-management-container (vždy aplikované)
-        innerContainer.style.cssText += `
-            display: flex !important; /* Default flex, bude přepsán gridem */
-            justify-content: center !important;
-            flex-wrap: wrap !important; /* Povolit zalamování pro menší obrazovky */
-            gap: 1rem !important; /* Výchozí mezera */
-            padding: 0 1rem !important; /* Výchozí odsazení */
-        `;
 
         // Aplikace responzivních stylů na základě šířky okna
         if (width >= 768) {
             // Tablet landscape a větší (notebook)
-            container.style.cssText += `
-                padding: 1.5rem 2rem !important;
-                margin: 2rem auto !important;
-                max-width: 800px !important;
-            `;
-            innerContainer.style.cssText += `
-                display: grid !important;
-                grid-template-columns: repeat(7, 1fr) !important;
-                gap: 1.5rem !important;
-                padding: 0 1rem !important;
-            `;
+            container.style.maxWidth = '800px';
+            container.style.width = '100%';
+            container.style.padding = '1.5rem 2rem';
+            container.style.margin = '2rem auto';
+
+            innerContainer.style.display = 'grid';
+            innerContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
+            innerContainer.style.gap = '1.5rem';
+            innerContainer.style.padding = '0 1rem';
+
             buttons.forEach(btn => {
-                btn.style.cssText += `
-                    padding: 1rem 1.2rem !important;
-                    font-size: 1rem !important;
-                `;
+                btn.style.padding = '1rem 1.2rem';
+                btn.style.fontSize = '1rem';
             });
         } else if (width < 768 && width >= 481) {
             // Tablet portrait a menší (max-width: 767px)
-            container.style.cssText += `
-                padding: 1rem 0.5rem !important;
-                margin: 1rem auto !important;
-                max-width: 400px !important;
-            `;
-            innerContainer.style.cssText += `
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 0.8rem !important;
-                justify-items: center !important;
-                align-items: center !important;
-                padding: 0 0.5rem !important;
-            `;
+            container.style.maxWidth = '400px';
+            container.style.width = '100%';
+            container.style.padding = '1rem 0.5rem';
+            container.style.margin = '1rem auto';
+
+            innerContainer.style.display = 'grid';
+            innerContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            innerContainer.style.gap = '0.8rem';
+            innerContainer.style.justifyItems = 'center';
+            innerContainer.style.alignItems = 'center';
+            innerContainer.style.padding = '0 0.5rem';
+
             buttons.forEach(btn => {
-                btn.style.cssText += `
-                    padding: 0.8rem 1rem !important;
-                    font-size: 0.85rem !important;
-                    margin: 0 !important;
-                    width: 100% !important;
-                    text-align: center !important;
-                    white-space: nowrap !important;
-                    overflow: hidden !important;
-                    text-overflow: ellipsis !important;
-                `;
+                btn.style.padding = '0.8rem 1rem';
+                btn.style.fontSize = '0.85rem';
+                btn.style.margin = '0';
+                btn.style.width = '100%';
+                btn.style.textAlign = 'center';
+                btn.style.whiteSpace = 'nowrap';
+                btn.style.overflow = 'hidden';
+                btn.style.textOverflow = 'ellipsis';
             });
         } else if (width <= 480 && width >= 321) {
             // Mobilní zařízení (max-width: 480px)
-            container.style.cssText += `
-                padding: 0.8rem 0.25rem !important;
-                margin: 0.8rem auto !important;
-                max-width: 425px !important;
-            `;
-            innerContainer.style.cssText += `
-                display: grid !important;
-                grid-template-columns: repeat(5, 1fr) !important;
-                gap: 0.6rem !important;
-                justify-items: center !important;
-                align-items: center !important;
-                padding: 0 0.25rem !important;
-            `;
+            container.style.maxWidth = '425px';
+            container.style.width = '100%';
+            container.style.padding = '0.8rem 0.25rem';
+            container.style.margin = '0.8rem auto';
+
+            innerContainer.style.display = 'grid';
+            innerContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            innerContainer.style.gap = '0.6rem';
+            innerContainer.style.justifyItems = 'center';
+            innerContainer.style.alignItems = 'center';
+            innerContainer.style.padding = '0 0.25rem';
+
             buttons.forEach(btn => {
-                btn.style.cssText += `
-                    font-size: 0.75rem !important;
-                    padding: 0.7rem 0.8rem !important;
-                    margin: 0 !important;
-                    width: 100% !important;
-                    text-align: center !important;
-                    white-space: nowrap !important;
-                    overflow: hidden !important;
-                    text-overflow: ellipsis !important;
-                `;
+                btn.style.fontSize = '0.75rem';
+                btn.style.padding = '0.7rem 0.8rem';
+                btn.style.margin = '0';
+                btn.style.width = '100%';
+                btn.style.textAlign = 'center';
+                btn.style.whiteSpace = 'nowrap';
+                btn.style.overflow = 'hidden';
+                btn.style.textOverflow = 'ellipsis';
             });
         } else if (width <= 320) {
             // Velmi malé displeje (max-width: 320px)
-            container.style.cssText += `
-                padding: 0.6rem 0.1rem !important;
-                margin: 0.6rem auto !important;
-                max-width: 200px !important;
-            `;
-            innerContainer.style.cssText += `
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 0.4rem !important;
-                justify-items: center !important;
-                align-items: center !important;
-                padding: 0 0.1rem !important;
-            `;
+            container.style.maxWidth = '200px';
+            container.style.width = '100%';
+            container.style.padding = '0.6rem 0.1rem';
+            container.style.margin = '0.6rem auto';
+
+            innerContainer.style.display = 'grid';
+            innerContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            innerContainer.style.gap = '0.4rem';
+            innerContainer.style.justifyItems = 'center';
+            innerContainer.style.alignItems = 'center';
+            innerContainer.style.padding = '0 0.1rem';
+
             buttons.forEach(btn => {
-                btn.style.cssText += `
-                    font-size: 0.7rem !important;
-                    padding: 0.6rem 0.4rem !important;
-                    margin: 0 !important;
-                    width: 100% !important;
-                    text-align: center !important;
-                    white-space: nowrap !important;
-                    overflow: hidden !important;
-                    text-overflow: ellipsis !important;
-                `;
+                btn.style.fontSize = '0.7rem';
+                btn.style.padding = '0.6rem 0.4rem';
+                btn.style.margin = '0';
+                btn.style.width = '100%';
+                btn.style.textAlign = 'center';
+                btn.style.whiteSpace = 'nowrap';
+                btn.style.overflow = 'hidden';
+                btn.style.textOverflow = 'ellipsis';
             });
         }
     }
@@ -2233,7 +2231,7 @@ function addPortfolioItem() {
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    if (body.classList.contains('edit-mode')) {
+                    if (body.classList.contains('edit-mode')) { // OPRAVENO: .Contains na .contains
                         showDataManagementButtons();
                     } else {
                         hideDataManagementButtons();
@@ -2248,7 +2246,7 @@ function addPortfolioItem() {
         });
 
         // Kontrola současného stavu při načtení
-        if (body.classList.Contains('edit-mode')) {
+        if (body.classList.contains('edit-mode')) { // OPRAVENO: .Contains na .contains
             showDataManagementButtons();
         } else {
             hideDataManagementButtons();
@@ -2257,12 +2255,12 @@ function addPortfolioItem() {
 
     // Inicializace
     function initDataManagementVisibility() {
-        hideDataManagementButtons();
-        observeEditMode();
-        applyDataManagementResponsiveStyles(); // Voláme pro inicializaci responzivních stylů
+        hideDataManagementButtons(); // Skryje kontejner na začátku
+        observeEditMode(); // Nastaví sledování edit režimu
+        applyDataManagementResponsiveStyles(); // Aplikuje responzivní styly na základě aktuální velikosti okna
 
         // --- APLIKACE SPECIFICKÝCH BAREV TLAČÍTEK (nemění se s responsivitou) ---
-        // Ponecháme tuto část pro specifické barvy, které se nemění s responsivitou
+        // Tyto styly se aplikují pouze jednou při inicializaci
         const saveBtn = document.getElementById('save-all-data-btn');
         const clearBtn = document.getElementById('clear-all-data-btn');
         const exportBtn = document.getElementById('export-data-btn');
@@ -2277,15 +2275,42 @@ function addPortfolioItem() {
             logoutBtn: `color: red !important;`
         };
 
-        if (saveBtn) saveBtn.style.cssText += baseColorStyles.saveBtn;
-        if (clearBtn) clearBtn.style.cssText += baseColorStyles.clearBtn;
-        if (exportBtn) exportBtn.style.cssText += baseColorStyles.exportBtn;
-        if (importBtn) importBtn.style.cssText += baseColorStyles.importBtn;
+        // Aplikujeme základní vizuální styl a poté barvu
+        const applyBaseVisualsAndColor = (element, colorStyle) => {
+            if (element) {
+                element.style.cssText = `
+                    text-decoration: none !important;
+                    transition: all 0.3s ease !important;
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    backdrop-filter: blur(5px) !important;
+                    -webkit-backdrop-filter: blur(5px) !important;
+                    border: none !important;
+                    cursor: pointer !important;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+                    border-radius: 10px !important; /* Důležité pro zaoblení */
+                    ${colorStyle}
+                `;
+            }
+        };
+
+        applyBaseVisualsAndColor(saveBtn, baseColorStyles.saveBtn);
+        applyBaseVisualsAndColor(clearBtn, baseColorStyles.clearBtn);
+        applyBaseVisualsAndColor(exportBtn, baseColorStyles.exportBtn);
+        applyBaseVisualsAndColor(importBtn, baseColorStyles.importBtn);
+
         if (logoutBtn) {
-            // Logout tlačítko má trochu menší padding v HTML, zkusíme to respektovat
-            // Ponecháme padding z původní definice, ale přidáme barvu
-            logoutBtn.style.cssText += `
+            // Logout tlačítko má specifický padding
+            logoutBtn.style.cssText = `
                 padding: 0.1rem 1rem !important; /* Zachování původního paddingu */
+                text-decoration: none !important;
+                transition: all 0.3s ease !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                backdrop-filter: blur(5px) !important;
+                -webkit-backdrop-filter: blur(5px) !important;
+                border: none !important;
+                cursor: pointer !important;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+                border-radius: 10px !important;
                 ${baseColorStyles.logoutBtn}
             `;
         }
@@ -2305,6 +2330,7 @@ function addPortfolioItem() {
     window.addEventListener('resize', applyDataManagementResponsiveStyles);
 
 })();
+
 
 
 
@@ -3237,3 +3263,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+ 
