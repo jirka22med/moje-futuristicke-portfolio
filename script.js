@@ -3051,7 +3051,8 @@ div#url-edit-modal .url-modal-buttons #url-edit-cancel-btn:hover,
 document.addEventListener('DOMContentLoaded', () => {
     const fullscreenButton = document.getElementById('fullscreenButton');
 
-    fullscreenButton.addEventListener('click', () => {
+    // Funkce pro přepínání celoobrazovkového režimu
+    function toggleFullscreen() {
         if (!document.fullscreenElement) {
             // Pokud nejsme v celoobrazovkovém režimu, přepneme se
             document.documentElement.requestFullscreen().catch(err => {
@@ -3061,10 +3062,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Pokud už jsme v celoobrazovkovém režimu, opustíme ho
             document.exitFullscreen();
         }
+    }
+
+    // Posluchač pro kliknutí na tlačítko
+    fullscreenButton.addEventListener('click', () => {
+        toggleFullscreen(); // Voláme společnou funkci
     });
 
-    // Přidáme posluchač pro událost fullscreenchange,
-    // aby se třída aktualizovala, i když uživatel opustí režim klávesou Esc.
+    // Posluchač pro událost fullscreenchange (aktualizace třídy 'active')
     document.addEventListener('fullscreenchange', () => {
         if (document.fullscreenElement) {
             fullscreenButton.classList.add('active'); // Přidá třídu 'active'
@@ -3075,8 +3080,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Důležité: Na začátku zkontrolujeme stav celoobrazovkového režimu
     // a nastavíme třídu, pokud je už stránka v celoobrazovém režimu (např. po F11).
-    // To je dobré pro případy, kdy uživatel vstoupí do fullscreenu jiným způsobem než kliknutím na tlačítko.
     if (document.fullscreenElement) {
         fullscreenButton.classList.add('active');
     }
+
+    // --- NOVÁ ČÁST: POSLUCHAČ PRO KLÁVESOVOU ZKRATKU ---
+    document.addEventListener('keydown', (event) => {
+        // Kontrolujeme, zda byla stisknuta klávesa 'F' nebo 'f'
+        if (event.key === 'f' || event.key === 'F') {
+            // Zabráníme výchozímu chování prohlížeče pro klávesu 'F' (pokud existuje)
+            event.preventDefault(); 
+            // Zavoláme funkci pro přepínání celoobrazovkového režimu
+            toggleFullscreen();
+            console.log('🔵 Klávesa "F" stisknuta, přepínám celoobrazovkový režim.');
+        }
+    });
+    // --- KONEC NOVÉ ČÁSTI ---
 });
+
