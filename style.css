@@ -1241,7 +1241,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     padding: 0 1rem  ;
     /* DŮLEŽITÉ: Ujisti se, že tento kontejner má 100% šířku uvnitř svého rodiče,
        aby se grid správně roztahoval. */
-    max-width: 600px !important  ; /* PŘIDÁNO: Zajistí, že grid zabere celou šířku rodiče */
+    width: 100%; /* PŘIDÁNO: Zajistí, že grid zabere celou šířku rodiče */
    
 }
 
@@ -1257,7 +1257,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
         transparent 50%,
         rgba(255, 255, 255, 0.1) 100%) !important;
     pointer-events: none !important;
-     width: 100% !important;
+     width: 100%;
     
 }
 #logout-button{
