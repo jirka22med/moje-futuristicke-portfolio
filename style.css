@@ -1369,7 +1369,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     
     .data-management-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
+        grid-template-columns: repeat(3, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
         
         gap: 0.8rem;
         justify-items: center;
@@ -1399,7 +1399,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     
     .data-management-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
+        grid-template-columns: repeat(3, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
         
         gap: 0.6rem;
         justify-items: center;
@@ -1429,7 +1429,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     
     .data-management-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
+        grid-template-columns: repeat(3, 1fr); /* Zachováno repeat(4, 1fr) podle tvého požadavku */
         
         gap: 0.4rem;
         justify-items: center;
