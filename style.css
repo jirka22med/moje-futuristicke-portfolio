@@ -81,7 +81,7 @@ nav {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-.nav-link, .cela-obrazovka  {
+.nav-link{
     color: white;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -99,6 +99,24 @@ nav {
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+#fullscreenButton{
+color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    font-size: 0.9rem;
+}    
+/* Styly pro aktivní tlačítko v celoobrazovém režimu */
+#fullscreenButton.active { /* Použij .fullscreen-button, pokud je to třída tvého tlačítka, nebo #fullscreenButton, pokud je to ID */
+    background: rgba(255, 255, 255, 0.25); /* Průhledná bílá s efektem ledu */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Jemný stín, aby vystoupilo */
+}
+
+}
 #loading-indicator {
     position: fixed;
     top: 50%;
