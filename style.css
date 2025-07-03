@@ -1348,7 +1348,7 @@ body.edit-mode .edit-mode-only { /* NOVINKA: Zobrazujeme edit-mode-only prvky v 
     }
     
     .data-management-container {
-        grid-template-columns: repeat(7, 1fr); /* výchozí hodnota byla grid-template-columns: repeat(4, 1fr); ale na noteboku mam 5 tlačítek to 5 bilo pod 1. tlačítkem změna na grid-template-columns: repeat(5, 1fr); to zajistlo že ám 5 tlačítek na řádku?  */
+        grid-template-columns: repeat(5, 1fr); /* výchozí hodnota byla grid-template-columns: repeat(4, 1fr); ale na noteboku mam 5 tlačítek to 5 bilo pod 1. tlačítkem změna na grid-template-columns: repeat(5, 1fr); to zajistlo že ám 5 tlačítek na řádku?  */
         gap: 1.5rem;
         padding: 0 1rem;
     }
