@@ -79,13 +79,12 @@
                     userIdContainer.classList.remove('hidden');
                 }
                 
-                if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {         
- 
+                if (localStorage.getItem(EDIT_MODE_KEY) === 'true') {
                     enableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = '🖖'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Zavřít'; // Upraveno
                 } else {
                     disableEditMode();
-                    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
+                    document.getElementById('edit-mode-toggle-btn').textContent = 'Upravit'; // Upraveno
                 }
             } else {
                 console.log('Uživatel není přihlášen přes Supabase.');
@@ -569,10 +568,10 @@ function toggleEditMode() {
 }
 //tady končí celá logika pro ukládaní a vykreslování
 function enableEditMode() {
-    isEditMode = true;                                                                                 
+    isEditMode = true;
     document.body.classList.add('edit-mode');
     document.getElementById('login-button').classList.add('hidden');
-    document.getElementById('edit-mode-toggle-btn').textContent = '🖖'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').textContent = '💾'; // Upraveno
     document.getElementById('edit-mode-toggle-btn').classList.remove('hidden');
 
     document.querySelectorAll('[data-editable]').forEach(el => {
@@ -608,7 +607,7 @@ function enableEditMode() {
 function disableEditMode() {
     isEditMode = false;
     document.body.classList.remove('edit-mode');
-    document.getElementById('edit-mode-toggle-btn').textContent = '🧰'; // Upraveno
+    document.getElementById('edit-mode-toggle-btn').textContent = '🔧'; // Upraveno
 
     if (!currentUserId) {
         document.getElementById('login-button').classList.remove('hidden');
@@ -2059,71 +2058,258 @@ function addPortfolioItem() {
         }
     }
 
-    // --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
-    (function() {
-        'use strict';
-        
-        // Funkce pro skrytí tlačítek správy dat
-        function hideDataManagementButtons() {
-            const container = document.querySelector('.function-setupDataManagement');
-            if (container) {
-                container.style.display = 'none';
-            }
+// --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
+(function() {
+    'use strict';
+
+    // Funkce pro skrytí tlačítek správy dat
+    function hideDataManagementButtons() {
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container) {
+            container.style.display = 'none';
         }
-        
-        // Funkce pro zobrazení tlačítek správy dat
-        function showDataManagementButtons() {
-            const container = document.querySelector('.function-setupDataManagement');
-            if (container) {
-                container.style.display = 'flex'; // Změna na flex, pokud používáš flexbox pro layout
-            }
+    }
+
+    // Funkce pro zobrazení tlačítek správy dat
+    function showDataManagementButtons() {
+        const container = document.querySelector('.function-setupDataManagement');
+        if (container) {
+            container.style.display = 'flex'; // Základní display pro kontejner
+            applyDataManagementResponsiveStyles(); // Voláme funkci pro responzivní styly
         }
-        
-        // Sledování změn na body elementu
-        function observeEditMode() {
-            const body = document.body;
-            
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                        if (body.classList.contains('edit-mode')) {
-                            showDataManagementButtons();
-                        } else {
-                            hideDataManagementButtons();
-                        }
+    }
+
+    // NOVÁ FUNKCE: Aplikace responzivních stylů pro kontejner tlačítek
+    function applyDataManagementResponsiveStyles() {
+        const container = document.querySelector('.function-setupDataManagement');
+        const innerContainer = document.querySelector('.function-setupDataManagement .data-management-container');
+        const buttons = document.querySelectorAll('.function-setupDataManagement .button');
+
+        if (!container || !innerContainer || buttons.length === 0) {
+            return;
+        }
+
+        const width = window.innerWidth;
+
+        // Reset stylů před aplikací nových, aby se zabránilo přetrvávání stylů z předchozích breakpointů
+        container.style.cssText = '';
+        innerContainer.style.cssText = '';
+        buttons.forEach(btn => {
+            // Ponecháme pouze barvy, které jsou aplikovány níže, zbytek resetujeme
+            const currentColor = btn.style.color;
+            btn.style.cssText = `color: ${currentColor} !important;`;
+        });
+
+        // Základní styly pro .function-setupDataManagement (vždy aplikované)
+        container.style.cssText += `
+            display: flex !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+            max-width: 800px !important;
+            width: 100% !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 1rem !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        `;
+
+        // Základní styly pro .data-management-container (vždy aplikované)
+        innerContainer.style.cssText += `
+            display: flex !important; /* Default flex, bude přepsán gridem */
+            justify-content: center !important;
+            flex-wrap: wrap !important; /* Povolit zalamování pro menší obrazovky */
+            gap: 1rem !important; /* Výchozí mezera */
+            padding: 0 1rem !important; /* Výchozí odsazení */
+        `;
+
+        // Aplikace responzivních stylů na základě šířky okna
+        if (width >= 768) {
+            // Tablet landscape a větší (notebook)
+            container.style.cssText += `
+                padding: 1.5rem 2rem !important;
+                margin: 2rem auto !important;
+                max-width: 800px !important;
+            `;
+            innerContainer.style.cssText += `
+                display: grid !important;
+                grid-template-columns: repeat(7, 1fr) !important;
+                gap: 1.5rem !important;
+                padding: 0 1rem !important;
+            `;
+            buttons.forEach(btn => {
+                btn.style.cssText += `
+                    padding: 1rem 1.2rem !important;
+                    font-size: 1rem !important;
+                `;
+            });
+        } else if (width < 768 && width >= 481) {
+            // Tablet portrait a menší (max-width: 767px)
+            container.style.cssText += `
+                padding: 1rem 0.5rem !important;
+                margin: 1rem auto !important;
+                max-width: 400px !important;
+            `;
+            innerContainer.style.cssText += `
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 0.8rem !important;
+                justify-items: center !important;
+                align-items: center !important;
+                padding: 0 0.5rem !important;
+            `;
+            buttons.forEach(btn => {
+                btn.style.cssText += `
+                    padding: 0.8rem 1rem !important;
+                    font-size: 0.85rem !important;
+                    margin: 0 !important;
+                    width: 100% !important;
+                    text-align: center !important;
+                    white-space: nowrap !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                `;
+            });
+        } else if (width <= 480 && width >= 321) {
+            // Mobilní zařízení (max-width: 480px)
+            container.style.cssText += `
+                padding: 0.8rem 0.25rem !important;
+                margin: 0.8rem auto !important;
+                max-width: 425px !important;
+            `;
+            innerContainer.style.cssText += `
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 0.6rem !important;
+                justify-items: center !important;
+                align-items: center !important;
+                padding: 0 0.25rem !important;
+            `;
+            buttons.forEach(btn => {
+                btn.style.cssText += `
+                    font-size: 0.75rem !important;
+                    padding: 0.7rem 0.8rem !important;
+                    margin: 0 !important;
+                    width: 100% !important;
+                    text-align: center !important;
+                    white-space: nowrap !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                `;
+            });
+        } else if (width <= 320) {
+            // Velmi malé displeje (max-width: 320px)
+            container.style.cssText += `
+                padding: 0.6rem 0.1rem !important;
+                margin: 0.6rem auto !important;
+                max-width: 200px !important;
+            `;
+            innerContainer.style.cssText += `
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 0.4rem !important;
+                justify-items: center !important;
+                align-items: center !important;
+                padding: 0 0.1rem !important;
+            `;
+            buttons.forEach(btn => {
+                btn.style.cssText += `
+                    font-size: 0.7rem !important;
+                    padding: 0.6rem 0.4rem !important;
+                    margin: 0 !important;
+                    width: 100% !important;
+                    text-align: center !important;
+                    white-space: nowrap !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                `;
+            });
+        }
+    }
+
+    // Sledování změn na body elementu
+    function observeEditMode() {
+        const body = document.body;
+
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (body.classList.contains('edit-mode')) {
+                        showDataManagementButtons();
+                    } else {
+                        hideDataManagementButtons();
                     }
-                });
+                }
             });
-            
-            observer.observe(body, {
-                attributes: true,
-                attributeFilter: ['class']
-            });
-            
-            // Kontrola současného stavu při načtení
-            if (body.classList.contains('edit-mode')) {
-                showDataManagementButtons();
-            } else {
-                hideDataManagementButtons();
-            }
-        }
-        
-        // Inicializace
-        function initDataManagementVisibility() {
-            hideDataManagementButtons();
-            observeEditMode();
-        }
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initDataManagementVisibility);
+        });
+
+        observer.observe(body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
+        // Kontrola současného stavu při načtení
+        if (body.classList.Contains('edit-mode')) {
+            showDataManagementButtons();
         } else {
-            initDataManagementVisibility();
+            hideDataManagementButtons();
         }
-        
-        window.hideDataManagementButtons = hideDataManagementButtons;
-        window.showDataManagementButtons = showDataManagementButtons;
-        
-    })();
+    }
+
+    // Inicializace
+    function initDataManagementVisibility() {
+        hideDataManagementButtons();
+        observeEditMode();
+        applyDataManagementResponsiveStyles(); // Voláme pro inicializaci responzivních stylů
+
+        // --- APLIKACE SPECIFICKÝCH BAREV TLAČÍTEK (nemění se s responsivitou) ---
+        // Ponecháme tuto část pro specifické barvy, které se nemění s responsivitou
+        const saveBtn = document.getElementById('save-all-data-btn');
+        const clearBtn = document.getElementById('clear-all-data-btn');
+        const exportBtn = document.getElementById('export-data-btn');
+        const importBtn = document.getElementById('import-data-btn');
+        const logoutBtn = document.getElementById('logout-button');
+
+        const baseColorStyles = {
+            saveBtn: `color: white !important;`,
+            clearBtn: `color: red !important;`,
+            exportBtn: `color: white !important;`,
+            importBtn: `color: white !important;`,
+            logoutBtn: `color: red !important;`
+        };
+
+        if (saveBtn) saveBtn.style.cssText += baseColorStyles.saveBtn;
+        if (clearBtn) clearBtn.style.cssText += baseColorStyles.clearBtn;
+        if (exportBtn) exportBtn.style.cssText += baseColorStyles.exportBtn;
+        if (importBtn) importBtn.style.cssText += baseColorStyles.importBtn;
+        if (logoutBtn) {
+            // Logout tlačítko má trochu menší padding v HTML, zkusíme to respektovat
+            // Ponecháme padding z původní definice, ale přidáme barvu
+            logoutBtn.style.cssText += `
+                padding: 0.1rem 1rem !important; /* Zachování původního paddingu */
+                ${baseColorStyles.logoutBtn}
+            `;
+        }
+        // --- KONEC APLIKACE SPECIFICKÝCH BAREV ---
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDataManagementVisibility);
+    } else {
+        initDataManagementVisibility();
+    }
+
+    window.hideDataManagementButtons = hideDataManagementButtons;
+    window.showDataManagementButtons = showDataManagementButtons;
+
+    // NOVÁ ČÁST: Posluchač události 'resize' pro dynamickou aktualizaci stylů
+    window.addEventListener('resize', applyDataManagementResponsiveStyles);
+
+})();
+
+
+
+
+
 
     // --- Pomocní script pro heslo před přechodem k přihlášení a registrace (od Claude.AI) ---
     (function() {
