@@ -499,6 +499,23 @@
                 openJirikModalBtn.id = 'jirik-open-modal-btn';
                 openJirikModalBtn.className = 'button custom-button'; // Přidáme tvé třídy
                 openJirikModalBtn.textContent = '📋';
+
+                 // >>> ZDE JE MÍSTO, KDE MŮŽEŠ EDITOVAT STYLY PRO TLAČÍTKO <<<
+                // Vložíme sem ty styly, které jsi mi poslal, a zde je můžeš měnit!
+                openJirikModalBtn.style.cssText = `
+                    color: #FF7F50 !important;
+                    text-decoration: none !important;
+                    padding: 0.5rem 1rem !important;
+                    border-radius: 25px !important;
+                    transition: all 0.3s ease !important;
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    backdrop-filter: blur(5px) !important;
+                    -webkit-backdrop-filter: blur(5px) !important;
+                    font-size: 1em !important;
+                    border: none !important;
+                    cursor: pointer !important;
+                `;
+                // >>> KONEC MÍSTA PRO EDITACI STYLŮ <<< 
                 
                 dataManagementContainer.appendChild(openJirikModalBtn);
                 originalConsole.log('✅ Tlačítko pro otevření konzole (Jiřík) bylo úspěšně vytvořeno a navázáno do .function-setupDataManagement .data-management-container!');
