@@ -3048,8 +3048,6 @@ div#url-edit-modal .url-modal-buttons #url-edit-cancel-btn:hover,
     });
 });
 
-//TADY JE JS PRO CELOOBRAZOVÝ REŽIM?
-
 document.addEventListener('DOMContentLoaded', () => {
     const fullscreenButton = document.getElementById('fullscreenButton');
 
@@ -3064,4 +3062,21 @@ document.addEventListener('DOMContentLoaded', () => {
             document.exitFullscreen();
         }
     });
+
+    // Přidáme posluchač pro událost fullscreenchange,
+    // aby se třída aktualizovala, i když uživatel opustí režim klávesou Esc.
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            fullscreenButton.classList.add('active'); // Přidá třídu 'active'
+        } else {
+            fullscreenButton.classList.remove('active'); // Odebere třídu 'active'
+        }
+    });
+
+    // Důležité: Na začátku zkontrolujeme stav celoobrazovkového režimu
+    // a nastavíme třídu, pokud je už stránka v celoobrazovém režimu (např. po F11).
+    // To je dobré pro případy, kdy uživatel vstoupí do fullscreenu jiným způsobem než kliknutím na tlačítko.
+    if (document.fullscreenElement) {
+        fullscreenButton.classList.add('active');
+    }
 });
