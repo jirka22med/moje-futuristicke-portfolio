@@ -1884,9 +1884,9 @@ async function saveEditedImage() {
 
 
     // --- Nové funkce pro editaci portfolia (ukládá do Firestore) ---
-    let editingPortfolioItemId = null;
+let editingPortfolioItemId = null;
 
-    async function editPortfolioItem(itemId) {
+async function editPortfolioItem(itemId) {
     if (!currentUserId) {
         showAlertModal("Přístup zamítnut", "Pro úpravu položky se musíte přihlásit.");
         return;
@@ -1959,60 +1959,61 @@ function addPortfolioItem() {
     showModal(document.getElementById('edit-portfolio-modal'));
 }
 
-    async function saveEditedPortfolioItem() {
-        if (!currentUserId) {
-            showAlertModal("Uložení selhalo", "Pro úpravu položky se musíte přihlásit.");
-            return;
-        }
-        const title = document.getElementById('edit-portfolio-title').value.trim();
-        const desc1 = document.getElementById('edit-portfolio-desc-1').value.trim();
-        const desc2 = document.getElementById('edit-portfolio-desc-2').value.trim();
-        const linkText = document.getElementById('edit-portfolio-link-text').value.trim();
-        const linkUrl = document.getElementById('edit-portfolio-link-url').value.trim();
+async function saveEditedPortfolioItem() {
+    if (!currentUserId) {
+        showAlertModal("Uložení selhalo", "Pro úpravu položky se musíte přihlásit.");
+        return;
+    }
+    const title = document.getElementById('edit-portfolio-title').value.trim();  
+    const desc1 = document.getElementById('edit-portfolio-desc-1').value.trim();
+    const desc2 = document.getElementById('edit-portfolio-desc-2').value.trim();
+    const linkText = document.getElementById('edit-portfolio-link-text').value.trim();
+    const linkUrl = document.getElementById('edit-portfolio-link-url').value.trim();
 
-        if (!title || !desc1) {
-            showAlertModal("Chybějící údaje", "Vyplňte prosím název a první popis položky portfolia.");
-            return;
-        }
-        if (linkUrl && !isValidHttpUrl(linkUrl)) {
-            showAlertModal("Neplatná URL", "Zadejte platnou URL adresu pro odkaz (http:// nebo https://).");
-            return;
-        }
-
-        showLoading("Ukládám položku portfolia...");
-        try {
-            const newId = editingPortfolioItemId || `portfolio-item-${Date.now()}`;
-            
-            editableContentData[`${itemId}-title`] = title;
-            editableContentData[`${itemId}-desc-1`] = desc1;
-            editableContentData[`${itemId}-desc-2`] = desc2;
-            editableContentData[`${newId}-link-text`] = linkText;
-             editableContentData[`${newId}-link-url`] = linkUrl;
-            // --- NOVÝ KÓD ZDE: ULOŽENÍ YOUTUBE URL ---
-            const youtubeUrl = document.getElementById('edit-portfolio-youtube').value.trim();
-            editableContentData[`${newId}-youtube-url`] = youtubeUrl; // Uložíme YouTube URL
-            // --- KONEC NOVÉHO KÓDU ---
-            editableContentData[`${newId}-userId`] = currentUserId;
-            editableContentData[`${newId}-createdAt`] = Date.now();
-
-            await saveDataToFirestore(); 
-
-            if (!editingPortfolioItemId) {
-                showAlertModal("Položka přidána", `Nová položka portfolia "${title}" byla přidána do cloudu.`);
-            } else {
-                showAlertModal("Položka upravena", `Položka portfolia "${title}" byla upravena v cloudu.`);
-            }
-            hideModal(document.getElementById('edit-portfolio-modal'));
-            hideLoading();
-            editingPortfolioItemId = null;
-        } catch (error) {
-            console.error('Chyba při ukládání položky portfolia do Firestore:', error);
-            showAlertModal("Chyba ukládání", `Nepodařilo se uložit položku portfolia: ${error.message}`);
-            hideLoading();
-        }
+    if (!title || !desc1) {
+        showAlertModal("Chybějící údaje", "Vyplňte prosím název a první popis položky portfolia.");
+        return;
+    }
+    if (linkUrl && !isValidHttpUrl(linkUrl)) {
+        showAlertModal("Neplatná URL", "Zadejte platnou URL adresu pro odkaz (http:// nebo https://).");
+        return;
     }
 
-    async function deletePortfolioItem() {
+    showLoading("Ukládám položku portfolia...");
+    try {
+        // 🔧 OPRAVENO: Používáme jednotné názvy klíčů
+        const itemId = editingPortfolioItemId || `portfolio-item-${Date.now()}`;
+        
+        editableContentData[`${itemId}-title`] = title; // OPRAVENO: používáme itemId místo newId
+        editableContentData[`${itemId}-desc-1`] = desc1; // OPRAVENO: používáme itemId místo newId
+        editableContentData[`${itemId}-desc-2`] = desc2; // OPRAVENO: používáme itemId místo newId
+        editableContentData[`${itemId}-link-text`] = linkText;
+        editableContentData[`${itemId}-link-url`] = linkUrl;
+        // --- NOVÝ KÓD ZDE: ULOŽENÍ YOUTUBE URL ---
+        const youtubeUrl = document.getElementById('edit-portfolio-youtube').value.trim();
+        editableContentData[`${itemId}-youtube-url`] = youtubeUrl; // Uložíme YouTube URL
+        // --- KONEC NOVÉHO KÓDU ---
+        editableContentData[`${itemId}-userId`] = currentUserId;
+        editableContentData[`${itemId}-createdAt`] = Date.now();
+
+        await saveDataToFirestore(); 
+
+        if (!editingPortfolioItemId) {
+            showAlertModal("Položka přidána", `Nová položka portfolia "${title}" byla přidána do cloudu.`);
+        } else {
+            showAlertModal("Položka upravena", `Položka portfolia "${title}" byla upravena v cloudu.`);
+        }
+        hideModal(document.getElementById('edit-portfolio-modal'));
+        hideLoading();
+        editingPortfolioItemId = null;
+    } catch (error) {
+        console.error('Chyba při ukládání položky portfolia do Firestore:', error);
+        showAlertModal("Chyba ukládání", `Nepodařilo se uložit položku portfolia: ${error.message}`);
+        hideLoading();
+    }
+}
+
+async function deletePortfolioItem() {
     if (!currentUserId) {
         showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
         return;
@@ -2035,15 +2036,15 @@ function addPortfolioItem() {
     if (confirmed) {
         showLoading("Mažu položku portfolia...");
         try {
-            // Smažeme všechna data včetně YouTube URL
-            delete editableContentData[`${editingPortfolioItemId}-title`];
-            delete editableContentData[`${editingPortfolioItemId}-desc-1`];
-            delete editableContentData[`${editingPortfolioItemId}-desc-2`];
-            delete editableContentData[`${editingPortfolioItemId}-link-text`];
-            delete editableContentData[`${editingPortfolioItemId}-link-url`];
-            delete editableContentData[`${editingPortfolioItemId}-youtube-url`]; // OPRAVENO: Přidáno mazání YouTube URL
-            delete editableContentData[`${editingPortfolioItemId}-userId`];
-            delete editableContentData[`${editingPortfolioItemId}-createdAt`];
+            // ✅ SPRÁVNÉ MAZÁNÍ - tyto názvy klíčů teď odpovídají těm při ukládání
+            delete editableContentData[`${editingPortfolioItemId}-title`]; // ✅ TERAZ SA ZMAŽE
+            delete editableContentData[`${editingPortfolioItemId}-desc-1`]; // ✅ TERAZ SA ZMAŽE
+            delete editableContentData[`${editingPortfolioItemId}-desc-2`]; // ✅ TERAZ SA ZMAŽE
+            delete editableContentData[`${editingPortfolioItemId}-link-text`]; // ✅ TOTO SE MAŽE 
+            delete editableContentData[`${editingPortfolioItemId}-link-url`]; // ✅ TOTO SE MAŽE
+            delete editableContentData[`${editingPortfolioItemId}-youtube-url`]; // ✅ TOTO SE MAŽE
+            //delete editableContentData[`${editingPortfolioItemId}-userId`]; // TOTO SE TOTO MÁM ZATÍM DEAKTIVOVANÍ
+            delete editableContentData[`${editingPortfolioItemId}-createdAt`]; // ✅ TOTO SE MAŽE
 
             await saveDataToFirestore();
             
