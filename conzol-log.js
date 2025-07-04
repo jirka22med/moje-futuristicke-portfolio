@@ -44,7 +44,7 @@
      //        'Kritická chyba: Knihovna Firebase Firestore se nenačetla.',
      //        'Kritická chyba: Knihovna Supabase se nenačetla.',
      //        'Změna velikosti okna, aktualizuji styly obrázků.',
-        //     'Realtime aktualizace z Firestore:', //toto je výpis z cloudu
+             'Realtime aktualizace z Firestore:', //toto je výpis z cloudu
      //        'Data načtena z Firestore.',
      //        'Žádná data v Firestore, použiji výchozí lokální data.',
       //       'Hlavní dokument v Firestore neexistuje, nebo byl smazán.',
