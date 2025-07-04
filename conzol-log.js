@@ -37,8 +37,8 @@
 
         // Keywords, které mají být filtrovány (pokud nejsou v allowedPhrases)
         const filterKeywords = [
-          //   'Supabase Auth State Change:', // Generické zprávy Supabase
-           'Supabase library not loaded',
+            'Supabase Auth State Change:', // Generické zprávy Supabase
+      //     'Supabase library not loaded',
      //        'Firebase Firestore úspěšně inicializován.',
      //        'Chyba při inicializaci Firebase Firestore:',
      //        'Kritická chyba: Knihovna Firebase Firestore se nenačetla.',
