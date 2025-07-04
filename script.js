@@ -1983,9 +1983,9 @@ function addPortfolioItem() {
         try {
             const newId = editingPortfolioItemId || `portfolio-item-${Date.now()}`;
             
-            editableContentData[`${newId}-title`] = title;
-            editableContentData[`${newId}-desc-1`] = desc1;
-            editableContentData[`${newId}-desc-2`] = desc2;
+            editableContentData[`${itemId}-title`] = title;
+            editableContentData[`${itemId}-desc-1`] = desc1;
+            editableContentData[`${itemId}-desc-2`] = desc2;
             editableContentData[`${newId}-link-text`] = linkText;
              editableContentData[`${newId}-link-url`] = linkUrl;
             // --- NOVÝ KÓD ZDE: ULOŽENÍ YOUTUBE URL ---
