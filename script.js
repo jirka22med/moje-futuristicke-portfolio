@@ -241,69 +241,64 @@
           //tady začíná hlavní logika
     // --- Funkce pro ukládání dat do Firestore (používá currentUserId ze Supabase) ---
     async function saveDataToFirestore() {
-        if (!currentUserId) {
-            showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
-            return false;
-        }
-
-        showLoading("Ukládám data do cloudu...");
-
-        document.querySelectorAll('[data-editable]').forEach(el => {
-            const id = el.dataset.editable;
-            if (id) {
-                if (el.tagName === 'A' && el.classList.contains('editable-link')) {
-                    editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
-                } else {
-                    editableContentData[id] = el.innerHTML;
-                }
-            }
-        });
-
-        // NOVÝ KÓD: Ukládání URL dat ze stávajících portfolio položek
-        document.querySelectorAll('#cloude-projek-test .portfolio-item').forEach(portfolioItem => {
-            const itemId = portfolioItem.dataset.itemId;
-            if (itemId) {
-                // Najdeme odkaz v této portfolio položce
-                const linkElement = portfolioItem.querySelector('a.editable-link');
-                if (linkElement) {
-                    const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
-                    const linkText = linkTextSpan ? linkTextSpan.textContent.trim() : '';
-                    const linkUrl = linkElement.getAttribute('href') || '';
-                    
-                    // Uložíme do editableContentData
-                    editableContentData[`${itemId}-link-text`] = linkText;
-                    editableContentData[`${itemId}-link-url`] = linkUrl;
-                    
-                    console.log(`💾 Ukládám URL data pro ${itemId}:`, { linkText, linkUrl });
-                }
-            }
-        });
-        
-        const dataToSave = {
-            galleryImages: galleryImagesData,
-            savedCodes: savedCodesData,
-            externalLinks: externalLinksData,
-            editableContent: editableContentData,
-            // lastUpdated: firebase.firestore.FieldValue.serverTimestamp(), // Ponecháno pro dokument nejvyšší úrovně
-            editorUserId: currentUserId
-        };
-
-        // Přidáme serverTimestamp pro samotný dokument nejvyšší úrovně, ne pro pole uvnitř
-        dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
-
-        try {
-            await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: true });
-            hideLoading();
-            showAlertModal("Uloženo do cloudu", "Všechna data včetně URL adres byla úspěšně uložena do Cloud Firestore.");
-            return true;
-        } catch (error) {
-            console.error('Chyba při ukládání do Firestore:', error);
-            hideLoading();
-            showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
-            return false;
-        }
+    if (!currentUserId) {
+        showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
+        return false;
     }
-
+    showLoading("Ukládám data do cloudu...");
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        const id = el.dataset.editable;
+        if (id) {
+            if (el.tagName === 'A' && el.classList.contains('editable-link')) {
+                editableContentData[id] = { url: el.href, text: el.childNodes[0] ? el.childNodes[0].nodeValue.trim() : '' };
+            } else {
+                editableContentData[id] = el.innerHTML;
+            }
+        }
+    });
+    // NOVÝ KÓD: Ukládání URL dat ze stávajících portfolio položek
+    document.querySelectorAll('#cloude-projek-test .portfolio-item').forEach(portfolioItem => {
+        const itemId = portfolioItem.dataset.itemId;
+        if (itemId) {
+            // Najdeme odkaz v této portfolio položce
+            const linkElement = portfolioItem.querySelector('a.editable-link');
+            if (linkElement) {
+                const linkTextSpan = linkElement.querySelector('[data-url-editable-text]');
+                const linkText = linkTextSpan ? linkTextSpan.textContent.trim() : '';
+                const linkUrl = linkElement.getAttribute('href') || '';
+                
+                // Uložíme do editableContentData
+                editableContentData[`${itemId}-link-text`] = linkText;
+                editableContentData[`${itemId}-link-url`] = linkUrl;
+                
+                console.log(`💾 Ukládám URL data pro ${itemId}:`, { linkText, linkUrl });
+            }
+        }
+    });
+    
+    const dataToSave = {
+        galleryImages: galleryImagesData,
+        savedCodes: savedCodesData,
+        externalLinks: externalLinksData,
+        editableContent: editableContentData, // KLÍČOVÉ: Tady jsou už smazané klíče
+        editorUserId: currentUserId
+    };
+    // Přidáme serverTimestamp pro samotný dokument nejvyšší úrovně, ne pro pole uvnitř
+    dataToSave.lastUpdated = firebase.firestore.FieldValue.serverTimestamp();
+    try {
+        // OPRAVENO: Změněno z { merge: true } na { merge: false }
+        // Tím se PŘEPÍŠE celý dokument a skutečně se smažou smazané klíče
+        await db.collection('publicContent').doc(DOC_ID).set(dataToSave, { merge: false });
+        hideLoading();
+        showAlertModal("Uloženo do cloudu", "Všechna data včetně URL adres byla úspěšně uložena do Cloud Firestore.");
+        return true;
+    } catch (error) {
+        console.error('Chyba při ukládání do Firestore:', error);
+        hideLoading();
+        showAlertModal("Chyba ukládání", `Nepodařilo se uložit data do cloudu: ${error.message}`);
+        return false;
+    }
+}
     // --- Funkce pro načítání dat z Firestore (všichni vidí) ---
     async function loadDataFromFirestore() {
         showLoading("Načítám data z cloudu...");
@@ -2018,45 +2013,62 @@ function addPortfolioItem() {
     }
 
     async function deletePortfolioItem() {
-        if (!currentUserId) {
-            showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
-            return;
-        }
-        if (!editingPortfolioItemId) return;
-
-        if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
-            showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
-            return;
-        }
-
-        const confirmed = await (window.showConfirmModal ?
-            showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
-            confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
-        );
-
-        if (confirmed) {
-            showLoading("Mažu položku portfolia...");
-            try {
-                delete editableContentData[`${editingPortfolioItemId}-title`];
-                delete editableContentData[`${editingPortfolioItemId}-desc-1`];
-                delete editableContentData[`${editingPortfolioItemId}-desc-2`];
-                delete editableContentData[`${editingPortfolioItemId}-link-text`];
-                delete editableContentData[`${editingPortfolioItemId}-link-url`];
-                delete editableContentData[`${editingPortfolioItemId}-userId`];
-                delete editableContentData[`${editingPortfolioItemId}-createdAt`]; // ZMĚNA ZDE: Smažeme i createdAt
-
-                await saveDataToFirestore();
-                showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu.");
-                hideLoading();
-            } catch (error) {
-                console.error('Chyba při mazání položky portfolia z Firestore:', error);
-                showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
-                hideLoading();
-            }
-            hideModal(document.getElementById('edit-portfolio-modal'));
-            editingPortfolioItemId = null;
-        }
+    if (!currentUserId) {
+        showAlertModal("Přístup zamítnut", "Pro smazání položky se musíte přihlásit.");
+        return;
     }
+    if (!editingPortfolioItemId) return;
+
+    if (editableContentData[`${editingPortfolioItemId}-userId`] !== currentUserId) {
+        showAlertModal("Přístup zamítnut", "Nemáte oprávnění smazat tuto položku portfolia. Můžete smazat pouze své vlastní položky.");
+        return;
+    }
+
+    // NOVÉ: Zavřeme edit modal PŘED zobrazením confirm dialogu
+    hideModal(document.getElementById('edit-portfolio-modal'));
+
+    const confirmed = await (window.showConfirmModal ?
+        showConfirmModal("Smazat položku portfolia?", "Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná! Smaže se i z cloudu pro všechny!", { okText: 'Ano, smazat', cancelText: 'Zrušit' }) :
+        confirm("Opravdu chcete smazat tuto položku z portfolia? Tato akce je nevratná!")
+    );
+
+    if (confirmed) {
+        showLoading("Mažu položku portfolia...");
+        try {
+            // Smažeme všechna data včetně YouTube URL
+            delete editableContentData[`${editingPortfolioItemId}-title`];
+            delete editableContentData[`${editingPortfolioItemId}-desc-1`];
+            delete editableContentData[`${editingPortfolioItemId}-desc-2`];
+            delete editableContentData[`${editingPortfolioItemId}-link-text`];
+            delete editableContentData[`${editingPortfolioItemId}-link-url`];
+            delete editableContentData[`${editingPortfolioItemId}-youtube-url`]; // OPRAVENO: Přidáno mazání YouTube URL
+            delete editableContentData[`${editingPortfolioItemId}-userId`];
+            delete editableContentData[`${editingPortfolioItemId}-createdAt`];
+
+            await saveDataToFirestore();
+            
+            showAlertModal("Položka smazána", "Položka portfolia byla úspěšně smazána z cloudu.");
+            hideLoading();
+            
+            // NOVÉ: Refresh stránky pro aktualizaci zobrazení
+            setTimeout(() => {
+                location.reload();
+            }, 3000); // Krátká pauza aby si uživatel stihl přečíst zprávu
+            
+        } catch (error) {
+            console.error('Chyba při mazání položky portfolia z Firestore:', error);
+            showAlertModal("Chyba mazání", `Nepodařilo se smazat položku portfolia: ${error.message}`);
+            hideLoading();
+        }
+    } else {
+        // NOVÉ: Pokud uživatel zruší smazání, znovu otevřeme edit modal
+        showModal(document.getElementById('edit-portfolio-modal'));
+    }
+    
+    editingPortfolioItemId = null;
+}
+//tady končí portfolio
+
 
 // --- Pomocný script pro správu viditelnosti tlačítek (od Claude.AI) ---
 (function() {
