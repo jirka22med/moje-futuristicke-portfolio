@@ -237,7 +237,7 @@ window.signOut = async function() {
 // --- Funkce pro ukládání ostatních dat do Firestore (mimo portfolia) ---
 async function saveDataToFirestore() {
     if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
+        //showAlertModal("Uložení selhalo", "Pro uložení dat se musíte přihlásit.");
         return false;
     }
     showLoading("Ukládám data do cloudu...");
@@ -870,7 +870,7 @@ function setupHtmlEditor() {
 
 async function saveHtmlCodeToFirestore(title, code) {
     if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro uložení kódu se musíte přihlásit.");
+        //showAlertModal("Uložení selhalo", "Pro uložení kódu se musíte přihlásit.");
         return;
     }
     showLoading("Ukládám HTML kód...");
@@ -1429,7 +1429,7 @@ async function editImage(imageId) {
 
 async function saveEditedImage() {
     if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro úpravu obrázku se musíte přihlásit.");
+        //showAlertModal("Uložení selhalo", "Pro úpravu obrázku se musíte přihlásit.");
         return;
     }
 
@@ -1542,7 +1542,7 @@ async function editLink(linkId) {
 
 async function saveEditedLink() {
     if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro úpravu odkazu se musíte přihlásit.");
+        //showAlertModal("Uložení selhalo", "Pro úpravu odkazu se musíte přihlásit.");
         return;
     }
     const title = document.getElementById('edit-link-title').value.trim();
@@ -1781,7 +1781,7 @@ async function editPortfolioItem(itemId) {
 // Úprava saveEditedPortfolioItem pro ukládání do pod-kolekce
 async function saveEditedPortfolioItem() {
     if (!currentUserId) {
-        showAlertModal("Uložení selhalo", "Pro úpravu položky se musíte přihlásit.");
+       // showAlertModal("Uložení selhalo", "Pro úpravu položky se musíte přihlásit.");
         return;
     }
     const title = document.getElementById('edit-portfolio-title').value.trim();
