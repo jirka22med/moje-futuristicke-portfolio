@@ -327,7 +327,7 @@ function setupFirestoreRealtimeListener() {
         .onSnapshot((doc) => {
             if (doc.exists) {
                 const data = doc.data();
-                console.log("Realtime aktualizace hlavního dokumentu z Firestore:", data);
+                //console.log("Realtime aktualizace hlavního dokumentu z Firestore:", data);
                 galleryImagesData = data.galleryImages || [...initialImageUrls];
                 savedCodesData = data.savedCodes || [];
                 externalLinksData = data.externalLinks || [...initialExternalLinksData];
