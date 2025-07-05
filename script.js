@@ -45,9 +45,7 @@ let currentUserId = null;
 let editingPortfolioItemId = null; // Používá se pro ID položky v editaci
 
 // Toto je přímo pro statické obrázky na strance, ty neslouží k úpravám a ani mazání
-const initialImageUrls = [
-   
-];
+const initialImageUrls = [ ];
 
 let initialExternalLinksData = [];
 
