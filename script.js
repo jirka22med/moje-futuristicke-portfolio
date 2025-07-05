@@ -357,7 +357,7 @@ function setupFirestoreRealtimeListener() {
     // NOVÉ: Listener pro pod-kolekci portfolioItems
     db.collection('publicContent').doc(DOC_ID).collection('portfolioItems')
         .onSnapshot((snapshot) => {
-            console.log("Realtime aktualizace portfolia z Firestore.");
+            //console.log("Realtime aktualizace portfolia z Firestore.");
             portfolioItemsData = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
