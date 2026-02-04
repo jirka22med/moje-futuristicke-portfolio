@@ -1,45 +1,47 @@
-# 🖖 NÁVOD PRO NOOBY: 8 Sliderů Font Size
-## S ukázkami PŘED/PO a přesnými řádky
+# 🖖 FINÁLNÍ NÁVOD: 8 Sliderů Font Size
+## Založeno na SKUTEČNÉM kódu z playlist-github-Z.js
 
 **Pro:** Více admirál Jiřík  
-**Styl:** Krok za krokem s ukázkami - pro absolutní začátečníky  
+**Soubor:** playlist-github-Z.js  
+**Datum:** 2026-02-04  
+**Styl:** SUPER PŘESNÝ s ukázkami PŘED/PO
 
 ---
 
-# 📋 SEZNAM ZMĚN (RYCHLÝ PŘEHLED)
+# 📊 PŘEHLED VŠECH ZMĚN
 
-| Krok | Kde (řádek) | Co dělám | Akce |
-|------|------------|----------|------|
-| 1 | 33-34 | currentSettings | SMAŽ 2 řádky, PŘIDEJ 17 nových |
-| 2 | 196-210 | HTML slidery | SMAŽ 15 řádků, PŘIDAJ 103 nových |
-| 3 | Za 699 | Event listenery | PŘIDEJ 53 řádků |
-| 4 | Za 1290 | Funkce applyFontSizes | PŘIDEJ 73 řádků |
-| 5 | Cca 960 | loadSettingsFromModal | PŘIDEJ 41 řádků |
-| 6 | Cca 1065 | applySettingsToModal | PŘIDEJ 11 řádků |
-| 7 | 74-76 | Fullscreen listenery | UPRAV 3 řádky |
-| 8 | 80-83 | Resize listener | UPRAV 1 řádek |
-| 9 | Za 85 | Init | PŘIDEJ 1 řádek |
+| # | Řádek | Sekce | Akce | Co dělám |
+|---|-------|-------|------|----------|
+| 1 | 34-35 | currentSettings | SMAŽ & PŘIDEJ | 2 řádky → 17 řádků |
+| 2 | 197-211 | HTML slidery | SMAŽ & PŘIDEJ | 15 řádků → 103 řádků |
+| 3 | Za 568 | Event listenery | PŘIDEJ NOVOU FUNKCI | +53 řádků |
+| 4 | 492 | attachEventListeners | PŘIDEJ VOLÁNÍ | +1 řádek |
+| 5 | Za 658 | applyFontSizes funkce | PŘIDEJ NOVOU FUNKCI | +73 řádků |
+| 6 | 937-948 | applySettingsToModal | SMAŽ & PŘIDEJ | 12 řádků → 41 řádků |
+| 7 | 1036-1041 | getSettingsFromForm | SMAŽ & PŘIDEJ | 6 řádků → 41 řádků |
+| 8 | 75-77 | Fullscreen listenery | UPRAV | +volání applyFontSizes |
+| 9 | 83 | Resize listener | UPRAV | +volání applyFontSizes |
+| 10 | Za 86 | init() konec | PŘIDEJ | +1 řádek |
 
 ---
 
 # 🎯 KROK 1: Aktualizace currentSettings
 
-## 📍 KDE TO NAJDU?
-Otevři `playlistSettings.js` a najdi **řádek 33-34**
+## 📍 MÍSTO: Řádky 34-35
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```javascript
         trackSpacing: 'normal',
-        headerFontSizePx: 24,                    // ← ŘÁDEK 33 - SMAŽ
-        trackTitleFontSizePx: 20,                // ← ŘÁDEK 34 - SMAŽ
+        headerFontSizePx: 24,          // ← ŘÁDEK 34 - SMAŽ TENTO
+        trackTitleFontSizePx: 20,      // ← ŘÁDEK 35 - SMAŽ TENTO
         customColors: {
 ```
 
-## ❌ CO UDĚLÁM:
-1. **SMAŽ** řádky 33-34 (ty dva s `headerFontSizePx` a `trackTitleFontSizePx`)
+## ❌ CO UDĚLAT:
+**SMAŽ řádky 34-35** (ty dva s `headerFontSizePx` a `trackTitleFontSizePx`)
 
-## ✅ JAK TO MÁ VYPADAT (PO):
+## ✅ NAHRAĎ TÍMTO (PO):
 
 ```javascript
         trackSpacing: 'normal',
@@ -68,18 +70,16 @@ Otevři `playlistSettings.js` a najdi **řádek 33-34**
 
 # 🎯 KROK 2: Aktualizace HTML sliderů
 
-## 📍 KDE TO NAJDU?
-Najdi **řádek 196** - začíná to s `<div class="setting-item">`
+## 📍 MÍSTO: Řádky 197-211
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```html
-                    </div>
                 </div>
                     
                 
 
-                    <div class="setting-item">              <!-- ← ŘÁDEK 196 - OD TADY MAŽU -->
+                    <div class="setting-item">                <!-- ← ŘÁDEK 197 - OD TADY MAŽU -->
                         <label for="header-font-size">Velikost nadpisu (Header):</label>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <input type="range" id="header-font-size" class="range-input" min="1" max="40" value="24">
@@ -93,19 +93,18 @@ Najdi **řádek 196** - začíná to s `<div class="setting-item">`
                             <input type="range" id="track-title-font-size" class="range-input" min="1" max="40" value="20">
                             <span class="range-value">20px</span>
                         </div>
-                    </div>                                  <!-- ← ŘÁDEK 210 - DO TADY MAŽU -->
+                    </div>                                    <!-- ← ŘÁDEK 211 - DO TADY MAŽU -->
                  
                   <!-- ═══════════════════════════════════════════════════ -->
                 <!-- 🎯 NOVÁ SEKCE: VÝŠKA PLAYLISTU (4 SLIDERY)        -->
 ```
 
-## ❌ CO UDĚLÁM:
-1. **SMAŽ** všechno od řádku 196 do řádku 210 (včetně)
+## ❌ CO UDĚLAT:
+**SMAŽ řádky 197-211** (celá sekce se 2 slidery)
 
-## ✅ JAK TO MÁ VYPADAT (PO):
+## ✅ NAHRAĎ TÍMTO (PO):
 
 ```html
-                    </div>
                 </div>
                     
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -206,126 +205,150 @@ Najdi **řádek 196** - začíná to s `<div class="setting-item">`
 
 ---
 
-# 🎯 KROK 3: Event Listenery
+# 🎯 KROK 3: Nová funkce attachFontSizeListeners()
 
-## 📍 KDE TO NAJDU?
-Najdi **řádek 699** - končí to s `});` u mobil fullscreen slideru
+## 📍 MÍSTO: ZA ŘÁDEK 568
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 NAJDI SI TOTO MÍSTO:
 
 ```javascript
-                });
-            }
-            
-        },  // ← ŘÁDEK 699 - ZA TENHLE ŘÁDEK PŘIDÁVÁM NOVÝ KÓD
+                this.applyPlaylistHeight();
+            });
+        });
+    },    // ← ŘÁDEK 568 - ZA TENHLE ŘÁDEK PŘIDÁVÁM
 
-        // Aplikace nastavení do modal okna
-        applySettingsToModal() {
+    // Event listenery pro barevná nastavení
+    attachColorListeners() {
 ```
 
-## ➕ CO UDĚLÁM:
-**PŘIDÁM** nový kód **ZA řádek 699** (mezi `},` a `// Aplikace nastavení`)
-
-## ✅ JAK TO MÁ VYPADAT (PO):
+## ➕ PŘIDEJ ZA ŘÁDEK 568:
 
 ```javascript
-                });
-            }
-            
-        },  // ← ŘÁDEK 699
+                this.applyPlaylistHeight();
+            });
+        });
+    },    // ← ŘÁDEK 568
 
 // ═══════════════════════════════════════════════════════════════
 // 🎯 FONT SIZE SLIDERY - Event Listeners (8 sliderů)
 // Více admirál Jiřík - Pattern stejný jako u výšky playlistu
 // ═══════════════════════════════════════════════════════════════
 attachFontSizeListeners() {
-    const fontSliders = this.DOM.modal.querySelectorAll('.font-slider');
+    const fontSliders = this.DOM.modal?.querySelectorAll('.font-slider');
     
-    fontSliders.forEach(slider => {
-        slider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            const type = e.target.dataset.type;   // 'header' nebo 'track'
-            const mode = e.target.dataset.mode;   // 'desktopNormal', 'desktopFullscreen', atd.
-            const valueSpan = e.target.nextElementSibling;
+    fontSliders?.forEach(slider => {
+        slider.addEventListener('input', () => {
+            const value = parseInt(slider.value);
+            const type = slider.dataset.type;   // 'header' nebo 'track'
+            const mode = slider.dataset.mode;   // 'desktopNormal', 'desktopFullscreen', atd.
             
             // Aktualizace zobrazené hodnoty
-            if (valueSpan && valueSpan.classList.contains('range-value')) {
-                valueSpan.textContent = value + 'px';
-            }
+            this.updateRangeValue(slider);
             
-            // Uložení do currentSettings
+            // Dočasná změna nastavení pro preview
             if (type === 'header') {
                 switch(mode) {
                     case 'desktopNormal':
-                        this.currentSettings.headerFontSizeDesktopNormal = parseInt(value);
+                        this.currentSettings.headerFontSizeDesktopNormal = value;
                         break;
                     case 'desktopFullscreen':
-                        this.currentSettings.headerFontSizeDesktopFullscreen = parseInt(value);
+                        this.currentSettings.headerFontSizeDesktopFullscreen = value;
                         break;
                     case 'mobileNormal':
-                        this.currentSettings.headerFontSizeMobileNormal = parseInt(value);
+                        this.currentSettings.headerFontSizeMobileNormal = value;
                         break;
                     case 'mobileFullscreen':
-                        this.currentSettings.headerFontSizeMobileFullscreen = parseInt(value);
+                        this.currentSettings.headerFontSizeMobileFullscreen = value;
                         break;
                 }
             } else if (type === 'track') {
                 switch(mode) {
                     case 'desktopNormal':
-                        this.currentSettings.trackTitleFontSizeDesktopNormal = parseInt(value);
+                        this.currentSettings.trackTitleFontSizeDesktopNormal = value;
                         break;
                     case 'desktopFullscreen':
-                        this.currentSettings.trackTitleFontSizeDesktopFullscreen = parseInt(value);
+                        this.currentSettings.trackTitleFontSizeDesktopFullscreen = value;
                         break;
                     case 'mobileNormal':
-                        this.currentSettings.trackTitleFontSizeMobileNormal = parseInt(value);
+                        this.currentSettings.trackTitleFontSizeMobileNormal = value;
                         break;
                     case 'mobileFullscreen':
-                        this.currentSettings.trackTitleFontSizeMobileFullscreen = parseInt(value);
+                        this.currentSettings.trackTitleFontSizeMobileFullscreen = value;
                         break;
                 }
             }
             
-            // Okamžitá aplikace změny
+            // Aplikuj novou velikost písma HNED
             this.applyFontSizes();
-            
-            this.log(`Font slider změněn: ${type} ${mode} = ${value}px`);
         });
     });
 },
 
-        // Aplikace nastavení do modal okna
-        applySettingsToModal() {
+    // Event listenery pro barevná nastavení
+    attachColorListeners() {
 ```
 
 ---
 
-# 🎯 KROK 4: Funkce applyFontSizes()
+# 🎯 KROK 4: Připojení listenerů v attachEventListeners()
 
-## 📍 KDE TO NAJDU?
-Najdi **řádek 1290** - končí funkce `applyPlaylistHeight()` s `},`
+## 📍 MÍSTO: Řádek 492
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```javascript
-            this.log(`✅ Playlist výška aplikována [${mode} ${screen}]: ${playlistHeight}px`);
-        },  // ← ŘÁDEK 1290 - ZA TENHLE ŘÁDEK PŘIDÁVÁM
+        // Event listenery pro akční tlačítka
+        this.attachActionListeners();
 
-        // Uložení nastavení do localStorage
-        saveSettingsToLocalStorage() {
+        // Event listenery pro barevná nastavení
+        this.attachColorListeners();                    // ← ŘÁDEK 495
+
+        this.log('Event listenery připojeny.');        // ← ŘÁDEK 497
+    },
 ```
 
-## ➕ CO UDĚLÁM:
-**PŘIDÁM** funkci `applyFontSizes()` **ZA řádek 1290**
-
-## ✅ JAK TO MÁ VYPADAT (PO):
+## ➕ PŘIDEJ ŘÁDEK ZA 495:
 
 ```javascript
-            this.log(`✅ Playlist výška aplikována [${mode} ${screen}]: ${playlistHeight}px`);
-        },  // ← ŘÁDEK 1290
+        // Event listenery pro akční tlačítka
+        this.attachActionListeners();
+
+        // Event listenery pro barevná nastavení
+        this.attachColorListeners();
+        
+        // Event listenery pro font size slidery
+        this.attachFontSizeListeners();    // ← PŘIDEJ TENTO ŘÁDEK
+
+        this.log('Event listenery připojeny.');
+    },
+```
+
+---
+
+# 🎯 KROK 5: Nová funkce applyFontSizes()
+
+## 📍 MÍSTO: ZA ŘÁDEK 658
+
+## 👀 NAJDI SI TOTO MÍSTO:
+
+```javascript
+        // 🔍 Debug log
+        this.log(`📏 Výška playlistu: ${height}px | Desktop: ${device.isDesktop} | Fullscreen: ${device.isFullscreen}`);
+    },    // ← ŘÁDEK 658 - ZA TENHLE ŘÁDEK PŘIDÁVÁM
+
+    // Aktualizace zobrazené hodnoty u color inputů
+    updateColorValue(input) {
+```
+
+## ➕ PŘIDEJ ZA ŘÁDEK 658:
+
+```javascript
+        // 🔍 Debug log
+        this.log(`📏 Výška playlistu: ${height}px | Desktop: ${device.isDesktop} | Fullscreen: ${device.isFullscreen}`);
+    },    // ← ŘÁDEK 658
 
 // ═══════════════════════════════════════════════════════════════
-// 🎯 Aplikace velikosti písma podle zařízení a režimu
+// 🎯 APLIKACE VELIKOSTI PÍSMA PODLE ZAŘÍZENÍ A REŽIMU
 // Více admirál Jiřík - Dynamické přepínání jako u výšky playlistu
 // ═══════════════════════════════════════════════════════════════
 applyFontSizes() {
@@ -334,34 +357,31 @@ applyFontSizes() {
         return;
     }
     
-    // Detekce zařízení a režimu
-    const isMobile = window.innerWidth <= 768;
-    const isFullscreen = document.fullscreenElement || 
-                        document.webkitFullscreenElement || 
-                        document.mozFullScreenElement;
+    // Detekce zařízení a režimu (používáme stejnou funkci jako u výšky)
+    const device = this.detectDevice();
     
     // Výběr správné hodnoty pro HEADER
     let headerSize;
-    if (isMobile) {
-        headerSize = isFullscreen 
-            ? this.currentSettings.headerFontSizeMobileFullscreen 
-            : this.currentSettings.headerFontSizeMobileNormal;
-    } else {
-        headerSize = isFullscreen 
+    if (device.isDesktop) {
+        headerSize = device.isFullscreen 
             ? this.currentSettings.headerFontSizeDesktopFullscreen 
             : this.currentSettings.headerFontSizeDesktopNormal;
+    } else {
+        headerSize = device.isFullscreen 
+            ? this.currentSettings.headerFontSizeMobileFullscreen 
+            : this.currentSettings.headerFontSizeMobileNormal;
     }
     
     // Výběr správné hodnoty pro TRACK TITLE
     let trackSize;
-    if (isMobile) {
-        trackSize = isFullscreen 
-            ? this.currentSettings.trackTitleFontSizeMobileFullscreen 
-            : this.currentSettings.trackTitleFontSizeMobileNormal;
-    } else {
-        trackSize = isFullscreen 
+    if (device.isDesktop) {
+        trackSize = device.isFullscreen 
             ? this.currentSettings.trackTitleFontSizeDesktopFullscreen 
             : this.currentSettings.trackTitleFontSizeDesktopNormal;
+    } else {
+        trackSize = device.isFullscreen 
+            ? this.currentSettings.trackTitleFontSizeMobileFullscreen 
+            : this.currentSettings.trackTitleFontSizeMobileNormal;
     }
     
     // Aplikace na HEADER (.playlist-title)
@@ -376,162 +396,185 @@ applyFontSizes() {
         title.style.fontSize = trackSize + 'px';
     });
     
-    const mode = isMobile ? 'Mobil' : 'Desktop';
-    const screen = isFullscreen ? 'Fullscreen' : 'Normal';
-    
-    this.log(`✅ Font sizes aplikovány [${mode} ${screen}]: Header=${headerSize}px, Track=${trackSize}px`);
+    // 🔍 Debug log
+    this.log(`🔤 Font sizes: Header=${headerSize}px, Track=${trackSize}px | Desktop: ${device.isDesktop} | Fullscreen: ${device.isFullscreen}`);
 },
 
-        // Uložení nastavení do localStorage
-        saveSettingsToLocalStorage() {
+    // Aktualizace zobrazené hodnoty u color inputů
+    updateColorValue(input) {
 ```
 
 ---
 
-# 🎯 KROK 5: Načtení hodnot v loadSettingsFromModal()
+# 🎯 KROK 6: Aktualizace applySettingsToModal()
 
-## 📍 KDE TO NAJDU?
-Najdi funkci `loadSettingsFromModal()` - hledej text "playlistHeightMobileFullscreen"
+## 📍 MÍSTO: Řádky 937-948
 
-## 👀 HLEDÁM TOTO:
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```javascript
-        const mobileFullscreenSlider = this.DOM.modal.querySelector('#height-mobile-fullscreen');
-        if (mobileFullscreenSlider) {
-            this.currentSettings.playlistHeightMobileFullscreen = parseInt(mobileFullscreenSlider.value);
         }
-        // ← ZA TENHLE ŘÁDEK PŘIDÁVÁM NOVÝ KÓD
+        /* 🆕 Načtení velikosti písma do posuvníků */        // ← ŘÁDEK 937
+        const headerFontInput = this.DOM.modal.querySelector('#header-font-size');
+        if (headerFontInput && this.currentSettings.headerFontSizePx) {
+            headerFontInput.value = this.currentSettings.headerFontSizePx;
+            this.updateRangeValue(headerFontInput);
+        }
+
+        const trackTitleFontInput = this.DOM.modal.querySelector('#track-title-font-size');
+        if (trackTitleFontInput && this.currentSettings.trackTitleFontSizePx) {
+            trackTitleFontInput.value = this.currentSettings.trackTitleFontSizePx;
+            this.updateRangeValue(trackTitleFontInput);
+        }                                                     // ← ŘÁDEK 948
+       // ═══════════════════════════════════════════════════════════════
+        // 🎯 Načtení výšek playlistu do sliderů
 ```
 
-## ➕ CO UDĚLÁM:
-**PŘIDÁM** za načítání height sliderů
+## ❌ CO UDĚLAT:
+**SMAŽ řádky 937-948** (celou sekci s 2 slidery)
 
-## ✅ PŘIDÁM TENTO KÓD:
+## ✅ NAHRAĎ TÍMTO (PO):
 
 ```javascript
+        }
 // ═══════════════════════════════════════════════════════════════
-// 🎯 FONT SIZE SLIDERY - Načtení hodnot z modalu
+// 🎯 FONT SIZE SLIDERY - Načtení hodnot do modalu (8 sliderů)
+// ═══════════════════════════════════════════════════════════════
+
+// Header Font Sizes
+const headerDesktopNormalSlider = this.DOM.modal.querySelector('#header-font-desktop-normal');
+if (headerDesktopNormalSlider && this.currentSettings.headerFontSizeDesktopNormal) {
+    headerDesktopNormalSlider.value = this.currentSettings.headerFontSizeDesktopNormal;
+    this.updateRangeValue(headerDesktopNormalSlider);
+}
+
+const headerDesktopFullscreenSlider = this.DOM.modal.querySelector('#header-font-desktop-fullscreen');
+if (headerDesktopFullscreenSlider && this.currentSettings.headerFontSizeDesktopFullscreen) {
+    headerDesktopFullscreenSlider.value = this.currentSettings.headerFontSizeDesktopFullscreen;
+    this.updateRangeValue(headerDesktopFullscreenSlider);
+}
+
+const headerMobileNormalSlider = this.DOM.modal.querySelector('#header-font-mobile-normal');
+if (headerMobileNormalSlider && this.currentSettings.headerFontSizeMobileNormal) {
+    headerMobileNormalSlider.value = this.currentSettings.headerFontSizeMobileNormal;
+    this.updateRangeValue(headerMobileNormalSlider);
+}
+
+const headerMobileFullscreenSlider = this.DOM.modal.querySelector('#header-font-mobile-fullscreen');
+if (headerMobileFullscreenSlider && this.currentSettings.headerFontSizeMobileFullscreen) {
+    headerMobileFullscreenSlider.value = this.currentSettings.headerFontSizeMobileFullscreen;
+    this.updateRangeValue(headerMobileFullscreenSlider);
+}
+
+// Track Title Font Sizes
+const trackDesktopNormalSlider = this.DOM.modal.querySelector('#track-font-desktop-normal');
+if (trackDesktopNormalSlider && this.currentSettings.trackTitleFontSizeDesktopNormal) {
+    trackDesktopNormalSlider.value = this.currentSettings.trackTitleFontSizeDesktopNormal;
+    this.updateRangeValue(trackDesktopNormalSlider);
+}
+
+const trackDesktopFullscreenSlider = this.DOM.modal.querySelector('#track-font-desktop-fullscreen');
+if (trackDesktopFullscreenSlider && this.currentSettings.trackTitleFontSizeDesktopFullscreen) {
+    trackDesktopFullscreenSlider.value = this.currentSettings.trackTitleFontSizeDesktopFullscreen;
+    this.updateRangeValue(trackDesktopFullscreenSlider);
+}
+
+const trackMobileNormalSlider = this.DOM.modal.querySelector('#track-font-mobile-normal');
+if (trackMobileNormalSlider && this.currentSettings.trackTitleFontSizeMobileNormal) {
+    trackMobileNormalSlider.value = this.currentSettings.trackTitleFontSizeMobileNormal;
+    this.updateRangeValue(trackMobileNormalSlider);
+}
+
+const trackMobileFullscreenSlider = this.DOM.modal.querySelector('#track-font-mobile-fullscreen');
+if (trackMobileFullscreenSlider && this.currentSettings.trackTitleFontSizeMobileFullscreen) {
+    trackMobileFullscreenSlider.value = this.currentSettings.trackTitleFontSizeMobileFullscreen;
+    this.updateRangeValue(trackMobileFullscreenSlider);
+}
+
+       // ═══════════════════════════════════════════════════════════════
+        // 🎯 Načtení výšek playlistu do sliderů
+```
+
+---
+
+# 🎯 KROK 7: Aktualizace getSettingsFromForm()
+
+## 📍 MÍSTO: Řádky 1036-1041
+
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
+
+```javascript
+        const borderRadiusInput = this.DOM.modal.querySelector('#border-radius');
+        if (borderRadiusInput) newSettings.borderRadius = parseInt(borderRadiusInput.value);
+         /* 🆕 Uložení velikosti písma z posuvníků */       // ← ŘÁDEK 1036
+        const headerFontInput = this.DOM.modal.querySelector('#header-font-size');
+        if (headerFontInput) newSettings.headerFontSizePx = parseInt(headerFontInput.value);
+
+        const trackTitleFontInput = this.DOM.modal.querySelector('#track-title-font-size');
+        if (trackTitleFontInput) newSettings.trackTitleFontSizePx = parseInt(trackTitleFontInput.value);
+                                                                     // ← ŘÁDEK 1041
+            
+            
+       // ═══════════════════════════════════════════════════════════════
+        // 🎯 Uložení výšek playlistu ze sliderů
+```
+
+## ❌ CO UDĚLAT:
+**SMAŽ řádky 1036-1041** (komentář + 2 slidery)
+
+## ✅ NAHRAĎ TÍMTO (PO):
+
+```javascript
+        const borderRadiusInput = this.DOM.modal.querySelector('#border-radius');
+        if (borderRadiusInput) newSettings.borderRadius = parseInt(borderRadiusInput.value);
+        
+// ═══════════════════════════════════════════════════════════════
+// 🎯 FONT SIZE SLIDERY - Uložení hodnot ze sliderů (8 sliderů)
 // ═══════════════════════════════════════════════════════════════
 
 // Header Font Sizes
 const headerDesktopNormal = this.DOM.modal.querySelector('#header-font-desktop-normal');
-if (headerDesktopNormal) {
-    this.currentSettings.headerFontSizeDesktopNormal = parseInt(headerDesktopNormal.value);
-}
+if (headerDesktopNormal) newSettings.headerFontSizeDesktopNormal = parseInt(headerDesktopNormal.value);
 
 const headerDesktopFullscreen = this.DOM.modal.querySelector('#header-font-desktop-fullscreen');
-if (headerDesktopFullscreen) {
-    this.currentSettings.headerFontSizeDesktopFullscreen = parseInt(headerDesktopFullscreen.value);
-}
+if (headerDesktopFullscreen) newSettings.headerFontSizeDesktopFullscreen = parseInt(headerDesktopFullscreen.value);
 
 const headerMobileNormal = this.DOM.modal.querySelector('#header-font-mobile-normal');
-if (headerMobileNormal) {
-    this.currentSettings.headerFontSizeMobileNormal = parseInt(headerMobileNormal.value);
-}
+if (headerMobileNormal) newSettings.headerFontSizeMobileNormal = parseInt(headerMobileNormal.value);
 
 const headerMobileFullscreen = this.DOM.modal.querySelector('#header-font-mobile-fullscreen');
-if (headerMobileFullscreen) {
-    this.currentSettings.headerFontSizeMobileFullscreen = parseInt(headerMobileFullscreen.value);
-}
+if (headerMobileFullscreen) newSettings.headerFontSizeMobileFullscreen = parseInt(headerMobileFullscreen.value);
 
 // Track Title Font Sizes
 const trackDesktopNormal = this.DOM.modal.querySelector('#track-font-desktop-normal');
-if (trackDesktopNormal) {
-    this.currentSettings.trackTitleFontSizeDesktopNormal = parseInt(trackDesktopNormal.value);
-}
+if (trackDesktopNormal) newSettings.trackTitleFontSizeDesktopNormal = parseInt(trackDesktopNormal.value);
 
 const trackDesktopFullscreen = this.DOM.modal.querySelector('#track-font-desktop-fullscreen');
-if (trackDesktopFullscreen) {
-    this.currentSettings.trackTitleFontSizeDesktopFullscreen = parseInt(trackDesktopFullscreen.value);
-}
+if (trackDesktopFullscreen) newSettings.trackTitleFontSizeDesktopFullscreen = parseInt(trackDesktopFullscreen.value);
 
 const trackMobileNormal = this.DOM.modal.querySelector('#track-font-mobile-normal');
-if (trackMobileNormal) {
-    this.currentSettings.trackTitleFontSizeMobileNormal = parseInt(trackMobileNormal.value);
-}
+if (trackMobileNormal) newSettings.trackTitleFontSizeMobileNormal = parseInt(trackMobileNormal.value);
 
 const trackMobileFullscreen = this.DOM.modal.querySelector('#track-font-mobile-fullscreen');
-if (trackMobileFullscreen) {
-    this.currentSettings.trackTitleFontSizeMobileFullscreen = parseInt(trackMobileFullscreen.value);
-}
-```
-
----
-
-# 🎯 KROK 6: Aplikace hodnot v applySettingsToModal()
-
-## 📍 KDE TO NAJDU?
-Najdi funkci `applySettingsToModal()` - hledej "setSliderValue" pro height
-
-## 👀 HLEDÁM TOTO:
-
-```javascript
-        this.setSliderValue('#height-desktop-normal', this.currentSettings.playlistHeightDesktopNormal);
-        this.setSliderValue('#height-desktop-fullscreen', this.currentSettings.playlistHeightDesktopFullscreen);
-        this.setSliderValue('#height-mobile-normal', this.currentSettings.playlistHeightMobileNormal);
-        this.setSliderValue('#height-mobile-fullscreen', this.currentSettings.playlistHeightMobileFullscreen);
-        // ← ZA TENHLE ŘÁDEK PŘIDÁVÁM
-```
-
-## ➕ PŘIDÁM TENTO KÓD:
-
-```javascript
-// ═══════════════════════════════════════════════════════════════
-// 🎯 FONT SIZE SLIDERY - Aplikace hodnot do modalu
-// ═══════════════════════════════════════════════════════════════
-
-// Header Font Sizes
-this.setSliderValue('#header-font-desktop-normal', this.currentSettings.headerFontSizeDesktopNormal);
-this.setSliderValue('#header-font-desktop-fullscreen', this.currentSettings.headerFontSizeDesktopFullscreen);
-this.setSliderValue('#header-font-mobile-normal', this.currentSettings.headerFontSizeMobileNormal);
-this.setSliderValue('#header-font-mobile-fullscreen', this.currentSettings.headerFontSizeMobileFullscreen);
-
-// Track Title Font Sizes
-this.setSliderValue('#track-font-desktop-normal', this.currentSettings.trackTitleFontSizeDesktopNormal);
-this.setSliderValue('#track-font-desktop-fullscreen', this.currentSettings.trackTitleFontSizeDesktopFullscreen);
-this.setSliderValue('#track-font-mobile-normal', this.currentSettings.trackTitleFontSizeMobileNormal);
-this.setSliderValue('#track-font-mobile-fullscreen', this.currentSettings.trackTitleFontSizeMobileFullscreen);
-```
-
----
-
-# 🎯 KROK 7: Připojení event listenerů v attachEventListeners()
-
-## 📍 KDE TO NAJDU?
-Najdi funkci `attachEventListeners()` - hledej kde končí
-
-## 👀 HLEDÁM KONEC FUNKCE:
-
-```javascript
-        this.attachHeightListeners();
-        
-        this.log('Event listenery připojeny.');
-    }, // ← TADY KONČÍ attachEventListeners
-```
-
-## ✏️ UPRAV:
-**PŘIDEJ** volání `this.attachFontSizeListeners();`
-
-## ✅ MÁ TO VYPADAT TAKTO:
-
-```javascript
-        this.attachHeightListeners();
-        this.attachFontSizeListeners();  // ← PŘIDEJ TENTO ŘÁDEK
-        
-        this.log('Event listenery připojeny.');
-    },
+if (trackMobileFullscreen) newSettings.trackTitleFontSizeMobileFullscreen = parseInt(trackMobileFullscreen.value);
+            
+            
+       // ═══════════════════════════════════════════════════════════════
+        // 🎯 Uložení výšek playlistu ze sliderů
 ```
 
 ---
 
 # 🎯 KROK 8: Fullscreen listenery v init()
 
-## 📍 KDE TO NAJDU?
-Najdi v `init()` funkci **řádek 74** - fullscreen event listenery
+## 📍 MÍSTO: Řádky 75-77
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```javascript
+       // ═══════════════════════════════════════════════════════════════
+        // 🎯 Sledování fullscreen změn
+        // ═══════════════════════════════════════════════════════════════
         document.addEventListener('fullscreenchange', () => this.applyPlaylistHeight());
         document.addEventListener('webkitfullscreenchange', () => this.applyPlaylistHeight());
         document.addEventListener('mozfullscreenchange', () => this.applyPlaylistHeight());
@@ -540,6 +583,9 @@ Najdi v `init()` funkci **řádek 74** - fullscreen event listenery
 ## ✏️ UPRAV NA:
 
 ```javascript
+       // ═══════════════════════════════════════════════════════════════
+        // 🎯 Sledování fullscreen změn
+        // ═══════════════════════════════════════════════════════════════
         document.addEventListener('fullscreenchange', () => {
             this.applyPlaylistHeight();
             this.applyFontSizes();
@@ -558,10 +604,9 @@ Najdi v `init()` funkci **řádek 74** - fullscreen event listenery
 
 # 🎯 KROK 9: Resize listener v init()
 
-## 📍 KDE TO NAJDU?
-Hned pod fullscreen listenery - **řádek 79-83**
+## 📍 MÍSTO: Řádek 83
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```javascript
         // Sledování změny velikosti okna
@@ -590,90 +635,145 @@ Hned pod fullscreen listenery - **řádek 79-83**
 
 # 🎯 KROK 10: Inicializace při startu
 
-## 📍 KDE TO NAJDU?
-Na konci `init()` funkce - **řádek 85**
+## 📍 MÍSTO: ZA ŘÁDEK 86
 
-## 👀 JAK TO TEĎKA VYPADÁ (PŘED):
+## 👀 TEĎKA VYPADÁ TAKTO (PŘED):
 
 ```javascript
-        this.log('PlaylistSettings modul inicializován.');
-    },  // ← Konec init funkce
+        });
+        
+        this.log('PlaylistSettings modul inicializován.');    // ← ŘÁDEK 86
+    },
+
+    // Vytvoření HTML elementů
 ```
 
-## ✏️ UPRAV NA:
+## ➕ PŘIDEJ ŘÁDEK ZA 86:
 
 ```javascript
+        });
+        
         // Aplikace font sizes při startu
         this.applyFontSizes();
         
         this.log('PlaylistSettings modul inicializován.');
-    },  // ← Konec init funkce
+    },
+
+    // Vytvoření HTML elementů
 ```
 
 ---
 
 # ✅ KONTROLNÍ CHECKLIST
 
-Po dokončení zkontroluj:
+Po dokončení zkontroluj postupně:
 
-- [ ] **Krok 1** - Máš v `currentSettings` 8 nových properties (řádek 33)
-- [ ] **Krok 2** - Máš v HTML 8 sliderů (místo původních 2)
-- [ ] **Krok 3** - Máš funkci `attachFontSizeListeners()`
-- [ ] **Krok 4** - Máš funkci `applyFontSizes()`
-- [ ] **Krok 5** - `loadSettingsFromModal()` načítá 8 hodnot
-- [ ] **Krok 6** - `applySettingsToModal()` nastavuje 8 sliderů
-- [ ] **Krok 7** - `attachFontSizeListeners()` se volá v `attachEventListeners()`
-- [ ] **Krok 8** - Fullscreen listenery volají `applyFontSizes()`
-- [ ] **Krok 9** - Resize listener volá `applyFontSizes()`
-- [ ] **Krok 10** - `applyFontSizes()` se volá při startu v `init()`
+- [ ] **Krok 1** - currentSettings má 8 nových properties (řádky 34-35)
+- [ ] **Krok 2** - HTML má 8 sliderů místo 2 (řádky 197-211)
+- [ ] **Krok 3** - Funkce `attachFontSizeListeners()` existuje (za řádek 568)
+- [ ] **Krok 4** - Volání `attachFontSizeListeners()` je v `attachEventListeners()` (řádek 492)
+- [ ] **Krok 5** - Funkce `applyFontSizes()` existuje (za řádek 658)
+- [ ] **Krok 6** - `applySettingsToModal()` načítá 8 sliderů (řádky 937-948)
+- [ ] **Krok 7** - `getSettingsFromForm()` ukládá 8 hodnot (řádky 1036-1041)
+- [ ] **Krok 8** - Fullscreen listenery volají `applyFontSizes()` (řádky 75-77)
+- [ ] **Krok 9** - Resize listener volá `applyFontSizes()` (řádek 83)
+- [ ] **Krok 10** - `applyFontSizes()` se volá při startu (za řádek 86)
 
 ---
 
 # 🧪 TESTOVÁNÍ
 
-## Test 1: Otevři nastavení
+## Test 1: Zobrazení sliderů
 1. Otevři stránku
-2. Klikni na ⚙️ tlačítko
-3. Mělo by se ti zobrazit 8 sliderů:
-   - 4 pro Header
-   - 4 pro Track Title
+2. Klikni na ⚙️ (nebo klávesa N)
+3. Mělo by se zobrazit **8 sliderů** (4 Header + 4 Track)
 
-## Test 2: Změň hodnotu
+## Test 2: Okamžitá změna
 1. Posuň slider "Desktop Normal - Header"
-2. Font size nadpisu by se měl okamžitě změnit
+2. Měla by se **OKAMŽITĚ** změnit velikost nadpisu
 
-## Test 3: Fullscreen
-1. Nastav různé hodnoty pro Normal vs Fullscreen
-2. Stiskni F11 (fullscreen)
-3. Font size by se měl automaticky změnit
+## Test 3: Fullscreen přepínání
+1. Nastav Desktop Normal Header na 20px
+2. Nastav Desktop Fullscreen Header na 30px
+3. Stiskni F11 → Font by se měl změnit na 30px
+4. Stiskni F11 znovu → Font by se měl vrátit na 20px
 
-## Test 4: Mobil
+## Test 4: Mobile/Desktop
 1. Otevři DevTools (F12)
 2. Zapni Device Toolbar (Ctrl+Shift+M)
-3. Změň na mobilní zařízení
-4. Font size by se měl změnit na mobile hodnoty
+3. Změň na iPhone
+4. Font by se měl automaticky přepnout na Mobile hodnoty
+
+## Test 5: Uložení do Firestore
+1. Změň všechny hodnoty
+2. Klikni "Uložit nastavení"
+3. Otevři Firestore Console
+4. Měly by tam být všechny 8 hodnoty
 
 ---
 
-# 🚨 MOŽNÉ PROBLÉMY
+# 🚨 MOŽNÉ PROBLÉMY A ŘEŠENÍ
 
-## Problém: Slidery se nezobrazují
-**Řešení:** Zkontroluj Krok 2 - jestli jsi správně SMAZAL staré řádky 196-210
+## ❌ Chyba: "Cannot read property 'querySelector' of null"
+**Příčina:** Modal ještě není vytvořený  
+**Řešení:** Zkontroluj, že `attachFontSizeListeners()` je volaná v `attachEventListeners()` (Krok 4)
 
-## Problém: Nic se neděje při změně slideru
-**Řešení:** Zkontroluj Krok 3 a Krok 7 - event listenery musí být připojené
+## ❌ Slidery se nezobrazují
+**Příčina:** HTML kód není správně vložený  
+**Řešení:** Zkontroluj Krok 2 - musíš SMAZAT staré řádky 197-211
 
-## Problém: Chyba v konzoli "applyFontSizes is not a function"
-**Řešení:** Zkontroluj Krok 4 - funkce musí být přidaná do objektu PlaylistSettings
+## ❌ Nic se neděje při změně slideru
+**Příčina:** Event listenery nejsou připojené  
+**Řešení:** Zkontroluj Krok 3 a Krok 4
 
-## Problém: Fullscreen nepřepíná font size
-**Řešení:** Zkontroluj Krok 8 - fullscreen listenery musí volat `applyFontSizes()`
+## ❌ Fullscreen nepřepíná velikost
+**Příčina:** Listenery nevolají `applyFontSizes()`  
+**Řešení:** Zkontroluj Krok 8
+
+## ❌ Hodnoty se neukládají do Firestore
+**Příčina:** `getSettingsFromForm()` nenačítá hodnoty  
+**Řešení:** Zkontroluj Krok 7
 
 ---
 
-🖖 **HOTOVO! Máš kompletní návod krok za krokem!** 🚀
+# 🎯 VÝCHOZÍ HODNOTY
+
+```javascript
+// Header Font Sizes
+Desktop Normal: 24px      (min: 10, max: 50)
+Desktop Fullscreen: 28px  (min: 10, max: 50)
+Mobile Normal: 18px       (min: 8, max: 40)
+Mobile Fullscreen: 22px   (min: 8, max: 40)
+
+// Track Title Font Sizes
+Desktop Normal: 16px      (min: 8, max: 40)
+Desktop Fullscreen: 18px  (min: 8, max: 40)
+Mobile Normal: 14px       (min: 6, max: 30)
+Mobile Fullscreen: 16px   (min: 6, max: 30)
+```
+
+Tyto hodnoty můžeš upravit podle potřeby v Kroku 1!
+
+---
+
+# 📞 ZÁVĚR
+
+Tento návod je založen na **SKUTEČNÉM KÓDU** z tvého `playlist-github-Z.js` souboru.
+
+Každý krok má:
+- ✅ Přesné číslo řádku
+- ✅ Ukázku PŘED
+- ✅ Ukázku PO
+- ✅ Jasné instrukce
+
+**Postupuj POMALU, krok za krokem, a testuj po každém kroku!**
+
+---
+
+🖖 **Warp pohon připraven! 8 sliderů ready k instalaci!** 🚀
 
 **Vytvořil:** Admirál Claude.AI  
 **Pro:** Více admirál Jiřík  
-**Styl:** Pro úplné začátečníky (noobs)  
-**Datum:** 2026-02-04
+**Založeno na:** playlist-github-Z.js (skutečný kód)  
+**Datum:** 2026-02-04  
+**Status:** ✅ FINÁLNÍ VERZE - SUPER PŘESNÁ
